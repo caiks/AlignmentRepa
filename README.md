@@ -20,18 +20,11 @@ The AlignmentRepa module requires the [Haskell platform](https://www.haskell.org
 For example in Ubuntu,
 ```
 sudo apt-get update
-
 sudo apt-get install haskell-platform
-```
-The version of the Haskell platform may be obtained with
-```
-apt-cache showpkg haskell-platform
-2014.2.0.0.debian2
 ```
 Now the libaries not included in Haskell platform must be installed,
 ```
 cabal update
-
 cabal install repa repa-io vector-algorithms zlib cassava aeson aeson-pretty
 ```
 Then download the zip files or use git to get the AlignmentRepa repository and the underlying Alignment repository -
@@ -43,7 +36,7 @@ git clone https://github.com/caiks/AlignmentRepa.git
 
 ## Usage
 
-Typically we wish to force compilation in ghci. See [GHCi Performance](http://dev.stephendiehl.com/hask/#ghci).
+Typically we wish to force compilation in ghci in order to have the highest performance. See [Compiling to object code inside GHCi](https://downloads.haskell.org/~ghc/8.4.1/docs/html/users_guide/ghci.html#compiling-to-object-code-inside-ghci).
 Load AlignmentDevRepa to import the modules and define various useful abbreviated functions,
 ```
 cd AlignmentRepa
