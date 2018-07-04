@@ -23,45 +23,45 @@ import Data.Array.Repa.Shape
 type VShape = Vector Int
 
 instance Shape VShape where
-	{-# INLINE [1] rank #-}
-	rank vv = UV.length vv
+    {-# INLINE [1] rank #-}
+    rank vv = UV.length vv
 
-	{-# INLINE [1] zeroDim #-}
-	zeroDim = UV.singleton 0
+    {-# INLINE [1] zeroDim #-}
+    zeroDim = UV.singleton 0
 
-	{-# INLINE [1] unitDim #-}
-	unitDim = UV.singleton 1
+    {-# INLINE [1] unitDim #-}
+    unitDim = UV.singleton 1
 
-	{-# INLINE [1] intersectDim #-}
-	intersectDim vv1 vv2 = UV.map (\(i1,i2) -> min i1 i2) $ UV.zip vv1 vv2
+    {-# INLINE [1] intersectDim #-}
+    intersectDim vv1 vv2 = UV.map (\(i1,i2) -> min i1 i2) $ UV.zip vv1 vv2
 
-	{-# INLINE [1] addDim #-}
-	addDim vv1 vv2 = UV.map (\(i1,i2) -> i1 + i2) $ UV.zip vv1 vv2
+    {-# INLINE [1] addDim #-}
+    addDim vv1 vv2 = UV.map (\(i1,i2) -> i1 + i2) $ UV.zip vv1 vv2
 
-	{-# INLINE [1] size #-}
-	size vv = UV.foldl' (*) 1 vv
+    {-# INLINE [1] size #-}
+    size vv = UV.foldl' (*) 1 vv
 
-	{-# INLINE [1] sizeIsValid #-}
-	sizeIsValid sh = size sh > 0 && size sh <= maxBound
+    {-# INLINE [1] sizeIsValid #-}
+    sizeIsValid sh = size sh > 0 && size sh <= maxBound
 
-	{-# INLINE [1] toIndex #-}
-	toIndex !vv1 !vv2 = UV.foldl' (\a (d,i) -> if a /= 0 then d*a + i else i) 0 $ UV.zip vv1 vv2
+    {-# INLINE [1] toIndex #-}
+    toIndex !vv1 !vv2 = UV.foldl' (\a (d,i) -> if a /= 0 then d*a + i else i) 0 $ UV.zip vv1 vv2
 
-	{-# INLINE [1] fromIndex #-}
-	fromIndex !vv !n = snd $ UV.unzip $ UV.postscanr' (\d (a,_) -> if a >= d then a `quotRem` d else (0, a)) (n,0) vv
+    {-# INLINE [1] fromIndex #-}
+    fromIndex !vv !n = snd $ UV.unzip $ UV.postscanr' (\d (a,_) -> if a >= d then a `quotRem` d else (0, a)) (n,0) vv
 --    snd $ UV.foldr' (\d (a,xx) -> let !(q,r) = a `quotRem` d in (q, r `UV.cons` xx)) (n,UV.empty) vv
 
-	{-# INLINE [1] inShapeRange #-}
-	inShapeRange vv1 vv2 vv3 = UV.all (\(i1,i2,i3) -> i3 >= i1 && i3 <= i2) $ UV.zip3 vv1 vv2 vv3
+    {-# INLINE [1] inShapeRange #-}
+    inShapeRange vv1 vv2 vv3 = UV.all (\(i1,i2,i3) -> i3 >= i1 && i3 <= i2) $ UV.zip3 vv1 vv2 vv3
 
-	{-# NOINLINE listOfShape #-}
-	listOfShape vv = UV.toList vv
+    {-# NOINLINE listOfShape #-}
+    listOfShape vv = UV.toList vv
 
-	{-# NOINLINE shapeOfList #-}
-	shapeOfList ll = UV.fromList ll
+    {-# NOINLINE shapeOfList #-}
+    shapeOfList ll = UV.fromList ll
 
-	{-# INLINE deepSeq #-}
-	deepSeq sh x = sh `seq` x
+    {-# INLINE deepSeq #-}
+    deepSeq sh x = sh `seq` x
 
 {-# INLINE [1] incIndex #-}
 incIndex :: VShape -> VShape -> VShape

@@ -3411,8 +3411,8 @@ parametersSystemsBuilderTupleLevelNoSumlayerRepa_ui_3 xmax omax bmax mmax uu vvg
     (x1,s1) = buildb (fvars ff `minus` fvars ffg `union` vv) (init (fder ff)) V.empty 0
     init vv = V.fromListN (card vv) [((0,0,0),((sgl w, (hvempty, hvempty, UV.empty)),0)) | w <- qqll vv]
     initc vv = 
-	      let pp = cross xmax omax vv hh hhx hhrr hhrrx in
-      V.fromListN (card pp) [((a1-a2-b1+b2, -b1+b2, -u),((jj, (bbv,ffv,ssv)), a1-b1)) |              
+      let pp = cross xmax omax vv hh hhx hhrr hhrrx in
+        V.fromListN (card pp) [((a1-a2-b1+b2, -b1+b2, -u),((jj, (bbv,ffv,ssv)), a1-b1)) |              
           jj <- qqll pp, let u = vol uu jj, u <= xmax, 
           let bb = reduce 1 jj hh vshh, let bbrr = reduce f jj hhrr vshhrr,
           let bbx = xind z (hhx `xred` jj), let bbrrx = xind z (hhrrx `xred` jj), 
