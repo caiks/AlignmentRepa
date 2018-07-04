@@ -51,8 +51,13 @@ ghci -i../Alignment -i../AlignmentRepa ../AlignmentRepa/AlignmentForeign.o
 let aa = regdiag 2 2
 
 rp $ aa
+"{({(1,1),(2,1)},1 % 1),({(1,2),(2,2)},1 % 1)}"
+
+aa
+Histogram (fromList [(State (fromList [(VarInt 1,ValInt 1),(VarInt 2,ValInt 1)]),1 % 1),(State (fromList [(VarInt 1,ValInt 2),(VarInt 2,ValInt 2)]),1 % 1)])
 
 aaar (sys aa) aa
+HistogramRepa {histogramRepasVectorVar = [VarInt 1,VarInt 2], histogramRepasMapVarInt = fromList [(VarInt 1,0),(VarInt 2,1)], histogramRepasArray = AUnboxed [2,2] [1.0,0.0,0.0,1.0]}
 ```
 
 ## Documentation
