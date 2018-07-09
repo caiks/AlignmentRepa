@@ -170,11 +170,16 @@ dfund = decompFudsUnderlying
 dfapply aa df = decompFudsHistogramsApply df aa
 dfmul aa df = decompFudsHistogramsMultiply df aa
 
+aare aa = map (\(ss,c) -> (ss,fromRational c)) (histogramsList aa) :: [(State,Double)]
 aaar uu aa = fromJust $ systemsHistogramsHistogramRepa uu aa
 araa uu rr = fromJust $ systemsHistogramRepasHistogram uu rr
 arred aa vv = setVarsHistogramRepasReduce vv aa
+
 hhhr uu hh = fromJust $ systemsHistoriesHistoryRepa uu hh
 hrhh uu hr = fromJust $ systemsHistoryRepasHistory_u uu hr
+aahr aa = hhhr (sys aa) $ aahh aa 
+hrhx = historyRepasRed
+aahx = hrhx . aahr 
 hrred hh vv = setVarsHistoryRepasReduce 1 vv hh
 hrev = eventsHistoryRepasHistoryRepaSelection
 hrmult = systemsDecompFudsHistoryRepasMultiply
@@ -184,6 +189,7 @@ hrvars = historyRepasSetVariable
 hrsize = historyRepasSize
 hralgn = systemsDecompFudsHistoryRepasAlignmentContentShuffleSummation_u
 hralgntree = systemsDecompFudsHistoryRepasTreeAlignmentContentShuffleSummation_u
+
 
 algn = histogramsAlignment
 algnden aa = let v = fromIntegral (vol (sys aa) (vars aa)); n = fromIntegral (dim aa) in algn aa  / (v ** (1/n))
