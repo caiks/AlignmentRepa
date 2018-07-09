@@ -59,6 +59,24 @@ Histogram (fromList [(State (fromList [(VarInt 1,ValInt 1),(VarInt 2,ValInt 1)])
 aaar (sys aa) aa
 HistogramRepa {histogramRepasVectorVar = [VarInt 1,VarInt 2], histogramRepasMapVarInt = fromList [(VarInt 1,0),(VarInt 2,1)], histogramRepasArray = AUnboxed [2,2] [1.0,0.0,0.0,1.0]}
 ```
+Note that if forcing compilation causes functions to be unresolved, for example,
+```hs
+Set.fromList [1,2,3]
+
+<interactive>:9:1: Not in scope: ‘Set.fromList’
+```
+then module `AlignmentDevRepa` can be interpreted by itself. Exit `ghci` and then delete `AlignmentDevRepa.o`,
+```
+rm AlignmentDevRepa.o
+
+ghci -i../Alignment -i../AlignmentRepa ../AlignmentRepa/AlignmentForeign.o
+```
+```hs
+:set +m
+:l AlignmentDevRepa
+
+Set.fromList [1,2,3]
+```
 
 ## Documentation
 
