@@ -15,7 +15,7 @@ There are a couple of useful libraries that should be installed along with repa 
 
 ## Installation
 
-The AlignmentRepa module requires the [Haskell platform](https://www.haskell.org/downloads#platform) to be installed.
+The `AlignmentRepa` module requires the [Haskell platform](https://www.haskell.org/downloads#platform) to be installed.
 
 For example in Ubuntu,
 ```
@@ -37,7 +37,7 @@ git clone https://github.com/caiks/AlignmentRepa.git
 ## Usage
 
 Typically we wish to force compilation in ghci in order to have the highest performance. See [Compiling to object code inside GHCi](https://downloads.haskell.org/~ghc/8.4.1/docs/html/users_guide/ghci.html#compiling-to-object-code-inside-ghci).
-Load AlignmentDevRepa to import the modules and define various useful abbreviated functions,
+Load `AlignmentDevRepa` to import the modules and define various useful abbreviated functions,
 ```
 cd AlignmentRepa
 gcc -fPIC -c AlignmentForeign.c -o AlignmentForeign.o -O3
@@ -76,6 +76,7 @@ ghci -i../Alignment -i../AlignmentRepa ../AlignmentRepa/AlignmentForeign.o
 :l AlignmentDevRepa
 
 Set.fromList [1,2,3]
+fromList [1,2,3]
 ```
 
 ## Documentation
