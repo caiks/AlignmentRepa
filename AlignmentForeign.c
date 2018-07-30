@@ -1507,4 +1507,136 @@ long long listVarsListTuplesArrayHistoriesAlignedTop_u_2(
   return t;
 }
 
+long long listListVarsArrayHistoryPairsSetTuplePartitionTop_u(
+    long long pmax, double z, long long v, long long n, long long* svv, long long q, double y1,
+    long long* qm, long long* ql, long long* qs, long long* qp, double* aa1, double* aa2,
+    long long* tt)
+{
+    long long t = 0;
+    double bb1[v];
+    double bb2[v];
+    double ts1[pmax];
+    double ts2[pmax];
+    long long ts3[pmax];
+    double t1;
+    double t2;
+    long long t3;
+    long long tm;
+    double x1;
+    double x2;
+    long long x3;
+    long long p;
+    long long m;
+    long long r;
+    long long i;
+    double a2;
+    double b2;
+    double c;
+
+    for (p = 0; p < q; p++)
+    {
+	m = qm[p];
+        c = pow((double)v,1.0/((double)m));
+
+	for (r=0, i=0; i<m; i++)
+	{
+	    r += (qs + n*p)[i];
+	}
+
+	listListVarsArrayHistoryPairsPartitionIndependent_u(z, v, n, svv, m, r, ql + n*p, qs + n*p, qp + n*p, aa1, aa2, bb1, bb2);
+
+	for (a2=0.0, b2=0.0, i=0; i<v; i++)
+	{
+	    a2 += alngam(bb1[i]+1.0);
+	    b2 += alngam(bb2[i]+1.0);
+	}
+
+	if (t < pmax)
+	{
+	    tt[t] = p;
+	    ts1[t] = (y1 - a2 + b2) / c;
+	    ts2[t] = b2;
+	    ts3[t] = -m;
+	    t++;
+	    if (t == pmax)
+	    {
+		for (t1 = ts1[0], t2 = ts2[0], t3 = ts3[0], tm = 0, i = 1; i < pmax; i++)
+		{
+		    x1 = ts1[i];
+		    if (t1 > x1)
+		    {
+			t1 = x1;
+			t2 = ts2[i];
+			t3 = ts3[i];
+			tm = i;
+		    }
+		    else if (t1 == x1)
+		    {
+			x2 = ts2[i];
+			if (t2 > x2)
+			{
+			    t2 = x2;
+			    t3 = ts3[i];
+			    tm = i;
+			}
+			else if (t2 == x2)
+			{
+			    x3 = ts3[i];
+			    if (t3 > x3)
+			    {
+				t3 = x3;
+				tm = i;
+			    }
+			}
+		    }
+		}
+	    }
+	}
+	else
+	{
+	    x1 = (y1 - a2 + b2) / c;
+	    x2 = b2;
+	    x3 = -m;
+	    if (t1 < x1 || (t1 == x1 && t2 < x2) || (t1 == x1 && t2 == x2 && t3 < x3))
+	    {
+		tt[tm] = p;
+		ts1[tm] = x1;
+		ts2[tm] = x2;
+		ts3[tm] = x3;
+		for (t1 = ts1[0], t2 = ts2[0], t3 = ts3[0], tm = 0, i = 1; i < pmax; i++)
+		{
+		    x1 = ts1[i];
+		    if (t1 > x1)
+		    {
+			t1 = x1;
+			t2 = ts2[i];
+			t3 = ts3[i];
+			tm = i;
+		    }
+		    else if (t1 == x1)
+		    {
+			x2 = ts2[i];
+			if (t2 > x2)
+			{
+			    t2 = x2;
+			    t3 = ts3[i];
+			    tm = i;
+			}
+			else if (t2 == x2)
+			{
+			    x3 = ts3[i];
+			    if (t3 > x3)
+			    {
+				t3 = x3;
+				tm = i;
+			    }
+			}
+		    }
+		}
+	    }
+	}
+    }
+    return t;
+}
+
 

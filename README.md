@@ -39,7 +39,12 @@ git clone https://github.com/caiks/AlignmentRepa.git
 Typically we wish to force compilation in ghci in order to have the highest performance. See [Compiling to object code inside GHCi](https://downloads.haskell.org/~ghc/8.4.1/docs/html/users_guide/ghci.html#compiling-to-object-code-inside-ghci).
 Load `AlignmentDevRepa` to import the modules and define various useful abbreviated functions,
 ```
-cd AlignmentRepa
+cd ../Alignment
+rm *.o *.hi
+
+cd ../AlignmentRepa
+rm *.o *.hi
+
 gcc -fPIC -c AlignmentForeign.c -o AlignmentForeign.o -O3
 ghci -i../Alignment -i../AlignmentRepa ../AlignmentRepa/AlignmentForeign.o
 ```

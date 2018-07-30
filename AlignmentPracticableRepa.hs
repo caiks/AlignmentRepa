@@ -42,6 +42,7 @@ module AlignmentPracticableRepa (
   parametersSystemsPartitionerRepa_ui,
   parametersSystemsPartitionerRepa_ui_1,
   parametersSystemsPartitionerRepa_ui_2,
+  parametersSystemsPartitionerRepa_ui_3,
   parametersRollerRepa,
   parametersRollerMaximumRollRepa,
   parametersRollerMaximumRollExcludedSelfRepa,
@@ -1521,47 +1522,29 @@ parametersSystemsPartitionerRepa_ui ::
   Integer -> Integer -> Integer -> System -> Set.Set Variable -> 
   (HistogramRepaVec, HistogramRepaVec, UV.Vector Double) -> Double ->
   ([(Set.Set (Set.Set Variable),(HistogramRepaVec,HistogramRepaVec))],Integer)
-parametersSystemsPartitionerRepa_ui mmax umax pmax uu kk (rrv,ggv,ssv) y1 = (mm3, toInteger (length mm1))
+parametersSystemsPartitionerRepa_ui mmax umax pmax uu kk (rrv,_,_) y1 = (mm3, q)
   where
     HistogramRepaVec vbb mbb z sbb rbb = rrv 
-    [bb, bbx, bbrr, bbrrx] = V.toList rbb 
-    [ra1,ra2,rb1,rb2] = UV.toList ssv 
+    [bb, _, bbrr, _] = V.toList rbb 
     nnv = HistogramRepaVec vbb mbb z sbb (V.fromListN 2 [bb, bbrr])
     vsbb = SV.unsafeCast (UV.convert bb) :: SV.Vector CDouble
     vsbbrr = SV.unsafeCast (UV.convert bbrr) :: SV.Vector CDouble
     n = toInteger $ UV.length sbb
-    n' = fromIntegral n
-    v = fromIntegral $ vol uu kk
-    inc = n <= mmax
-    mmax' = if inc then n-1 else mmax :: Integer
-    mm1 = [(((y1-a2+b2)/c, b2, -m),(yy, (ccv,ffv), False)) |
-        yy <- stirsll kk mmax', dim yy >= 2, and [vol uu jj <= umax | jj <- qqll yy],
-        let m = fromIntegral $ dim yy,
-        let ccv = ppxx yy nnv vsbb vsbbrr, let ffv = rrvffv ccv, 
-        let [a2, b2] = UV.toList (rrvsum ffv), let c = v ** (1/m)]
-    mm2 = topd pmax $ if inc then (((y1-ra2+rb2)/(v**(1/n')), rb2, -n'),(self kk, (rrv,rrv), True)) : mm1 else mm1
-    mm3 = ([(yy, (HistogramRepaVec vcc mcc z scc (V.fromListN 4 [cc, ccx, ccrr, ccrrx]), 
-            HistogramRepaVec vff mff 1 sff (V.fromListN 4 [ff, ffx, ffrr, ffrrx]))) | 
-              (yy,(HistogramRepaVec vcc mcc z scc rcc, HistogramRepaVec vff mff _ sff rff), isself) <- mm2, not isself,
-              let [ccx, ccrrx] = V.toList rcc, let [cc, ccrr] = V.toList (rrvvrr (pprr yy nnv)), 
-              let [ffx, ffrrx] = V.toList rff, let ff = facln cc, let ffrr = facln ccrr] List.++ 
-           [(yy, (rrv,ggv)) | (yy, _, isself) <- mm2, isself])
+    (mm2,q) = rrvqqy mmax umax pmax rrv y1
+    mm3 = [(yy, (HistogramRepaVec vcc mcc z scc (V.fromListN 4 [cc, ccx, ccrr, ccrrx]), 
+            HistogramRepaVec vcc mcc 1 scc (V.fromListN 4 [ff, ffx, ffrr, ffrrx]))) | 
+              yy <- Set.toList mm2, 
+              let ccv = pprr yy nnv,
+              let HistogramRepaVec vcc mcc _ scc rcc = ccv,
+              let [cc, ccrr] = V.toList rcc, 
+              let [ccx, ccrrx] = V.toList (rrvvrr (ppxx yy nnv vsbb vsbbrr)),
+              let ff = facln cc, let ffrr = facln ccrr,
+              let ffx = facln ccx, let ffrrx = facln ccrrx]
     pprr pp rrv = setSetVarsHistogramRepaVecsPartitionVec_u pp rrv
     ppxx pp rrv vsaa vsaarr = setSetVarsHistogramRepaPairStorablesPartitionIndependentPair_u pp rrv vsaa vsaarr
-    rrvffv = histogramRepaVecsFaclnsRepaVecs
-    rrvsum = histogramRepaVecsSum
+    rrvqqy = parametersHistogramRepaVecsSetTuplePartitionTop_u 
     rrvvrr = histogramRepaVecsArray
     facln rr = UV.map (\x -> logGamma (x + 1)) rr
-    vol uu vv = systemsSetVarsVolume_u uu vv
-    stirsll vv bmax = Set.toList $ setsSetPartitionLimited vv bmax
-    dim = toInteger . Set.size
-    ssgl = stateSingleton
-    sempty = stateEmpty
-    topd amax = V.toList . snd . V.unzip . vectorPairsTop (fromInteger amax) . V.fromList
-    self = Set.map Set.singleton
-    qqll = Set.toList
-    llqq :: forall a. (Ord a) => [a] -> Set.Set a
-    llqq = Set.fromList
 
 parametersSystemsPartitionerRepa_ui_1 :: 
   Integer -> Integer -> Integer -> System -> Set.Set Variable -> 
@@ -1636,6 +1619,52 @@ parametersSystemsPartitionerRepa_ui_2 mmax umax pmax uu kk (rrv,ggv,ssv) y1 = (m
            [(yy, (rrv,ggv)) | (yy, _, isself) <- mm2, isself])
     pprr pp rrv = setSetVarsHistogramRepaVecsPartitionVec_u pp rrv
     ppxx pp rrv = setSetVarsHistogramRepaVecsPartitionIndependentVec_u pp rrv
+    rrvffv = histogramRepaVecsFaclnsRepaVecs
+    rrvsum = histogramRepaVecsSum
+    rrvvrr = histogramRepaVecsArray
+    facln rr = UV.map (\x -> logGamma (x + 1)) rr
+    vol uu vv = systemsSetVarsVolume_u uu vv
+    stirsll vv bmax = Set.toList $ setsSetPartitionLimited vv bmax
+    dim = toInteger . Set.size
+    ssgl = stateSingleton
+    sempty = stateEmpty
+    topd amax = V.toList . snd . V.unzip . vectorPairsTop (fromInteger amax) . V.fromList
+    self = Set.map Set.singleton
+    qqll = Set.toList
+    llqq :: forall a. (Ord a) => [a] -> Set.Set a
+    llqq = Set.fromList
+
+parametersSystemsPartitionerRepa_ui_3 :: 
+  Integer -> Integer -> Integer -> System -> Set.Set Variable -> 
+  (HistogramRepaVec, HistogramRepaVec, UV.Vector Double) -> Double ->
+  ([(Set.Set (Set.Set Variable),(HistogramRepaVec,HistogramRepaVec))],Integer)
+parametersSystemsPartitionerRepa_ui_3 mmax umax pmax uu kk (rrv,ggv,ssv) y1 = (mm3, toInteger (length mm1))
+  where
+    HistogramRepaVec vbb mbb z sbb rbb = rrv 
+    [bb, bbx, bbrr, bbrrx] = V.toList rbb 
+    [ra1,ra2,rb1,rb2] = UV.toList ssv 
+    nnv = HistogramRepaVec vbb mbb z sbb (V.fromListN 2 [bb, bbrr])
+    vsbb = SV.unsafeCast (UV.convert bb) :: SV.Vector CDouble
+    vsbbrr = SV.unsafeCast (UV.convert bbrr) :: SV.Vector CDouble
+    n = toInteger $ UV.length sbb
+    n' = fromIntegral n
+    v = fromIntegral $ vol uu kk
+    inc = n <= mmax
+    mmax' = if inc then n-1 else mmax :: Integer
+    mm1 = [(((y1-a2+b2)/c, b2, -m),(yy, (ccv,ffv), False)) |
+        yy <- stirsll kk mmax', dim yy >= 2, and [vol uu jj <= umax | jj <- qqll yy],
+        let m = fromIntegral $ dim yy,
+        let ccv = ppxx yy nnv vsbb vsbbrr, let ffv = rrvffv ccv, 
+        let [a2, b2] = UV.toList (rrvsum ffv), let c = v ** (1/m)]
+    mm2 = topd pmax $ if inc then (((y1-ra2+rb2)/(v**(1/n')), rb2, -n'),(self kk, (rrv,rrv), True)) : mm1 else mm1
+    mm3 = ([(yy, (HistogramRepaVec vcc mcc z scc (V.fromListN 4 [cc, ccx, ccrr, ccrrx]), 
+            HistogramRepaVec vff mff 1 sff (V.fromListN 4 [ff, ffx, ffrr, ffrrx]))) | 
+              (yy,(HistogramRepaVec vcc mcc z scc rcc, HistogramRepaVec vff mff _ sff rff), isself) <- mm2, not isself,
+              let [ccx, ccrrx] = V.toList rcc, let [cc, ccrr] = V.toList (rrvvrr (pprr yy nnv)), 
+              let [ffx, ffrrx] = V.toList rff, let ff = facln cc, let ffrr = facln ccrr] List.++ 
+           [(yy, (rrv,ggv)) | (yy, _, isself) <- mm2, isself])
+    pprr pp rrv = setSetVarsHistogramRepaVecsPartitionVec_u pp rrv
+    ppxx pp rrv vsaa vsaarr = setSetVarsHistogramRepaPairStorablesPartitionIndependentPair_u pp rrv vsaa vsaarr
     rrvffv = histogramRepaVecsFaclnsRepaVecs
     rrvsum = histogramRepaVecsSum
     rrvvrr = histogramRepaVecsArray
