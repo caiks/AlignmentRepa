@@ -50,6 +50,7 @@ module AlignmentPracticableRepa (
   parametersRollerMaximumRollExcludedSelfRepa_2,
   parametersRollerMaximumRollExcludedSelfRepa_i,
   parametersRollerMaximumRollExcludedSelfRepa_i_1,
+  parametersRollerMaximumRollExcludedSelfRepa_i_2,
   parametersSystemsLayererHighestRepa,
   parametersSystemsLayererMaximumRollHighestRepa,
   parametersSystemsLayererMaximumRollExcludedSelfHighestRepa,
@@ -1986,6 +1987,13 @@ parametersRollerMaximumRollExcludedSelfRepa_i_1 qq = (fst (unzip (topd z1)),y1)
         vv = V.fromListN l mm
         vv1 = V.imap (\i (a,b) -> (b,i)) vv     
         (_,m) = V.maximum vv1
+
+parametersRollerMaximumRollExcludedSelfRepa_i_2 :: 
+  (Set.Set (Set.Set Variable),(HistogramRepaVec,HistogramRepaVec)) -> 
+  ([(Set.Set (Set.Set Variable),V.Vector (UV.Vector Int))],Integer)
+parametersRollerMaximumRollExcludedSelfRepa_i_2 (!yy,(!rrv,_)) = ([(yy,tt)],q)
+  where
+    (!tt,!q) = histogramRepaVecsRollMax rrv
 
 parametersSystemsLayererHighestRepa :: 
   Integer -> Integer -> Integer -> Integer -> Integer -> Integer -> Integer -> Integer -> 

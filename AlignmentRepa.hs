@@ -29,6 +29,7 @@ module AlignmentRepa (
   sumsHistogramRepasRollMapPairsHistogramRepasSum_u,
   varsSourcesTargetsRollsHistogramRepaVecsHistogramRepaVecRollsCopyVec_u,
   varsSourcesTargetsRollsHistogramRepaVecsHistogramRepaVecRollsCopyVec_u_1,
+  histogramRepaVecsRollMax,
   setVarsHistogramRepasReduce,
   setVarsHistogramRepasReduce_1,
   setVarsHistogramRepasReduce_2,
@@ -1557,6 +1558,34 @@ varsSourcesTargetsRollsHistogramRepaVecsHistogramRepaVecRollsCopyVec_u_1 !u !s !
             return ()
         incIndexM_ suu iuu)
       V.mapM UV.unsafeFreeze vbb
+
+foreign import ccall unsafe "arrayHistoryPairsRollMax_u" arrayHistoryPairsRollMax_u :: 
+  CDouble -> CLLong -> CLLong -> Ptr CLLong -> CLLong -> CLLong -> Ptr CDouble -> Ptr CDouble -> 
+  Ptr CLLong -> IO (CLLong)
+
+histogramRepaVecsRollMax :: HistogramRepaVec -> (V.Vector (UV.Vector Int),Integer)
+histogramRepaVecsRollMax rrv  = (tt, toInteger q)
+  where
+    HistogramRepaVec _ _ z svv vaa = rrv
+    [aa, _, bb, _] = V.toList vaa 
+    !vsaa = SV.unsafeCast (UV.convert aa) :: SV.Vector CDouble
+    !vsbb = SV.unsafeCast (UV.convert bb) :: SV.Vector CDouble
+    !vssvv = SV.unsafeCast (UV.convert svv) :: SV.Vector CLLong
+    !v = R.size svv
+    !n = rank svv
+    !d = UV.maximum svv
+    !nd = n*d
+    (!ppm,!q) = unsafePerformIO $ do
+      let vsppm = SV.replicate nd 0
+      mppm <- SV.unsafeThaw vsppm
+      q <- SV.unsafeWith vssvv $ \psvv -> do
+        SV.unsafeWith vsaa $ \paa -> do
+        SV.unsafeWith vsbb $ \pbb -> do
+        SMV.unsafeWith mppm $ \pmppm -> do
+          arrayHistoryPairsRollMax_u (realToFrac z) (fromIntegral v) (fromIntegral n) psvv (fromIntegral d) (fromIntegral nd) paa pbb pmppm
+      vsppm' <- SV.unsafeFreeze mppm
+      return ((SV.convert (SV.unsafeCast vsppm' :: SV.Vector Int)),q)
+    !tt = V.map (\(i,e) -> UV.take e (UV.drop (d*i) ppm)) (V.indexed (UV.convert svv))
 
 historyRepasTransformRepasApply_u :: HistoryRepa -> TransformRepa -> HistoryRepa 
 historyRepasTransformRepasApply_u aa tt = HistoryRepa vbb mbb sbb rbb

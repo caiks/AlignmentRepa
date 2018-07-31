@@ -12,17 +12,40 @@ void listVarsArrayHistoriesReduce_u(double f, long long n, long long* ppkk, long
   }
 }
 
-inline long long toIndexPerm(long long q, long long* ppp, long long* svv, long long* ivv)
+inline long long toIndex(long long n, long long* svv, long long* ivv)
+{
+  long long k;
+  long long a;
+
+  for(k=1, a=ivv[0]; k<n; k++)
+    a = svv[k]*a + ivv[k];
+  return a;
+}
+
+inline long long toIndexPerm(long long n, long long* ppp, long long* svv, long long* ivv)
 {
   long long k;
   long long p;
   long long a;
 
-  for(k=1, a=ivv[ppp[0]]; k<q; k++)
+  for(k=1, a=ivv[ppp[0]]; k<n; k++)
   {
     p = ppp[k];
     a = svv[p]*a + ivv[p];
   }
+  return a;
+}
+
+inline long long toIndexInsert(long long u, long long r, long long q, long long n, long long* svv, long long* ivv)
+{
+  long long k;
+  long long a;
+
+  for(k=0, a=0; k<u; k++)
+    a = svv[k]*a + ivv[k];
+  a = r*a + q;
+  for(; k<n; k++)
+    a = svv[k]*a + ivv[k];
   return a;
 }
 
@@ -1639,4 +1662,94 @@ long long listListVarsArrayHistoryPairsSetTuplePartitionTop_u(
     return t;
 }
 
+#include <stdio.h>
+
+long long arrayHistoryPairsRollMax_u(
+    double z, long long v, long long n, long long* svv, long long d, long long nd, double* aa, double* bb,
+    long long* ppm)
+{
+  long long srchd = 0;
+  double am = 0.0;
+  long long ivv[n];
+  long long ppc[nd];
+  double xx[nd];
+  double yy[nd];
+  double ff[nd];
+  double gg[nd];
+  long long cv;
+  long long uu[d];
+  long long i;
+  long long j;  
+  long long k;  
+  long long p;
+  double a;
+  double b;
+
+  cv = v;
+
+  for (i=0; i<nd; i++)
+  {
+    xx[i]=0.0;
+    yy[i]=0.0;
+    ff[i]=0.0;
+    gg[i]=0.0;
+  }
+
+  for (i=0; i<n; i++)
+  {
+    for (j=0; j<d; j++)
+    {
+      p = d*i+j;
+      ppm[p]=j;
+      ppc[p]=j;
+    }
+  }
+
+  for (i=0; i<n; i++)
+    ivv[i] = 0;
+  for (j=0; j<v; j++)
+  {
+    i = toIndex(n, svv, ivv);
+    a = aa[i];
+    b = bb[i];
+    for (k=0; k<n; k++)   
+    {
+      p = d*k+ivv[k];
+      xx[p] += a;
+      yy[p] += b;
+      ff[p] += alngam(a+1.0);
+      gg[p] += alngam(b+1.0);
+    }
+    incIndex(n,svv,ivv);
+  }
+
+  for (i=0; i<n; i++)
+    ivv[i] = 0;
+  for (j=0; j<v; j++)
+  {
+    for (a=z, b=z, k=0; k<n; k++)   
+    {
+      p = d*k+ivv[k];
+      a *= xx[p]/z;
+      b *= yy[p]/z;
+    }
+    for (k=0; k<n; k++)   
+    {
+      p = d*k+ivv[k];
+      ff[p] -= alngam(a+1.0);
+      gg[p] -= alngam(b+1.0);
+    }
+    incIndex(n,svv,ivv);
+  }
+
+  for (am=0.0, i=0; i<n; i++)
+    am += ff[i]-gg[i];
+ 
+/*  printf("am = %.2f\n",am); */
+
+  am /= pow((double)v,1.0/((double)n));
+
+
+  return srchd;
+}
 
