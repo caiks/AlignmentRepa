@@ -1670,20 +1670,41 @@ long long arrayHistoryPairsRollMax_u(
 {
   long long srchd = 0;
   double am = 0.0;
+  double ab = 0.0;
   long long ivv[n];
+  long long syy[n];
+  long long iyy[n];
   long long ppc[nd];
   double xx[nd];
   double yy[nd];
   double ff[nd];
   double gg[nd];
   long long cv;
+  long long minv;
   long long uu[d];
+  long long y; 
+  long long r; 
+  long long u; 
+  long long h;  
+  long long g;
   long long i;
   long long j;  
   long long k;  
+  long long w;  
   long long p;
+  long long q;
+  long long s;
+  long long is;
+  long long us;
+  long long t;
+  long long it;
+  long long ut;
+  long long m;
   double a;
   double b;
+  double f;
+
+  m = n-1;
 
   cv = v;
 
@@ -1695,8 +1716,9 @@ long long arrayHistoryPairsRollMax_u(
     gg[i]=0.0;
   }
 
-  for (i=0; i<n; i++)
+  for (minv = 1, i=0; i<n; i++)
   {
+    minv *= 2;
     for (j=0; j<d; j++)
     {
       p = d*i+j;
@@ -1744,11 +1766,86 @@ long long arrayHistoryPairsRollMax_u(
 
   for (am=0.0, i=0; i<n; i++)
     am += ff[i]-gg[i];
+  ab = am;
  
 /*  printf("am = %.2f\n",am); */
 
   am /= pow((double)v,1.0/((double)n));
 
+  while (cv>minv)
+  {
+    for (w=0; w<n; w++)
+    {
+      r = svv[w];
+      p = d*w;
+
+      for (h=ppc[p], j=1; j<r; j++)  
+      {
+        k = ppc[p+j];
+        if (k<h)
+          h = k;
+      }
+      for (uu[0]=h, i=1; i<r; i++)
+      {
+        for (g=ppc[p], j=1; j<r; j++)  
+        {
+          k = ppc[p+j];
+          if (k<g && k>h)
+            g = k;
+        }
+        if (g>h)
+        {
+          h = g;
+          uu[i]=h;
+        }
+        else
+          break;
+      }
+      u = i; 
+
+      if (u>2)
+      {
+        for (i=0; i<w; i++)
+          syy[i] = svv[i];
+        for (; i<m; i++)
+          syy[i] = svv[i+1];
+        y = v/r;
+  
+        for (s=1; s<u-1; s++)
+          for (t=0; t<u-2; t++)
+          {
+            for (i=0; i<m; i++)
+              iyy[i] = 0;       
+            us = uu[s];
+            ut = uu[t]; 
+            f = ab - ff[p+us] - ff[p+ut] + gg[p+us] + gg[p+ut];
+            for (j=0; j<y; j++)
+            { 
+              is = toIndexInsert(w, r, us, m, syy, iyy);
+              it = toIndexInsert(w, r, ut, m, syy, iyy);
+              f += alngam(aa[is]+aa[it]+1.0) - alngam(bb[is]+bb[it]+1.0);
+              a = xx[p+us] + xx[p+ut];
+              b = yy[p+us] + yy[p+ut];
+              for (k=0; k<m; k++)  
+              { 
+                if (k < w)
+                  q = d*k + iyy[k];
+                else 
+                  q = d*(k+1) + iyy[k];
+                a *= xx[q]/z;
+                b *= yy[q]/z;
+              }
+              f -= alngam(a+1.0) - alngam(b+1.0);
+              incIndex(m,syy,iyy);
+            }
+            f /= pow((double)(cv/u*(u-1)),1.0/((double)n));
+            srchd++;
+
+          } 
+
+      }
+    }
+  }
 
   return srchd;
 }
