@@ -1560,16 +1560,19 @@ varsSourcesTargetsRollsHistogramRepaVecsHistogramRepaVecRollsCopyVec_u_1 !u !s !
       V.mapM UV.unsafeFreeze vbb
 
 foreign import ccall unsafe "arrayHistoryPairsRollMax_u" arrayHistoryPairsRollMax_u :: 
-  CDouble -> CLLong -> CLLong -> Ptr CLLong -> CLLong -> CLLong -> Ptr CDouble -> Ptr CDouble -> 
+  CDouble -> CLLong -> CLLong -> Ptr CLLong -> CLLong -> CLLong -> 
+  Ptr CDouble -> Ptr CDouble -> Ptr CDouble -> Ptr CDouble -> 
   Ptr CLLong -> IO (CLLong)
 
 histogramRepaVecsRollMax :: HistogramRepaVec -> (V.Vector (UV.Vector Int),Integer)
 histogramRepaVecsRollMax rrv  = (tt, toInteger q)
   where
     HistogramRepaVec _ _ z svv vaa = rrv
-    [aa, _, bb, _] = V.toList vaa 
+    [aa, aax, bb, bbx] = V.toList vaa 
     !vsaa = SV.unsafeCast (UV.convert aa) :: SV.Vector CDouble
     !vsbb = SV.unsafeCast (UV.convert bb) :: SV.Vector CDouble
+    !vsaax = SV.unsafeCast (UV.convert aax) :: SV.Vector CDouble
+    !vsbbx = SV.unsafeCast (UV.convert bbx) :: SV.Vector CDouble
     !vssvv = SV.unsafeCast (UV.convert svv) :: SV.Vector CLLong
     !v = R.size svv
     !n = rank svv
@@ -1581,8 +1584,10 @@ histogramRepaVecsRollMax rrv  = (tt, toInteger q)
       q <- SV.unsafeWith vssvv $ \psvv -> do
         SV.unsafeWith vsaa $ \paa -> do
         SV.unsafeWith vsbb $ \pbb -> do
+        SV.unsafeWith vsaax $ \paax -> do
+        SV.unsafeWith vsbbx $ \pbbx -> do
         SMV.unsafeWith mppm $ \pmppm -> do
-          arrayHistoryPairsRollMax_u (realToFrac z) (fromIntegral v) (fromIntegral n) psvv (fromIntegral d) (fromIntegral nd) paa pbb pmppm
+          arrayHistoryPairsRollMax_u (realToFrac z) (fromIntegral v) (fromIntegral n) psvv (fromIntegral d) (fromIntegral nd) paa paax pbb pbbx pmppm
       vsppm' <- SV.unsafeFreeze mppm
       return ((SV.convert (SV.unsafeCast vsppm' :: SV.Vector Int)),q)
     !tt = V.map (\(i,e) -> UV.take e (UV.drop (d*i) ppm)) (V.indexed (UV.convert svv))
