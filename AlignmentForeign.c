@@ -115,7 +115,6 @@ void listListVarsArrayHistoryPairsPartitionIndependent_u(
     {
 	for (k = 0; k<m; k++)
 	{
-
 	    i = toIndexPerm(lyy[k], ppp[k], svv, ivv);
 	    xx1[k][i] += aa1[j];
 	    xx2[k][i] += aa2[j];
@@ -1662,7 +1661,7 @@ long long listListVarsArrayHistoryPairsSetTuplePartitionTop_u(
     return t;
 }
 
-/* #include <stdio.h> */
+#include <stdio.h>
 
 long long arrayHistoryPairsRollMax_u(
     long long v, long long n, long long* svv, long long d, long long nd,
@@ -1679,7 +1678,6 @@ long long arrayHistoryPairsRollMax_u(
     double aaxz[v];
     double bbz[v];
     double bbxz[v];
-    double* aat;
     double ff[nd];
     long long minv;
     long long vc;
@@ -1694,6 +1692,7 @@ long long arrayHistoryPairsRollMax_u(
     long long i;
     long long j;
     long long k;
+    long long q;
     long long w;
     long long p;
     long long s;
@@ -1732,47 +1731,61 @@ long long arrayHistoryPairsRollMax_u(
 	incIndex(n, svv, ivv);
     }
 
+printf("fc = %.2f\n",fc);
+
     fm = fc / pow((double)vc, 1.0/((double)n));
 
-    /*  printf("am = %.2f\n",fm); */
+printf("fm = %.2f\n",fm);
 
     m = n - 1;
 
-    while (vc > minv)
+    for (q = 0; vc > minv; q++)
     {
-	for (w = 0; svv[w] > 2 && w < n; w++)
+printf("q = %lld\n",q);
+	for (w = 0; w < n; w++)
 	{
-	    for (i = 0; i < w; i++)
-		syy[i] = svv[i];
-	    for (; i < m; i++)
-		syy[i] = svv[i+1];
-	    p = d * w;
 	    r = svv[w];
-	    y = vc / r;
-	    for (s = 1; s < r-1; s++)
-		for (t = 0; t < r-2; t++)
-		{
-		    for (i = 0; i < m; i++)
-			ivv[i] = 0;
-		    for (f = fc - ff[p+s] - ff[p+t], i = 0; i < y; i++)
+            if (r > 2)
+            {
+	    	for (i = 0; i < w; i++)
+		    syy[i] = svv[i];
+	    	for (; i < m; i++)
+		    syy[i] = svv[i+1];
+	    	p = d * w;
+	    	y = vc / r;
+	    	for (s = 1; s < r-1; s++)
+		    for (t = 0; t < s; t++)
 		    {
-			is = toIndexInsert(w, r, s, m, syy, ivv);
-			it = toIndexInsert(w, r, t, m, syy, ivv);
-			f += alngam(aa[is] + aa[it] + 1.0) - alngam(aax[is] + aax[it] + 1.0)
-			    - alngam(bb[is] + bb[it] + 1.0) + alngam(bbx[is] + bbx[it] + 1.0);
-			incIndex(m, syy, ivv);
+		    	for (i = 0; i < m; i++)
+			    ivv[i] = 0;
+		    	for (f = fc - ff[p+s] - ff[p+t], i = 0; i < y; i++)
+		    	{
+			    is = toIndexInsert(w, r, s, m, syy, ivv);
+			    it = toIndexInsert(w, r, t, m, syy, ivv);
+			    f += alngam(aa[is] + aa[it] + 1.0) - alngam(aax[is] + aax[it] + 1.0)
+			        - alngam(bb[is] + bb[it] + 1.0) + alngam(bbx[is] + bbx[it] + 1.0);
+			    incIndex(m, syy, ivv);
+		    	}
+		    	f /= pow((double)(y*(r-1)), 1.0/((double)n));
+		    	srchd++;
+printf("w = %lld\n",w);
+printf("s = %lld\n",s);
+printf("t = %lld\n",t);
+printf("f = %.2f\n",f);
+		    	if ((w == 0 && s == 1 && t == 0) || (f > fw))
+		    	{
+			    ww = w;
+			    sw = s;
+			    tw = t;
+			    fw = f;
+		    	}
 		    }
-		    f /= pow((double)(y*(r-1)), 1.0/((double)n));
-		    srchd++;
-		    if ((w == 0 && s == 1 && t == 0) || (f > fw))
-		    {
-			ww = w;
-			sw = s;
-			tw = t;
-			fw = f;
-		    }
-		}
+            }
 	}
+printf("ww = %lld\n",ww);
+printf("sw = %lld\n",sw);
+printf("tw = %lld\n",tw);
+printf("fw = %.2f\n",fw);
 	for (i = 0; i < n; i++)
 	    szz[i] = svv[i];
 	r = svv[ww] - 1;
@@ -1826,11 +1839,15 @@ long long arrayHistoryPairsRollMax_u(
 		ff[d*k + ivv[k]] += f;
 	    incIndex(n, szz, ivv);
 	}
+printf("fc = %.2f\n",fc);
+	for (j = 0; j < vc; j++)
+        {
+	    aa[j] = aaz[j];
+	    aax[j] = aaxz[j];
+	    bb[j] = bbz[j];
+	    bbx[j] = bbxz[j];
+        }
 	svv[ww] = r;
-	aat = aa; aa = aaz; aaz = aat;
-	aat = aax; aax = aaxz; aaxz = aat;
-	aat = bb; bb = bbz; bbz = aat;
-	aat = bbx; bbx = bbxz; bbxz = aat;
 	for (j = 0; j < d; j++)
 	{
 	    p = d*ww + j;
@@ -1840,9 +1857,10 @@ long long arrayHistoryPairsRollMax_u(
 	    else if (u > sw)
               ppc[p] = u-1;
 	}
-	if (fw > fm)
+	if (q == 0 || fw > fm)
 	{
 	    fm = fw;
+printf("fm = %.2f\n",fm);
 	    for (i = 0; i < nd; i++)
 		ppm[i] = ppc[i];
 	}

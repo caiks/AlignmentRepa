@@ -1991,9 +1991,10 @@ parametersRollerMaximumRollExcludedSelfRepa_i_1 qq = (fst (unzip (topd z1)),y1)
 parametersRollerMaximumRollExcludedSelfRepa_i_2 :: 
   (Set.Set (Set.Set Variable),(HistogramRepaVec,HistogramRepaVec)) -> 
   ([(Set.Set (Set.Set Variable),V.Vector (UV.Vector Int))],Integer)
-parametersRollerMaximumRollExcludedSelfRepa_i_2 (!yy,(!rrv,_)) = ([(yy,tt)],q)
+parametersRollerMaximumRollExcludedSelfRepa_i_2 (!yy,(!rrv,_)) = (ll,q)
   where
     (!tt,!q) = histogramRepaVecsRollMax rrv
+    ll = if V.or (V.map (\vv -> UV.maximum vv < UV.length vv - 1) tt) then [(yy,tt)] else []
 
 parametersSystemsLayererHighestRepa :: 
   Integer -> Integer -> Integer -> Integer -> Integer -> Integer -> Integer -> Integer -> 
