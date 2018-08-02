@@ -1702,6 +1702,7 @@ long long arrayHistoryPairsRollMax_u(
     long long m;
     long long u;
     double f;
+    double c;
 
     for (i = 0; i < nd; i++)
 	ff[i] = 0.0;
@@ -1733,10 +1734,6 @@ long long arrayHistoryPairsRollMax_u(
 
 printf("fc = %.2f\n",fc);
 
-    fm = fc / pow((double)vc, 1.0/((double)n));
-
-printf("fm = %.2f\n",fm);
-
     m = n - 1;
 
     for (q = 0; vc > minv; q++)
@@ -1753,7 +1750,8 @@ printf("q = %lld\n",q);
 		    syy[i] = svv[i+1];
 	    	p = d * w;
 	    	y = vc / r;
-	    	for (s = 1; s < r-1; s++)
+		c = pow((double)(y*(r-1)), 1.0/((double)n));
+	    	for (s = 1; s < r; s++)
 		    for (t = 0; t < s; t++)
 		    {
 		    	for (i = 0; i < m; i++)
@@ -1766,7 +1764,7 @@ printf("q = %lld\n",q);
 			        - alngam(bb[is] + bb[it] + 1.0) + alngam(bbx[is] + bbx[it] + 1.0);
 			    incIndex(m, syy, ivv);
 		    	}
-		    	f /= pow((double)(y*(r-1)), 1.0/((double)n));
+		    	f /= c;
 		    	srchd++;
 printf("w = %lld\n",w);
 printf("s = %lld\n",s);
