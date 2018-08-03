@@ -1661,8 +1661,6 @@ long long listListVarsArrayHistoryPairsSetTuplePartitionTop_u(
     return t;
 }
 
-#include <stdio.h>
-
 long long arrayHistoryPairsRollMax_u(
     long long v, long long n, long long* svv, long long d, long long nd,
     double* aa, double* aax, double* bb, double* bbx,
@@ -1732,13 +1730,10 @@ long long arrayHistoryPairsRollMax_u(
 	incIndex(n, svv, ivv);
     }
 
-printf("fc = %.2f\n",fc);
-
     m = n - 1;
 
     for (q = 0; vc > minv; q++)
     {
-printf("q = %lld\n",q);
 	for (w = 0; w < n; w++)
 	{
 	    r = svv[w];
@@ -1766,10 +1761,6 @@ printf("q = %lld\n",q);
 		    	}
 		    	f /= c;
 		    	srchd++;
-printf("w = %lld\n",w);
-printf("s = %lld\n",s);
-printf("t = %lld\n",t);
-printf("f = %.2f\n",f);
 		    	if ((w == 0 && s == 1 && t == 0) || (f > fw))
 		    	{
 			    ww = w;
@@ -1780,10 +1771,6 @@ printf("f = %.2f\n",f);
 		    }
             }
 	}
-printf("ww = %lld\n",ww);
-printf("sw = %lld\n",sw);
-printf("tw = %lld\n",tw);
-printf("fw = %.2f\n",fw);
 	for (i = 0; i < n; i++)
 	    szz[i] = svv[i];
 	r = svv[ww] - 1;
@@ -1837,7 +1824,6 @@ printf("fw = %.2f\n",fw);
 		ff[d*k + ivv[k]] += f;
 	    incIndex(n, szz, ivv);
 	}
-printf("fc = %.2f\n",fc);
 	for (j = 0; j < vc; j++)
         {
 	    aa[j] = aaz[j];
@@ -1858,7 +1844,6 @@ printf("fc = %.2f\n",fc);
 	if (q == 0 || fw > fm)
 	{
 	    fm = fw;
-printf("fm = %.2f\n",fm);
 	    for (i = 0; i < nd; i++)
 		ppm[i] = ppc[i];
 	}
