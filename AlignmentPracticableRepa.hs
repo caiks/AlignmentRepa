@@ -1892,10 +1892,10 @@ parametersRollerMaximumRollExcludedSelfRepa_2 qq = fst $ unzip $ topd (rollb mm 
         vv1 = V.imap (\i (a,b) -> (b,i)) vv     
         (_,m) = V.maximum vv1
 
-parametersRollerMaximumRollExcludedSelfRepa_i :: 
+parametersRollerMaximumRollExcludedSelfRepa_i_2 :: 
   (Set.Set (Set.Set Variable),(HistogramRepaVec,HistogramRepaVec)) -> 
   ([(Set.Set (Set.Set Variable),V.Vector (UV.Vector Int))],Integer)
-parametersRollerMaximumRollExcludedSelfRepa_i qq = (topd z1,y1)
+parametersRollerMaximumRollExcludedSelfRepa_i_2 qq = (topd z1,y1)
   where
     (!yy,(!ccv,!ffv)) = qq
     !xxv = reds ffv
@@ -1988,10 +1988,10 @@ parametersRollerMaximumRollExcludedSelfRepa_i_1 qq = (fst (unzip (topd z1)),y1)
         vv1 = V.imap (\i (a,b) -> (b,i)) vv     
         (_,m) = V.maximum vv1
 
-parametersRollerMaximumRollExcludedSelfRepa_i_2 :: 
+parametersRollerMaximumRollExcludedSelfRepa_i :: 
   (Set.Set (Set.Set Variable),(HistogramRepaVec,HistogramRepaVec)) -> 
   ([(Set.Set (Set.Set Variable),V.Vector (UV.Vector Int))],Integer)
-parametersRollerMaximumRollExcludedSelfRepa_i_2 (!yy,(!rrv,_)) = (ll,q)
+parametersRollerMaximumRollExcludedSelfRepa_i (!yy,(!rrv,_)) = (ll,q)
   where
     (!tt,!q) = histogramRepaVecsRollMax rrv
     ll = if V.or (V.map (\vv -> UV.maximum vv < UV.length vv - 1) tt) then [(yy,tt)] else []
