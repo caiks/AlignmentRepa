@@ -25,6 +25,7 @@ module AlignmentPracticableRepa (
   parametersSystemsBuilderTupleLevelNoSumlayerRepa_ui_2,
   parametersSystemsBuilderTupleLevelNoSumlayerRepa_ui_3,
   parametersSystemsBuilderTupleLevelNoSumlayerMultiEffectiveRepa_u,
+  parametersSystemsBuilderTupleLevelNoSumlayerMultiEffectiveRepa_u_1,
   parametersSystemsBuilderTupleLevelNoSumlayerMultiEffectiveRepa_ui,
   parametersSystemsBuilderDerivedVarsHighestRepa,
   parametersSystemsBuilderDerivedVarsHighestNoSumlayerIncludeHiddenRepa,
@@ -3274,7 +3275,16 @@ parametersSystemsBuilderTupleLevelNoSumlayerMultiEffectiveRepa_u ::
   Integer -> Integer -> Integer -> Integer -> System -> Set.Set Variable -> Fud -> Fud -> 
   HistoryRepa -> HistogramRepaRed -> HistoryRepa -> HistogramRepaRed ->   
   [((Set.Set Variable, (HistogramRepaVec, HistogramRepaVec, UV.Vector Double)),Double)]
-parametersSystemsBuilderTupleLevelNoSumlayerMultiEffectiveRepa_u xmax omax bmax mmax uu vvg ffg ff hh hhx hhrr hhrrx
+parametersSystemsBuilderTupleLevelNoSumlayerMultiEffectiveRepa_u xmax omax bmax mmax uu vvg ffg ff hh hhx hhrr hhrrx =
+    fst $ buildfftup xmax omax bmax mmax uu vvg ffg ff hh hhx hhrr hhrrx
+  where
+    buildfftup = parametersSystemsBuilderTupleLevelNoSumlayerMultiEffectiveRepa_ui
+
+parametersSystemsBuilderTupleLevelNoSumlayerMultiEffectiveRepa_u_1 :: 
+  Integer -> Integer -> Integer -> Integer -> System -> Set.Set Variable -> Fud -> Fud -> 
+  HistoryRepa -> HistogramRepaRed -> HistoryRepa -> HistogramRepaRed ->   
+  [((Set.Set Variable, (HistogramRepaVec, HistogramRepaVec, UV.Vector Double)),Double)]
+parametersSystemsBuilderTupleLevelNoSumlayerMultiEffectiveRepa_u_1 xmax omax bmax mmax uu vvg ffg ff hh hhx hhrr hhrrx
   | vv' == Set.empty = []
   | ff == fudEmpty = V.toList $ topd (bmax `div` mmax) $ buildb vv' (init vv') V.empty
   | otherwise = 
