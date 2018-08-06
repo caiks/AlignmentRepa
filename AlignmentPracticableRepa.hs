@@ -55,6 +55,7 @@ module AlignmentPracticableRepa (
   parametersRollerMaximumRollExcludedSelfRepa,
   parametersRollerMaximumRollExcludedSelfRepa_1,
   parametersRollerMaximumRollExcludedSelfRepa_2,
+  parametersRollerMaximumRollExcludedSelfRepa_3,
   parametersRollerMaximumRollExcludedSelfRepa_i,
   parametersRollerMaximumRollExcludedSelfRepa_i_1,
   parametersRollerMaximumRollExcludedSelfRepa_i_2,
@@ -1834,50 +1835,10 @@ parametersRollerMaximumRollRepa qq = fst $ unzip $ topd (rollb mm mm)
 parametersRollerMaximumRollExcludedSelfRepa :: 
   (Set.Set (Set.Set Variable),(HistogramRepaVec,HistogramRepaVec)) -> 
   [(Set.Set (Set.Set Variable),V.Vector (UV.Vector Int))]
-parametersRollerMaximumRollExcludedSelfRepa qq = topd (rollb pp ccv ffv xxv a w [])
+parametersRollerMaximumRollExcludedSelfRepa qq = 
+    fst $ parter qq
   where
-    (!yy,(!ccv,!ffv)) = qq
-    !xxv = reds ffv
-    !a = UV.sum (vec (sing 0 xxv))
-    !scc = sh ccv
-    !w = R.size scc
-    !m = R.rank scc
-    !pp = V.map (\d -> UV.enumFromN 0 d) (UV.convert scc)
-    rollb pp ccv ffv xxv a w nn
-      | mm /= [] = rollb pp' ccv' ffv' xxv' a' w' (((yy,pp'),b'):nn)
-      | otherwise = nn         
-      where
-        !scc = sh ccv
-        !mm = top $ [((a',w',(v,s,t,q,rrv,ggv)),a'/c') | 
-               v <- [0..m-1], let d = scc UV.! v, d > 2, 
-               let w' = w * (d-1) `div` d, let c' = fromIntegral w' ** (1 / fromIntegral m), 
-               let (rrv,(rs,rt)) = rollv v ccv, let ggv = faclns rrv, 
-               let av = sumv a (sing v xxv) (rs,rt) (sing4 v ggv),
-               (q,(s,t,a')) <- zip [0..] (UV.toList (UV.zip3 rs rt av))]
-        ((a',w',(v,s,t,q,rrv,ggv)),b') = head mm
-        ccv' = copyv v s t q ccv rrv
-        ffv' = copyv v s t q ffv ggv
-        xxv' = reds ffv'
-        pp' = pp V.// [(v, rollr s t (pp V.! v))]
-    sh = histogramRepaVecsShape
-    vec = R.toUnboxed . histogramRepasArray
-    faclns = histogramRepaVecsFaclnsRepaVecs
-    reds = histogramRepa4VecsRed_u
-    sing = varsHistogramRepaRedsSingle_u
-    sing4 = varsHistogramRepa4VecsReduceSingle_u
-    rollv = varsHistogramRepaVecsRollVec_u
-    sumv = sumsHistogramRepasRollMapPairsHistogramRepasSum_u
-    copyv = varsSourcesTargetsRollsHistogramRepaVecsHistogramRepaVecRollsCopyVec_u
-    rollr s t = UV.map (\r -> if r > s then r-1 else (if r == s then t else r))
-    topd mm = fst $ unzip $ top mm
-    top mm 
-      | l <= 0 = []
-      | otherwise  = [V.unsafeIndex vv m]
-      where
-        l = length mm
-        vv = V.fromListN l mm
-        vv1 = V.imap (\i (a,b) -> (b,i)) vv     
-        (_,m) = V.maximum vv1
+    parter = parametersRollerMaximumRollExcludedSelfRepa_i
 
 parametersRollerMaximumRollExcludedSelfRepa_1 :: 
   (Set.Set (Set.Set Variable),(HistogramRepaVec,HistogramRepaVec)) -> 
@@ -1943,6 +1904,54 @@ parametersRollerMaximumRollExcludedSelfRepa_2 qq = fst $ unzip $ topd (rollb mm 
                  (((yy,pp),((ccv,ffv),(a',w',m),(v,s,t,q,rrv,ggv))),b') <- mm,
                  let ccv' = copyv v s t q ccv rrv, let ffv' = copyv v s t q ffv ggv, let xxv' = reds ffv',
                  let pp' = pp V.// [(v, rollr s t (pp V.! v))]]
+    sh = histogramRepaVecsShape
+    vec = R.toUnboxed . histogramRepasArray
+    faclns = histogramRepaVecsFaclnsRepaVecs
+    reds = histogramRepa4VecsRed_u
+    sing = varsHistogramRepaRedsSingle_u
+    sing4 = varsHistogramRepa4VecsReduceSingle_u
+    rollv = varsHistogramRepaVecsRollVec_u
+    sumv = sumsHistogramRepasRollMapPairsHistogramRepasSum_u
+    copyv = varsSourcesTargetsRollsHistogramRepaVecsHistogramRepaVecRollsCopyVec_u
+    rollr s t = UV.map (\r -> if r > s then r-1 else (if r == s then t else r))
+    topd mm = fst $ unzip $ top mm
+    top mm 
+      | l <= 0 = []
+      | otherwise  = [V.unsafeIndex vv m]
+      where
+        l = length mm
+        vv = V.fromListN l mm
+        vv1 = V.imap (\i (a,b) -> (b,i)) vv     
+        (_,m) = V.maximum vv1
+
+parametersRollerMaximumRollExcludedSelfRepa_3 :: 
+  (Set.Set (Set.Set Variable),(HistogramRepaVec,HistogramRepaVec)) -> 
+  [(Set.Set (Set.Set Variable),V.Vector (UV.Vector Int))]
+parametersRollerMaximumRollExcludedSelfRepa_3 qq = topd (rollb pp ccv ffv xxv a w [])
+  where
+    (!yy,(!ccv,!ffv)) = qq
+    !xxv = reds ffv
+    !a = UV.sum (vec (sing 0 xxv))
+    !scc = sh ccv
+    !w = R.size scc
+    !m = R.rank scc
+    !pp = V.map (\d -> UV.enumFromN 0 d) (UV.convert scc)
+    rollb pp ccv ffv xxv a w nn
+      | mm /= [] = rollb pp' ccv' ffv' xxv' a' w' (((yy,pp'),b'):nn)
+      | otherwise = nn         
+      where
+        !scc = sh ccv
+        !mm = top $ [((a',w',(v,s,t,q,rrv,ggv)),a'/c') | 
+               v <- [0..m-1], let d = scc UV.! v, d > 2, 
+               let w' = w * (d-1) `div` d, let c' = fromIntegral w' ** (1 / fromIntegral m), 
+               let (rrv,(rs,rt)) = rollv v ccv, let ggv = faclns rrv, 
+               let av = sumv a (sing v xxv) (rs,rt) (sing4 v ggv),
+               (q,(s,t,a')) <- zip [0..] (UV.toList (UV.zip3 rs rt av))]
+        ((a',w',(v,s,t,q,rrv,ggv)),b') = head mm
+        ccv' = copyv v s t q ccv rrv
+        ffv' = copyv v s t q ffv ggv
+        xxv' = reds ffv'
+        pp' = pp V.// [(v, rollr s t (pp V.! v))]
     sh = histogramRepaVecsShape
     vec = R.toUnboxed . histogramRepasArray
     faclns = histogramRepaVecsFaclnsRepaVecs
