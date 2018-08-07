@@ -30,7 +30,9 @@ module AlignmentPracticableRepa (
   parametersSystemsBuilderDerivedVarsHighestRepa,
   parametersSystemsBuilderDerivedVarsHighestNoSumlayerIncludeHiddenRepa,
   parametersSystemsBuilderDerivedVarsHighestNoSumlayerIncludeHiddenRepa_1,
+  parametersSystemsBuilderDerivedVarsHighestNoSumlayerIncludeHiddenRepa_2,
   parametersSystemsBuilderDerivedVarsHighestNoSumlayerIncludeHiddenRepa_u,
+  parametersSystemsBuilderDerivedVarsHighestNoSumlayerIncludeHiddenRepa_u_1,
   parametersSystemsBuilderDerivedVarsHighestNoSumlayerIncludeHiddenRepa_ui,
   parametersSystemsBuilderDerivedVarsHighestNoSumlayerIncludeHiddenRepa_ui_1,
   parametersSystemsBuilderDerivedVarsHighestNoSumlayerIncludeHiddenRepa_ui_2,
@@ -1022,7 +1024,7 @@ parametersSystemsBuilderDerivedVarsHighestNoSumlayerIncludeHiddenRepa wmax omax 
   | z == 0 || zrr == 0 = Nothing
   | not (vvqq vhh `subset` uvars uu && vhh == vhhrr && vhh == vhhx && vhhx == vhhrrx && vv `subset` vvqq vhh) = Nothing
   | not (fvars ff `subset` uvars uu) = Nothing
-  | otherwise = Just $ V.toList $ maxfst $ buildd (fvars ff `minus` vv) (init (fder ff)) V.empty
+  | otherwise = Just $ buildffdervar wmax omax uu vv ff hh hhx hhrr hhrrx
   where
     HistoryRepa vhh _ _ aa = hh
     HistogramRepaRed vhhx _ _ _ = hhx
@@ -1030,40 +1032,10 @@ parametersSystemsBuilderDerivedVarsHighestNoSumlayerIncludeHiddenRepa wmax omax 
     HistogramRepaRed vhhrrx _ _ _ = hhrrx
     Z :. _ :. z = extent aa
     Z :. _ :. zrr = extent aarr
-    f = (fromIntegral z)/(fromIntegral zrr)
-    init vv = V.fromListN (card vv) [((0,0,0),(sgl w, hempty, hempty)) | w <- qqll vv]
-    buildd ww qq nn = if (not (V.null mm)) then buildd ww mm (nn V.++ mm) else (final nn) 
-      where
-        pp = llqq [jj | (_,(kk,_,_)) <- V.toList qq, w <- qqll (ww `minus` kk), let jj = kk `add` w]
-        mm = top omax $ V.fromListN (card pp) [(((a-b)/c,-b/c,-u),(jj, bb, bbrr)) |
-          jj <- qqll pp, let u = vol uu jj, u <= wmax,
-          let bb = reduce 1 jj hh, let bbrr = reduce f jj hhrr,
-          let bbx = xind z (hhx `xred` jj), let bbrrx = xind z (hhrrx `xred` jj), 
-          let u' = fromIntegral u, let m = fromIntegral (Set.size jj),
-          let a = sumfacln bb - sumfacln bbx, let b = sumfacln bbrr - sumfacln bbrrx, let c = u' ** (1/m)]
-    final = V.filter (\(_,(kk,_,_)) -> card kk > 1) 
-    sumfacln (HistogramRepa _ _ rr) = UV.sum $ UV.map (\x -> logGamma (x + 1)) (toUnboxed rr)
-    reduce = setVarsHistoryRepasReduce
-    xred hhx vv = setVarsHistogramRepaRedsRed vv hhx
-    xind x hhx = histogramRepaRedsIndependent (fromIntegral x) hhx
-    hempty = histogramRepaEmpty
-    fder = fudsDerived
+    buildffdervar = parametersSystemsBuilderDerivedVarsHighestNoSumlayerIncludeHiddenRepa_u
     fvars = fudsVars
-    vars = histogramsVars
-    vol uu vv = fromJust $ systemsVarsVolume uu vv
     uvars = systemsVars
-    top amax mm = vectorPairsTop (fromInteger amax) mm
-    maxfst mm = V.map (\((a,_,_),x) -> (x,a)) $ vectorPairsTop 1 mm
-    add xx x = x `Set.insert` xx
-    minus = Set.difference
     subset = Set.isSubsetOf
-    card = Set.size
-    qqll :: forall a. Set.Set a -> [a]
-    qqll = Set.toList
-    llqq :: forall a. (Ord a) => [a] -> Set.Set a
-    llqq = Set.fromList
-    sgl = Set.singleton
-    empty = Set.empty
     vvqq = Set.fromList . V.toList
 
 parametersSystemsBuilderDerivedVarsHighestNoSumlayerIncludeHiddenRepa_1 :: 
@@ -1120,11 +1092,73 @@ parametersSystemsBuilderDerivedVarsHighestNoSumlayerIncludeHiddenRepa_1 wmax oma
     empty = Set.empty
     vvqq = Set.fromList . V.toList
 
+parametersSystemsBuilderDerivedVarsHighestNoSumlayerIncludeHiddenRepa_2 :: 
+  Integer -> Integer -> System -> Set.Set Variable -> Fud -> 
+  HistoryRepa -> HistogramRepaRed -> HistoryRepa -> HistogramRepaRed ->   
+  Maybe [((Set.Set Variable, HistogramRepa, HistogramRepa), Double)]
+parametersSystemsBuilderDerivedVarsHighestNoSumlayerIncludeHiddenRepa_2 wmax omax uu vv ff hh hhx hhrr hhrrx
+  | wmax < 0 || omax < 0 = Nothing
+  | z == 0 || zrr == 0 = Nothing
+  | not (vvqq vhh `subset` uvars uu && vhh == vhhrr && vhh == vhhx && vhhx == vhhrrx && vv `subset` vvqq vhh) = Nothing
+  | not (fvars ff `subset` uvars uu) = Nothing
+  | otherwise = Just $ V.toList $ maxfst $ buildd (fvars ff `minus` vv) (init (fder ff)) V.empty
+  where
+    HistoryRepa vhh _ _ aa = hh
+    HistogramRepaRed vhhx _ _ _ = hhx
+    HistoryRepa vhhrr _ _ aarr = hhrr
+    HistogramRepaRed vhhrrx _ _ _ = hhrrx
+    Z :. _ :. z = extent aa
+    Z :. _ :. zrr = extent aarr
+    f = (fromIntegral z)/(fromIntegral zrr)
+    init vv = V.fromListN (card vv) [((0,0,0),(sgl w, hempty, hempty)) | w <- qqll vv]
+    buildd ww qq nn = if (not (V.null mm)) then buildd ww mm (nn V.++ mm) else (final nn) 
+      where
+        pp = llqq [jj | (_,(kk,_,_)) <- V.toList qq, w <- qqll (ww `minus` kk), let jj = kk `add` w]
+        mm = top omax $ V.fromListN (card pp) [(((a-b)/c,-b/c,-u),(jj, bb, bbrr)) |
+          jj <- qqll pp, let u = vol uu jj, u <= wmax,
+          let bb = reduce 1 jj hh, let bbrr = reduce f jj hhrr,
+          let bbx = xind z (hhx `xred` jj), let bbrrx = xind z (hhrrx `xred` jj), 
+          let u' = fromIntegral u, let m = fromIntegral (Set.size jj),
+          let a = sumfacln bb - sumfacln bbx, let b = sumfacln bbrr - sumfacln bbrrx, let c = u' ** (1/m)]
+    final = V.filter (\(_,(kk,_,_)) -> card kk > 1) 
+    sumfacln (HistogramRepa _ _ rr) = UV.sum $ UV.map (\x -> logGamma (x + 1)) (toUnboxed rr)
+    reduce = setVarsHistoryRepasReduce
+    xred hhx vv = setVarsHistogramRepaRedsRed vv hhx
+    xind x hhx = histogramRepaRedsIndependent (fromIntegral x) hhx
+    hempty = histogramRepaEmpty
+    fder = fudsDerived
+    fvars = fudsVars
+    vars = histogramsVars
+    vol uu vv = fromJust $ systemsVarsVolume uu vv
+    uvars = systemsVars
+    top amax mm = vectorPairsTop (fromInteger amax) mm
+    maxfst mm = V.map (\((a,_,_),x) -> (x,a)) $ vectorPairsTop 1 mm
+    add xx x = x `Set.insert` xx
+    minus = Set.difference
+    subset = Set.isSubsetOf
+    card = Set.size
+    qqll :: forall a. Set.Set a -> [a]
+    qqll = Set.toList
+    llqq :: forall a. (Ord a) => [a] -> Set.Set a
+    llqq = Set.fromList
+    sgl = Set.singleton
+    empty = Set.empty
+    vvqq = Set.fromList . V.toList
+
 parametersSystemsBuilderDerivedVarsHighestNoSumlayerIncludeHiddenRepa_u :: 
   Integer -> Integer -> System -> Set.Set Variable -> Fud -> 
   HistoryRepa -> HistogramRepaRed -> HistoryRepa -> HistogramRepaRed ->   
   [((Set.Set Variable, HistogramRepa, HistogramRepa), Double)]
 parametersSystemsBuilderDerivedVarsHighestNoSumlayerIncludeHiddenRepa_u wmax omax uu vv ff hh hhx hhrr hhrrx = 
+    fst $ buildffdervar wmax omax uu vv ff hh hhx hhrr hhrrx   
+  where
+    buildffdervar = parametersSystemsBuilderDerivedVarsHighestNoSumlayerIncludeHiddenRepa_ui
+
+parametersSystemsBuilderDerivedVarsHighestNoSumlayerIncludeHiddenRepa_u_1 :: 
+  Integer -> Integer -> System -> Set.Set Variable -> Fud -> 
+  HistoryRepa -> HistogramRepaRed -> HistoryRepa -> HistogramRepaRed ->   
+  [((Set.Set Variable, HistogramRepa, HistogramRepa), Double)]
+parametersSystemsBuilderDerivedVarsHighestNoSumlayerIncludeHiddenRepa_u_1 wmax omax uu vv ff hh hhx hhrr hhrrx = 
   V.toList $ maxfst $ buildd (fvars ff `minus` vv) (init (fder ff)) V.empty
   where
     HistoryRepa vhh _ _ aa = hh
