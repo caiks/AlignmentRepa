@@ -37,6 +37,7 @@ module AlignmentPracticableRepa (
   parametersSystemsBuilderDerivedVarsHighestNoSumlayerIncludeHiddenRepa_ui_1,
   parametersSystemsBuilderDerivedVarsHighestNoSumlayerIncludeHiddenRepa_ui_2,
   parametersSystemsBuilderDerivedVarsLevelHighestNoSumlayerIncludeHiddenRepa_u,
+  parametersSystemsBuilderDerivedVarsLevelHighestNoSumlayerIncludeHiddenRepa_u_1,
   parametersSystemsBuilderDerivedVarsLevelHighestNoSumlayerIncludeHiddenRepa_ui,
   parametersSystemsBuilderDerivedVarsLevelHighestNoSumlayerIncludeHiddenRepa_ui_1,
   parametersSystemsBuilderDerivedVarsLevelHighestNoSumlayerIncludeHiddenRepa_ui_2,
@@ -3693,6 +3694,15 @@ parametersSystemsBuilderDerivedVarsLevelHighestNoSumlayerIncludeHiddenRepa_u ::
   HistoryRepa -> HistogramRepaRed -> HistoryRepa -> HistogramRepaRed ->   
   [((Set.Set Variable, HistogramRepa, HistogramRepa), Double)]
 parametersSystemsBuilderDerivedVarsLevelHighestNoSumlayerIncludeHiddenRepa_u wmax omax uu vv ffg ff hh hhx hhrr hhrrx = 
+    fst $ buildffdervar wmax omax uu vv ffg ff hh hhx hhrr hhrrx
+  where
+    buildffdervar = parametersSystemsBuilderDerivedVarsLevelHighestNoSumlayerIncludeHiddenRepa_ui 
+
+parametersSystemsBuilderDerivedVarsLevelHighestNoSumlayerIncludeHiddenRepa_u_1 :: 
+  Integer -> Integer -> System -> Set.Set Variable -> Fud -> Fud -> 
+  HistoryRepa -> HistogramRepaRed -> HistoryRepa -> HistogramRepaRed ->   
+  [((Set.Set Variable, HistogramRepa, HistogramRepa), Double)]
+parametersSystemsBuilderDerivedVarsLevelHighestNoSumlayerIncludeHiddenRepa_u_1 wmax omax uu vv ffg ff hh hhx hhrr hhrrx = 
   V.toList $ maxfst $ buildd (fvars ff `minus` vv `minus` fvars ffg) (init (fder ff)) V.empty
   where
     Z :. _ :. z = extent $ historyRepasArray hh
