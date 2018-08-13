@@ -458,6 +458,8 @@ long long listVarsArrayHistoriesAlignedTop_u(
     long long k;
     long long a;
 
+    *s = 0;
+
     for (k = 1, a = svv[0], xx1[0] = pxx1, xx2[0] = pxx2; k<n; k++)
     {
 	xx1[k] = pxx1 + a;
@@ -877,6 +879,8 @@ long long listVarsListTuplesArrayHistoriesAlignedTop_u(
     long long k;
     long long a;
     long long ok;
+
+    *s = 0;
 
     for (k = 1, a = svv[0], xx1[0] = pxx1, xx2[0] = pxx2; k<n; k++)
     {
@@ -1662,8 +1666,8 @@ long long listListVarsArrayHistoryPairsSetTuplePartitionTop_u(
 }
 
 long long arrayHistoryPairsRollMax_u(
-    long long v, long long n, long long* svv, long long d, long long nd,
-    double* aa, double* aax, double* bb, double* bbx,
+    long long v, long long n, long long* svvy, long long d, long long nd,
+    double* aay, double* aaxy, double* bby, double* bbxy,
     long long* ppm)
 {
     long long srchd = 0;
@@ -1671,7 +1675,12 @@ long long arrayHistoryPairsRollMax_u(
 
     long long ivv[n];
     long long syy[n];
+    long long svv[n];
     long long szz[n];
+    double aa[v];
+    double aax[v];
+    double bb[v];
+    double bbx[v];
     double aaz[v];
     double aaxz[v];
     double bbz[v];
@@ -1685,6 +1694,7 @@ long long arrayHistoryPairsRollMax_u(
     long long sw;
     long long tw;
     double fw;
+    long long x;    
     long long y;
     long long r;
     long long i;
@@ -1702,12 +1712,21 @@ long long arrayHistoryPairsRollMax_u(
     double f;
     double c;
 
+    for (j = 0; j < v; j++)
+    {
+	aa[j] = aay[j];
+	aax[j] = aaxy[j];
+	bb[j] = bby[j];
+	bbx[j] = bbxy[j];
+    }
+
     for (i = 0; i < nd; i++)
 	ff[i] = 0.0;
 
     for (minv = 1, i = 0; i < n; i++)
     {
 	minv *= 2;
+        svv[i] = svvy[i];
 	for (j = 0; j < d; j++)
 	{
 	    p = d*i + j;
@@ -1734,7 +1753,7 @@ long long arrayHistoryPairsRollMax_u(
 
     for (q = 0; vc > minv; q++)
     {
-	for (w = 0; w < n; w++)
+	for (x = 0, w = 0; w < n; w++)
 	{
 	    r = svv[w];
             if (r > 2)
@@ -1761,8 +1780,9 @@ long long arrayHistoryPairsRollMax_u(
 		    	}
 		    	f *= c;
 		    	srchd++;
-		    	if ((w == 0 && s == 1 && t == 0) || (f > fw))
+		    	if ((x == 0) || (f > fw))
 		    	{
+                            x++;
 			    ww = w;
 			    sw = s;
 			    tw = t;

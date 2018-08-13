@@ -2133,9 +2133,11 @@ parametersSystemsLayererHighestRepa wmax lmax xmax omax bmax mmax umax pmax uu v
                  let w = VarPair (VarPair (VarInt f, VarInt l), VarInt b), 
                  let ww = llqq $ List.map (\(_,u) -> (nnww u)) ii, 
                  let tt = trans (unit [ss `sunion` ssgl w (nnww u) | (ss,u) <- ii]) (sgl w)]
-        hh = qqff $ llqq $ fst $ unzip ll
-        uu' = uu `uunion` (lluu $ snd $ unzip ll)
-        ffr = V.fromList $ List.map (tttr uu') $ fst $ unzip ll
+        ll' = [(tt,(w,ww)) | (tt,(w,ww)) <- ll, 
+                and [Set.size ww /= Set.size ww' || und tt /= und tt' || ttpp tt /= ttpp tt' | (tt',(w',ww')) <- ll, w > w']]
+        hh = qqff $ llqq $ fst $ unzip ll'
+        uu' = uu `uunion` (lluu $ snd $ unzip ll')
+        ffr = V.fromList $ List.map (tttr uu') $ fst $ unzip ll'
         xx' = apply xx ffr
         xxp' = historyRepasRed xx'
         xxrr' = apply xxrr ffr
@@ -2155,6 +2157,8 @@ parametersSystemsLayererHighestRepa wmax lmax xmax omax bmax mmax umax pmax uu v
     qqff = fromJust . setTransformsFud
     ffqq = fudsSetTransform
     funion ff gg = qqff (ffqq ff `Set.union` ffqq gg)
+    ttpp = transformsPartition
+    und = transformsUnderlying
     trans = histogramsSetVarsTransform_u
     unit qq = listsHistogram_u $ List.map (\ss -> (ss,1)) $ qq
     sunion = pairStatesUnionLeft
@@ -2194,9 +2198,11 @@ parametersSystemsLayererMaximumRollHighestRepa wmax lmax xmax omax bmax mmax uma
                  let w = VarPair (VarPair (VarInt f, VarInt l), VarInt b), 
                  let ww = llqq $ List.map (\(_,u) -> (nnww u)) ii, 
                  let tt = trans (unit [ss `sunion` ssgl w (nnww u) | (ss,u) <- ii]) (sgl w)]
-        hh = qqff $ llqq $ fst $ unzip ll
-        uu' = uu `uunion` (lluu $ snd $ unzip ll)
-        ffr = V.fromList $ List.map (tttr uu') $ fst $ unzip ll
+        ll' = [(tt,(w,ww)) | (tt,(w,ww)) <- ll, 
+                and [Set.size ww /= Set.size ww' || und tt /= und tt' || ttpp tt /= ttpp tt' | (tt',(w',ww')) <- ll, w > w']]
+        hh = qqff $ llqq $ fst $ unzip ll'
+        uu' = uu `uunion` (lluu $ snd $ unzip ll')
+        ffr = V.fromList $ List.map (tttr uu') $ fst $ unzip ll'
         xx' = apply xx ffr
         xxp' = historyRepasRed xx'
         xxrr' = apply xxrr ffr
@@ -2216,6 +2222,8 @@ parametersSystemsLayererMaximumRollHighestRepa wmax lmax xmax omax bmax mmax uma
     qqff = fromJust . setTransformsFud
     ffqq = fudsSetTransform
     funion ff gg = qqff (ffqq ff `Set.union` ffqq gg)
+    ttpp = transformsPartition
+    und = transformsUnderlying
     trans = histogramsSetVarsTransform_u
     unit qq = listsHistogram_u $ List.map (\ss -> (ss,1)) $ qq
     sunion = pairStatesUnionLeft
@@ -2276,9 +2284,11 @@ parametersSystemsLayererMaximumRollExcludedSelfHighestRepa_1
                  let w = VarPair (VarPair (VarInt f, VarInt l), VarInt b), 
                  let ww = llqq $ List.map (\(_,u) -> (nnww u)) ii, 
                  let tt = trans (unit [ss `sunion` ssgl w (nnww u) | (ss,u) <- ii]) (sgl w)]
-        hh = qqff $ llqq $ fst $ unzip ll
-        uu' = uu `uunion` (lluu $ snd $ unzip ll)
-        ffr = V.fromList $ List.map (tttr uu') $ fst $ unzip ll
+        ll' = [(tt,(w,ww)) | (tt,(w,ww)) <- ll, 
+                and [Set.size ww /= Set.size ww' || und tt /= und tt' || ttpp tt /= ttpp tt' | (tt',(w',ww')) <- ll, w > w']]
+        hh = qqff $ llqq $ fst $ unzip ll'
+        uu' = uu `uunion` (lluu $ snd $ unzip ll')
+        ffr = V.fromList $ List.map (tttr uu') $ fst $ unzip ll'
         xx' = apply xx ffr
         xxp' = historyRepasRed xx'
         xxrr' = apply xxrr ffr
@@ -2298,6 +2308,8 @@ parametersSystemsLayererMaximumRollExcludedSelfHighestRepa_1
     qqff = fromJust . setTransformsFud
     ffqq = fudsSetTransform
     funion ff gg = qqff (ffqq ff `Set.union` ffqq gg)
+    ttpp = transformsPartition
+    und = transformsUnderlying
     trans = histogramsSetVarsTransform_u
     unit qq = listsHistogram_u $ List.map (\ss -> (ss,1)) $ qq
     sunion = pairStatesUnionLeft
@@ -2339,9 +2351,11 @@ parametersSystemsLayererMaximumRollExcludedSelfHighestRepa_2
                  let w = VarPair (VarPair (VarInt f, VarInt l), VarInt b), 
                  let ww = llqq $ List.map (\(_,u) -> (nnww u)) ii, 
                  let tt = trans (unit [ss `sunion` ssgl w (nnww u) | (ss,u) <- ii]) (sgl w)]
-        hh = qqff $ llqq $ fst $ unzip ll
-        uu' = uu `uunion` (lluu $ snd $ unzip ll)
-        ffr = V.fromList $ List.map (tttr uu') $ fst $ unzip ll
+        ll' = [(tt,(w,ww)) | (tt,(w,ww)) <- ll, 
+                and [Set.size ww /= Set.size ww' || und tt /= und tt' || ttpp tt /= ttpp tt' | (tt',(w',ww')) <- ll, w > w']]
+        hh = qqff $ llqq $ fst $ unzip ll'
+        uu' = uu `uunion` (lluu $ snd $ unzip ll')
+        ffr = V.fromList $ List.map (tttr uu') $ fst $ unzip ll'
         xx' = apply xx ffr
         xxp' = historyRepasRed xx'
         xxrr' = apply xxrr ffr
@@ -2361,6 +2375,8 @@ parametersSystemsLayererMaximumRollExcludedSelfHighestRepa_2
     qqff = fromJust . setTransformsFud
     ffqq = fudsSetTransform
     funion ff gg = qqff (ffqq ff `Set.union` ffqq gg)
+    ttpp = transformsPartition
+    und = transformsUnderlying
     trans = histogramsSetVarsTransform_u
     unit qq = listsHistogram_u $ List.map (\ss -> (ss,1)) $ qq
     sunion = pairStatesUnionLeft
@@ -2398,9 +2414,11 @@ parametersSystemsLayererMaximumRollExcludedSelfHighestRepa_u
                  let w = VarPair (VarPair (VarInt f, VarInt l), VarInt b), 
                  let ww = llqq $ List.map (\(_,u) -> (nnww u)) ii, 
                  let tt = trans (unit [ss `sunion` ssgl w (nnww u) | (ss,u) <- ii]) (sgl w)]
-        hh = qqff $ llqq $ fst $ unzip ll
-        uu' = uu `uunion` (lluu $ snd $ unzip ll)
-        ffr = V.fromList $ List.map (tttr uu') $ fst $ unzip ll
+        ll' = [(tt,(w,ww)) | (tt,(w,ww)) <- ll, 
+                and [Set.size ww /= Set.size ww' || und tt /= und tt' || ttpp tt /= ttpp tt' | (tt',(w',ww')) <- ll, w > w']]
+        hh = qqff $ llqq $ fst $ unzip ll'
+        uu' = uu `uunion` (lluu $ snd $ unzip ll')
+        ffr = V.fromList $ List.map (tttr uu') $ fst $ unzip ll'
         xx' = apply xx ffr
         xxp' = historyRepasRed xx'
         xxrr' = apply xxrr ffr
@@ -2418,6 +2436,8 @@ parametersSystemsLayererMaximumRollExcludedSelfHighestRepa_u
     qqff = setTransformsFud_u
     ffqq = fudsSetTransform
     funion ff gg = qqff (ffqq ff `Set.union` ffqq gg)
+    ttpp = transformsPartition
+    und = transformsUnderlying
     trans = histogramsSetVarsTransform_u
     unit qq = listsHistogram_u $ List.map (\ss -> (ss,1)) $ qq
     sunion = pairStatesUnionLeft
@@ -2452,9 +2472,11 @@ parametersSystemsLayererMaximumRollExcludedSelfHighestRepa_u_1
                  let w = VarPair (VarPair (VarInt f, VarInt l), VarInt b), 
                  let ww = llqq $ List.map (\(_,u) -> (nnww u)) ii, 
                  let tt = trans (unit [ss `sunion` ssgl w (nnww u) | (ss,u) <- ii]) (sgl w)]
-        hh = qqff $ llqq $ fst $ unzip ll
-        uu' = uu `uunion` (lluu $ snd $ unzip ll)
-        ffr = V.fromList $ List.map (tttr uu') $ fst $ unzip ll
+        ll' = [(tt,(w,ww)) | (tt,(w,ww)) <- ll, 
+                and [Set.size ww /= Set.size ww' || und tt /= und tt' || ttpp tt /= ttpp tt' | (tt',(w',ww')) <- ll, w > w']]
+        hh = qqff $ llqq $ fst $ unzip ll'
+        uu' = uu `uunion` (lluu $ snd $ unzip ll')
+        ffr = V.fromList $ List.map (tttr uu') $ fst $ unzip ll'
         xx' = apply xx ffr
         xxp' = historyRepasRed xx'
         xxrr' = apply xxrr ffr
@@ -2472,6 +2494,8 @@ parametersSystemsLayererMaximumRollExcludedSelfHighestRepa_u_1
     qqff = setTransformsFud_u
     ffqq = fudsSetTransform
     funion ff gg = qqff (ffqq ff `Set.union` ffqq gg)
+    ttpp = transformsPartition
+    und = transformsUnderlying
     trans = histogramsSetVarsTransform_u
     unit qq = listsHistogram_u $ List.map (\ss -> (ss,1)) $ qq
     sunion = pairStatesUnionLeft
@@ -3888,9 +3912,11 @@ parametersSystemsLayererLevelMaximumRollExcludedSelfHighestRepa_u
                  let w = VarPair (VarPair (VarPair (VarInt f, VarInt g), VarInt l), VarInt b), 
                  let ww = llqq $ List.map (\(_,u) -> (nnww u)) ii, 
                  let tt = trans (unit [ss `sunion` ssgl w (nnww u) | (ss,u) <- ii]) (sgl w)]
-        hh = qqff $ llqq $ fst $ unzip ll
-        uu' = uu `uunion` (lluu $ snd $ unzip ll)
-        ffr = V.fromList $ List.map (tttr uu') $ fst $ unzip ll
+        ll' = [(tt,(w,ww)) | (tt,(w,ww)) <- ll, 
+                and [Set.size ww /= Set.size ww' || und tt /= und tt' || ttpp tt /= ttpp tt' | (tt',(w',ww')) <- ll, w > w']]
+        hh = qqff $ llqq $ fst $ unzip ll'
+        uu' = uu `uunion` (lluu $ snd $ unzip ll')
+        ffr = V.fromList $ List.map (tttr uu') $ fst $ unzip ll'
         xx' = apply xx ffr
         xxp' = historyRepasRed xx'
         xxrr' = apply xxrr ffr
@@ -3910,6 +3936,8 @@ parametersSystemsLayererLevelMaximumRollExcludedSelfHighestRepa_u
     qqff = setTransformsFud_u
     ffqq = fudsSetTransform
     funion ff gg = qqff (ffqq ff `Set.union` ffqq gg)
+    ttpp = transformsPartition
+    und = transformsUnderlying
     fund = fudsUnderlying
     trans = histogramsSetVarsTransform_u
     unit qq = listsHistogram_u $ List.map (\ss -> (ss,1)) $ qq
@@ -3946,9 +3974,11 @@ parametersSystemsLayererLevelMaximumRollExcludedSelfHighestRepa_u_1
                  let w = VarPair (VarPair (VarPair (VarInt f, VarInt g), VarInt l), VarInt b), 
                  let ww = llqq $ List.map (\(_,u) -> (nnww u)) ii, 
                  let tt = trans (unit [ss `sunion` ssgl w (nnww u) | (ss,u) <- ii]) (sgl w)]
-        hh = qqff $ llqq $ fst $ unzip ll
-        uu' = uu `uunion` (lluu $ snd $ unzip ll)
-        ffr = V.fromList $ List.map (tttr uu') $ fst $ unzip ll
+        ll' = [(tt,(w,ww)) | (tt,(w,ww)) <- ll, 
+                and [Set.size ww /= Set.size ww' || und tt /= und tt' || ttpp tt /= ttpp tt' | (tt',(w',ww')) <- ll, w > w']]
+        hh = qqff $ llqq $ fst $ unzip ll'
+        uu' = uu `uunion` (lluu $ snd $ unzip ll')
+        ffr = V.fromList $ List.map (tttr uu') $ fst $ unzip ll'
         xx' = apply xx ffr
         xxp' = historyRepasRed xx'
         xxrr' = apply xxrr ffr
@@ -3969,6 +3999,8 @@ parametersSystemsLayererLevelMaximumRollExcludedSelfHighestRepa_u_1
     ffqq = fudsSetTransform
     funion ff gg = qqff (ffqq ff `Set.union` ffqq gg)
     fund = fudsUnderlying
+    ttpp = transformsPartition
+    und = transformsUnderlying
     trans = histogramsSetVarsTransform_u
     unit qq = listsHistogram_u $ List.map (\ss -> (ss,1)) $ qq
     sunion = pairStatesUnionLeft
