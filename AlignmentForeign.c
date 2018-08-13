@@ -1745,7 +1745,7 @@ long long arrayHistoryPairsRollMax_u(
 		    syy[i] = svv[i+1];
 	    	p = d * w;
 	    	y = vc / r;
-		c = pow((double)(y*(r-1)), 1.0/((double)n));
+		c = 1.0/pow((double)(y*(r-1)), 1.0/((double)n));
 	    	for (s = 1; s < r; s++)
 		    for (t = 0; t < s; t++)
 		    {
@@ -1759,7 +1759,7 @@ long long arrayHistoryPairsRollMax_u(
 			        - alngam(bb[is] + bb[it] + 1.0) + alngam(bbx[is] + bbx[it] + 1.0);
 			    incIndex(m, syy, ivv);
 		    	}
-		    	f /= c;
+		    	f *= c;
 		    	srchd++;
 		    	if ((w == 0 && s == 1 && t == 0) || (f > fw))
 		    	{
