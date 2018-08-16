@@ -28,6 +28,8 @@ module AlignmentPracticableRepa (
   parametersSystemsBuilderTupleLevelNoSumlayerMultiEffectiveRepa_u_1,
   parametersSystemsBuilderTupleLevelNoSumlayerMultiEffectiveRepa_ui,
   parametersSystemsBuilderDerivedVarsHighestRepa,
+  parametersSystemsBuilderDerivedVarsHighestNoSumlayerRepa_u,
+  parametersSystemsBuilderDerivedVarsHighestNoSumlayerRepa_ui,
   parametersSystemsBuilderDerivedVarsHighestNoSumlayerIncludeHiddenRepa,
   parametersSystemsBuilderDerivedVarsHighestNoSumlayerIncludeHiddenRepa_1,
   parametersSystemsBuilderDerivedVarsHighestNoSumlayerIncludeHiddenRepa_2,
@@ -36,6 +38,8 @@ module AlignmentPracticableRepa (
   parametersSystemsBuilderDerivedVarsHighestNoSumlayerIncludeHiddenRepa_ui,
   parametersSystemsBuilderDerivedVarsHighestNoSumlayerIncludeHiddenRepa_ui_1,
   parametersSystemsBuilderDerivedVarsHighestNoSumlayerIncludeHiddenRepa_ui_2,
+  parametersSystemsBuilderDerivedVarsLevelHighestNoSumlayerRepa_u,
+  parametersSystemsBuilderDerivedVarsLevelHighestNoSumlayerRepa_ui,
   parametersSystemsBuilderDerivedVarsLevelHighestNoSumlayerIncludeHiddenRepa_u,
   parametersSystemsBuilderDerivedVarsLevelHighestNoSumlayerIncludeHiddenRepa_u_1,
   parametersSystemsBuilderDerivedVarsLevelHighestNoSumlayerIncludeHiddenRepa_ui,
@@ -1015,6 +1019,58 @@ parametersSystemsBuilderDerivedVarsHighestRepa wmax omax uu vv ff hh hhx hhrr hh
     sgl = Set.singleton
     empty = Set.empty
     vvqq = Set.fromList . V.toList
+
+parametersSystemsBuilderDerivedVarsHighestNoSumlayerRepa_u :: 
+  Integer -> Integer -> System -> Set.Set Variable -> Fud -> 
+  HistoryRepa -> HistogramRepaRed -> HistoryRepa -> HistogramRepaRed ->   
+  [((Set.Set Variable, HistogramRepa, HistogramRepa), Double)]
+parametersSystemsBuilderDerivedVarsHighestNoSumlayerRepa_u wmax omax uu vv ff hh hhx hhrr hhrrx = 
+    fst $ buildffdervar wmax omax uu vv ff hh hhx hhrr hhrrx   
+  where
+    buildffdervar = parametersSystemsBuilderDerivedVarsHighestNoSumlayerRepa_ui
+
+parametersSystemsBuilderDerivedVarsHighestNoSumlayerRepa_ui :: 
+  Integer -> Integer -> System -> Set.Set Variable -> Fud -> 
+  HistoryRepa -> HistogramRepaRed -> HistoryRepa -> HistogramRepaRed ->   
+  ([((Set.Set Variable, HistogramRepa, HistogramRepa), Double)],Integer)
+parametersSystemsBuilderDerivedVarsHighestNoSumlayerRepa_ui wmax omax uu vv ff hh hhx hhrr hhrrx
+  | yy == Set.empty = ([],0)
+  | otherwise = (res (maxd x1),s1)
+  where
+    Z :. _ :. z = extent $ historyRepasArray hh
+    Z :. _ :. zrr = extent $ historyRepasArray hhrr
+    f = (fromIntegral z)/(fromIntegral zrr)
+    vshh = SV.unsafeCast (UV.convert (R.toUnboxed (historyRepasArray hh))) :: SV.Vector CLLong
+    vshhrr = SV.unsafeCast (UV.convert (R.toUnboxed (historyRepasArray hhrr))) :: SV.Vector CLLong
+    yy = fvars ff `minus` vv
+    (xa,sa) = append wmax omax yy (qqvv (Set.map sgl (fder ff))) hh hhx hhrr hhrrx
+    (x1,s1) = buildb yy xa xa sa
+    buildb ww qq nn sn
+      | V.null qq = (nn,sn) 
+      | not (V.null mm) = buildb ww mm (nn V.++ mm) (sn + sm)
+      | otherwise = (nn,sn) 
+      where
+        (mm,sm) = append wmax omax ww (snd $ V.unzip qq) hh hhx hhrr hhrrx
+    res xx = [((jj, bb, bbrr), (a-b)/c) | jj <- vvll xx, let u = vol uu jj, 
+          let bb = reduce 1 jj hh vshh, let bbrr = reduce f jj hhrr vshhrr,
+          let bbx = xind z (hhx `xred` jj), let bbrrx = xind z (hhrrx `xred` jj), 
+          let u' = fromIntegral u, let m = fromIntegral (Set.size jj),
+          let a = sumfacln bb - sumfacln bbx, let b = sumfacln bbrr - sumfacln bbrrx, let c = u' ** (1/m)]
+    sumfacln (HistogramRepa _ _ rr) = UV.sum $ UV.map (\x -> logGamma (x + 1)) (toUnboxed rr)
+    reduce = setVarsHistoryRepaStorablesReduce
+    xred hhx vv = setVarsHistogramRepaRedsRed vv hhx
+    xind x hhx = histogramRepaRedsIndependent (fromIntegral x) hhx
+    append = parametersSetVarsSetSetVarsHistoryRepasSetSetVarsAlignedExcludeHiddenDenseTop_u
+    fder = fudsDerived
+    fvars = fudsVars
+    vol uu vv = systemsSetVarsVolume_u uu vv
+    maxd mm = snd $ V.unzip $ vectorPairsTop 1 mm
+    minus = Set.difference
+    sgl = Set.singleton
+    vvll = V.toList
+    qqvv = V.fromList . Set.toList
+
+
 
 parametersSystemsBuilderDerivedVarsHighestNoSumlayerIncludeHiddenRepa :: 
   Integer -> Integer -> System -> Set.Set Variable -> Fud -> 
@@ -2299,8 +2355,8 @@ parametersSystemsLayererMaximumRollExcludedSelfHighestRepa_1
       fromJust $ parametersSystemsBuilderTupleNoSumlayerRepa_1 xmax omax bmax mmax uu vv ff hh hhp hhrr hhrrp
     parter uu kk bb y1 = fromJust $ parametersSystemsPartitionerRepa_4 mmax umax pmax uu kk bb y1
     roller qq = parametersRollerMaximumRollExcludedSelfRepa_1 qq
-    buildffdervar uu vv ff xx xxp xxrr xxrrp = (List.map (\((kk,_,_),a) -> (kk,a)) $ fromJust $
-      parametersSystemsBuilderDerivedVarsHighestNoSumlayerIncludeHiddenRepa_1 wmax omax uu vv ff xx xxp xxrr xxrrp)
+    buildffdervar uu vv ff xx xxp xxrr xxrrp = (List.map (\((kk,_,_),a) -> (kk,a)) $
+      parametersSystemsBuilderDerivedVarsHighestNoSumlayerRepa_u wmax omax uu vv ff xx xxp xxrr xxrrp)
     apply = historyRepasListTransformRepasApply_u
     tttr uu tt = fromJust $ systemsTransformsTransformRepa uu tt
     hhvvr = historyRepasVectorVar
@@ -2366,8 +2422,8 @@ parametersSystemsLayererMaximumRollExcludedSelfHighestRepa_2
       fromJust $ parametersSystemsBuilderTupleNoSumlayerRepa xmax omax bmax mmax uu vv ff hh hhp hhrr hhrrp
     parter uu kk bb y1 = fromJust $ parametersSystemsPartitionerRepa mmax umax pmax uu kk bb y1
     roller qq = parametersRollerMaximumRollExcludedSelfRepa qq
-    buildffdervar uu vv ff xx xxp xxrr xxrrp = (List.map (\((kk,_,_),a) -> (kk,a)) $ fromJust $
-      parametersSystemsBuilderDerivedVarsHighestNoSumlayerIncludeHiddenRepa wmax omax uu vv ff xx xxp xxrr xxrrp)
+    buildffdervar uu vv ff xx xxp xxrr xxrrp = (List.map (\((kk,_,_),a) -> (kk,a)) $
+      parametersSystemsBuilderDerivedVarsHighestNoSumlayerRepa_u wmax omax uu vv ff xx xxp xxrr xxrrp)
     apply = historyRepasListTransformRepasApply_u
     tttr uu tt = fromJust $ systemsTransformsTransformRepa uu tt
     hhvvr = historyRepasVectorVar
@@ -2430,7 +2486,7 @@ parametersSystemsLayererMaximumRollExcludedSelfHighestRepa_u
     parter uu kk bb y1 = parametersSystemsPartitionerRepa_u mmax umax pmax uu kk bb y1
     roller qq = parametersRollerMaximumRollExcludedSelfRepa qq
     buildffdervar uu vv ff xx xxp xxrr xxrrp = (List.map (\((kk,_,_),a) -> (kk,a)) $
-      parametersSystemsBuilderDerivedVarsHighestNoSumlayerIncludeHiddenRepa_u wmax omax uu vv ff xx xxp xxrr xxrrp)
+      parametersSystemsBuilderDerivedVarsHighestNoSumlayerRepa_u wmax omax uu vv ff xx xxp xxrr xxrrp)
     apply = historyRepasListTransformRepasApply_u
     tttr uu tt = systemsTransformsTransformRepa_u uu tt
     qqff = setTransformsFud_u
@@ -2488,7 +2544,7 @@ parametersSystemsLayererMaximumRollExcludedSelfHighestRepa_u_1
     parter uu kk bb y1 = parametersSystemsPartitionerRepa_u mmax umax pmax uu kk bb y1
     roller qq = parametersRollerMaximumRollExcludedSelfRepa qq
     buildffdervar uu vv ff xx xxp xxrr xxrrp = (List.map (\((kk,_,_),a) -> (kk,a)) $
-      parametersSystemsBuilderDerivedVarsHighestNoSumlayerIncludeHiddenRepa_u wmax omax uu vv ff xx xxp xxrr xxrrp)
+      parametersSystemsBuilderDerivedVarsHighestNoSumlayerRepa_u wmax omax uu vv ff xx xxp xxrr xxrrp)
     apply = historyRepasListTransformRepasApply_u
     tttr uu tt = systemsTransformsTransformRepa_u uu tt
     qqff = setTransformsFud_u
@@ -3713,6 +3769,56 @@ parametersSystemsBuilderTupleLevelNoSumlayerMultiEffectiveRepa_ui xmax omax bmax
     vvll = V.toList
     qqvv = V.fromList . Set.toList
 
+parametersSystemsBuilderDerivedVarsLevelHighestNoSumlayerRepa_u :: 
+  Integer -> Integer -> System -> Set.Set Variable -> Fud -> Fud -> 
+  HistoryRepa -> HistogramRepaRed -> HistoryRepa -> HistogramRepaRed ->   
+  [((Set.Set Variable, HistogramRepa, HistogramRepa), Double)]
+parametersSystemsBuilderDerivedVarsLevelHighestNoSumlayerRepa_u wmax omax uu vv ffg ff hh hhx hhrr hhrrx = 
+    fst $ buildffdervar wmax omax uu vv ffg ff hh hhx hhrr hhrrx
+  where
+    buildffdervar = parametersSystemsBuilderDerivedVarsLevelHighestNoSumlayerRepa_ui 
+
+parametersSystemsBuilderDerivedVarsLevelHighestNoSumlayerRepa_ui :: 
+  Integer -> Integer -> System -> Set.Set Variable -> Fud -> Fud -> 
+  HistoryRepa -> HistogramRepaRed -> HistoryRepa -> HistogramRepaRed ->   
+  ([((Set.Set Variable, HistogramRepa, HistogramRepa), Double)],Integer)
+parametersSystemsBuilderDerivedVarsLevelHighestNoSumlayerRepa_ui wmax omax uu vv ffg ff hh hhx hhrr hhrrx
+  | yy == Set.empty = ([],0)
+  | otherwise = (res (maxd x1),s1)
+  where
+    Z :. _ :. z = extent $ historyRepasArray hh
+    Z :. _ :. zrr = extent $ historyRepasArray hhrr
+    f = (fromIntegral z)/(fromIntegral zrr)
+    vshh = SV.unsafeCast (UV.convert (R.toUnboxed (historyRepasArray hh))) :: SV.Vector CLLong
+    vshhrr = SV.unsafeCast (UV.convert (R.toUnboxed (historyRepasArray hhrr))) :: SV.Vector CLLong
+    yy = fvars ff `minus` vv `minus` fvars ffg
+    (xa,sa) = append wmax omax yy (qqvv (Set.map sgl (fder ff))) hh hhx hhrr hhrrx
+    (x1,s1) = buildb yy xa xa sa
+    buildb ww qq nn sn
+      | V.null qq = (nn,sn) 
+      | not (V.null mm) = buildb ww mm (nn V.++ mm) (sn + sm)
+      | otherwise = (nn,sn) 
+      where
+        (mm,sm) = append wmax omax ww (snd $ V.unzip qq) hh hhx hhrr hhrrx
+    res xx = [((jj, bb, bbrr), (a-b)/c) | jj <- vvll xx, let u = vol uu jj, 
+          let bb = reduce 1 jj hh vshh, let bbrr = reduce f jj hhrr vshhrr,
+          let bbx = xind z (hhx `xred` jj), let bbrrx = xind z (hhrrx `xred` jj), 
+          let u' = fromIntegral u, let m = fromIntegral (Set.size jj),
+          let a = sumfacln bb - sumfacln bbx, let b = sumfacln bbrr - sumfacln bbrrx, let c = u' ** (1/m)]
+    sumfacln (HistogramRepa _ _ rr) = UV.sum $ UV.map (\x -> logGamma (x + 1)) (toUnboxed rr)
+    reduce = setVarsHistoryRepaStorablesReduce
+    xred hhx vv = setVarsHistogramRepaRedsRed vv hhx
+    xind x hhx = histogramRepaRedsIndependent (fromIntegral x) hhx
+    append = parametersSetVarsSetSetVarsHistoryRepasSetSetVarsAlignedExcludeHiddenDenseTop_u
+    fder = fudsDerived
+    fvars = fudsVars
+    vol uu vv = systemsSetVarsVolume_u uu vv
+    maxd mm = snd $ V.unzip $ vectorPairsTop 1 mm
+    minus = Set.difference
+    sgl = Set.singleton
+    vvll = V.toList
+    qqvv = V.fromList . Set.toList
+
 parametersSystemsBuilderDerivedVarsLevelHighestNoSumlayerIncludeHiddenRepa_u :: 
   Integer -> Integer -> System -> Set.Set Variable -> Fud -> Fud -> 
   HistoryRepa -> HistogramRepaRed -> HistoryRepa -> HistogramRepaRed ->   
@@ -3928,7 +4034,7 @@ parametersSystemsLayererLevelMaximumRollExcludedSelfHighestRepa_u
     parter uu kk bb y1 = parametersSystemsPartitionerRepa_u mmax umax pmax uu kk bb y1
     roller qq = parametersRollerMaximumRollExcludedSelfRepa qq
     buildffdervar uu vv ffg ff xx xxp xxrr xxrrp = (List.map (\((kk,_,_),a) -> (kk,a)) $
-      parametersSystemsBuilderDerivedVarsLevelHighestNoSumlayerIncludeHiddenRepa_u 
+      parametersSystemsBuilderDerivedVarsLevelHighestNoSumlayerRepa_u 
         wmax omax uu vv ffg ff xx xxp xxrr xxrrp)
     apply = historyRepasListTransformRepasApply_u
     tttr uu tt = systemsTransformsTransformRepa_u uu tt
@@ -3990,7 +4096,7 @@ parametersSystemsLayererLevelMaximumRollExcludedSelfHighestRepa_u_1
     parter uu kk bb y1 = parametersSystemsPartitionerRepa_u mmax umax pmax uu kk bb y1
     roller qq = parametersRollerMaximumRollExcludedSelfRepa qq
     buildffdervar uu vv ffg ff xx xxp xxrr xxrrp = (List.map (\((kk,_,_),a) -> (kk,a)) $
-      parametersSystemsBuilderDerivedVarsLevelHighestNoSumlayerIncludeHiddenRepa_u 
+      parametersSystemsBuilderDerivedVarsLevelHighestNoSumlayerRepa_u 
         wmax omax uu vv ffg ff xx xxp xxrr xxrrp)
     apply = historyRepasListTransformRepasApply_u
     tttr uu tt = systemsTransformsTransformRepa_u uu tt
@@ -4626,4 +4732,3 @@ parametersSystemsDecomperMaximumRollExcludedSelfHighestFmaxBatchRepa
     notin = Set.notMember
     flip = List.map (\(a,b) -> (b,a))
     min x y = if x<y then x else y
-
