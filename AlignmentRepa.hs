@@ -110,7 +110,8 @@ module AlignmentRepa (
   parametersSetVarsSetSetVarsHistoryRepasSetSetVarsAlignedTop_u_1,
   parametersSetVarsSetSetVarsHistoryRepasSetSetVarsAlignedTop_u_2,
   parametersSetVarsSetSetVarsHistoryRepasSetSetVarsAlignedDenseTop,
-  parametersSetVarsSetSetVarsHistoryRepasSetSetVarsAlignedDenseTop_u
+  parametersSetVarsSetSetVarsHistoryRepasSetSetVarsAlignedDenseTop_u,
+  parametersSetVarsSetSetVarsHistoryRepasSetSetVarsAlignedExcludeHiddenDenseTop_u
 )
 where
 import Control.Monad
@@ -2793,3 +2794,70 @@ parametersSetVarsSetSetVarsHistoryRepasSetSetVarsAlignedDenseTop_u wmax omax ww 
     !qq = V.zip (V.zip3 (SV.convert (SV.unsafeCast vsts1)) (SV.convert (SV.unsafeCast vsts2)) (V.map fromIntegral (SV.convert vsts3))) (V.map (\(p1,p2) -> Set.insert (vww V.! (fromIntegral p1)) (vdd V.! (fromIntegral p2))) (V.zip (SV.convert vsqww1) (SV.convert vsqww2)))
     qqvv = V.fromList . Set.toList
 
+foreign import ccall unsafe "listVarsListTuplesArrayHistoriesAlignedExcludeHiddenTop_u" listVarsListTuplesArrayHistoriesAlignedExcludeHiddenTop_u
+  :: CLLong -> CLLong -> CLLong -> CLLong -> Ptr CLLong -> CLLong -> CLLong -> CLLong -> 
+    CLLong -> CLLong -> Ptr CLLong -> Ptr CLLong -> Ptr CLLong -> Ptr CDouble -> Ptr CLLong -> Ptr CDouble -> 
+    Ptr CLLong -> Ptr CLLong -> Ptr CDouble -> Ptr CDouble -> Ptr CLLong -> Ptr CLLong -> IO (CLLong)
+
+parametersSetVarsSetSetVarsHistoryRepasSetSetVarsAlignedExcludeHiddenDenseTop_u :: Integer -> Integer -> Set.Set Variable -> V.Vector (Set.Set Variable) -> HistoryRepa -> HistogramRepaRed -> HistoryRepa -> HistogramRepaRed -> (V.Vector ((Double,Double,Integer),Set.Set Variable),Integer) 
+parametersSetVarsSetSetVarsHistoryRepasSetSetVarsAlignedExcludeHiddenDenseTop_u wmax omax ww vdd hh hhx hhrr hhrrx = (qq,s)
+  where
+    HistoryRepa vhh mvv svv aa = hh
+    HistogramRepaRed _ _ _ laax = hhx
+    HistoryRepa _ _ _ aarr = hhrr
+    HistogramRepaRed _ _ _ laarrx = hhrrx
+    R.Z R.:. (!n) R.:. (!z) = R.extent aa
+    R.Z R.:. _ R.:. (!zrr) = R.extent aarr
+    !vww = qqvv ww 
+    !m = V.length vww
+    !d = V.length vdd
+    !e = Set.size (V.head vdd)
+    !pww = V.map (mvv Map.!) vww
+    !pdd = V.map (mvv Map.!) (V.concat (V.toList (V.map qqvv vdd)))
+    !vshh = SV.unsafeCast (UV.convert (R.toUnboxed aa)) :: SV.Vector CLLong
+    !vshhx = SV.unsafeCast (UV.convert (UV.concat (V.toList laax))) :: SV.Vector CDouble
+    !vshhrr = SV.unsafeCast (UV.convert (R.toUnboxed aarr)) :: SV.Vector CLLong
+    !vshhrrx = SV.unsafeCast (UV.convert (UV.concat (V.toList laarrx))) :: SV.Vector CDouble
+    !vssvv = SV.unsafeCast (UV.convert svv) :: SV.Vector CLLong
+    !vspww = SV.unsafeCast (UV.convert pww) :: SV.Vector CLLong
+    !vspdd = SV.unsafeCast (UV.convert pdd) :: SV.Vector CLLong
+    (!vsqww1,!vsqww2,!vsts1,!vsts2,!vsts3,!s) = unsafePerformIO $ do
+      let vsqww1 = SV.replicate (fromIntegral omax) 0
+      let vsqww2 = SV.replicate (fromIntegral omax) 0
+      let vsts1 = SV.replicate (fromIntegral omax) 0
+      let vsts2 = SV.replicate (fromIntegral omax) 0
+      let vsts3 = SV.replicate (fromIntegral omax) 0
+      let vsss = SV.replicate 1 0
+      mqww1 <- SV.unsafeThaw vsqww1
+      mqww2 <- SV.unsafeThaw vsqww2
+      mts1 <- SV.unsafeThaw vsts1
+      mts2 <- SV.unsafeThaw vsts2
+      mts3 <- SV.unsafeThaw vsts3
+      mss <- SV.unsafeThaw vsss
+      t <- SV.unsafeWith vssvv $ \psvv -> do
+        SV.unsafeWith vspww $ \ppww -> do
+        SV.unsafeWith vspdd $ \ppdd -> do
+        SV.unsafeWith vshh $ \phh -> do
+        SV.unsafeWith vshhx $ \phhx -> do
+        SV.unsafeWith vshhrr $ \phhrr -> do
+        SV.unsafeWith vshhrrx $ \phhrrx -> do
+        SMV.unsafeWith mqww1 $ \pmqww1 -> do
+        SMV.unsafeWith mqww2 $ \pmqww2 -> do
+        SMV.unsafeWith mts1 $ \pmts1 -> do
+        SMV.unsafeWith mts2 $ \pmts2 -> do
+        SMV.unsafeWith mts3 $ \pmts3 -> do
+        SMV.unsafeWith mss $ \pmss -> do
+          listVarsListTuplesArrayHistoriesAlignedExcludeHiddenTop_u 1 (fromIntegral wmax) (fromIntegral omax) 
+            (fromIntegral n) psvv (fromIntegral m) (fromIntegral d) (fromIntegral e) 
+            (fromIntegral z) (fromIntegral zrr) ppww ppdd phh phhx phhrr phhrrx pmqww1 pmqww2 pmts1 pmts2 pmts3 pmss
+      vsqww1' <- SV.unsafeFreeze mqww1 
+      vsqww2' <- SV.unsafeFreeze mqww2
+      vsts1' <- SV.unsafeFreeze mts1
+      vsts2' <- SV.unsafeFreeze mts2
+      vsts3' <- SV.unsafeFreeze mts3
+      vsss' <- SV.unsafeFreeze mss
+      return (SV.take (fromIntegral t) vsqww1',SV.take (fromIntegral t) vsqww2',
+        SV.take (fromIntegral t) vsts1',SV.take (fromIntegral t) vsts2',SV.take (fromIntegral t) vsts3', 
+        toInteger (vsss' SV.! 0))
+    !qq = V.zip (V.zip3 (SV.convert (SV.unsafeCast vsts1)) (SV.convert (SV.unsafeCast vsts2)) (V.map fromIntegral (SV.convert vsts3))) (V.map (\(p1,p2) -> Set.insert (vww V.! (fromIntegral p1)) (vdd V.! (fromIntegral p2))) (V.zip (SV.convert vsqww1) (SV.convert vsqww2)))
+    qqvv = V.fromList . Set.toList
