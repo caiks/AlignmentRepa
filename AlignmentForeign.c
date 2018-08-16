@@ -1533,6 +1533,245 @@ long long listVarsListTuplesArrayHistoriesAlignedTop_u_2(
     return t;
 }
 
+long long listVarsListTuplesArrayHistoriesAlignedExcludeHiddenTop_u(
+    long long dense,
+    long long xmax, long long omax, long long n, long long* svv, long long m, long long d, long long e,
+    long long z1, long long z2,
+    long long* ppww, long long* ppdd,
+    long long* phh1, double* pxx1, long long* phh2, double* pxx2,
+    long long* tww1, long long* tww2, double* ts1, double* ts2, long long* ts3, long long* s)
+{
+    long long t = 0;
+    long long findm = 0;
+    long long* pdd[d];
+    double aa[xmax];
+    double* xx1[n];
+    double* xx2[n];
+    long long ts4[omax];
+    double zf = (double)z1;
+    double f = (double)z1 / (double)z2;
+    double t1;
+    double t2;
+    long long t3;
+    long long tm;
+    double x1;
+    double x2;
+    double y1;
+    double y2;
+    long long x3;
+    long long x4;
+    double c;
+    double a1;
+    double a2;
+    double b1;
+    double b2;
+    long long ii;
+    long long ij;
+    long long pi;
+    long long* pj;
+    long long pk;
+    long long qi;
+    long long qj[e];
+    long long qk;
+    long long si;
+    long long sj[e];
+    long long yj[e];
+    long long sk;
+    long long yk;
+    long long u;
+    long long u1;
+    long long i;
+    long long j;
+    long long k;
+    long long a;
+    long long ok;
+
+    *s = 0;
+
+    for (k = 1, a = svv[0], xx1[0] = pxx1, xx2[0] = pxx2; k<n; k++)
+    {
+	xx1[k] = pxx1 + a;
+	xx2[k] = pxx2 + a;
+	a += svv[k];
+    }
+
+    for (k = 0; k<d; k++)
+	pdd[k] = ppdd + e*k;
+
+    for (ii = 0; ii<m; ii++)
+    {
+	pi = ppww[ii];
+	si = svv[pi];
+	for (ij = 0; ij<d; ij++)
+	{
+	    pj = pdd[ij];
+	    for (k = 0, ok = 1, u1 = 1; k<e; k++)
+	    {
+		pk = pj[k];
+		if (pk == pi)
+		{
+		    ok = 0;
+		    break;
+		}
+		sk = svv[pk];
+		sj[k] = sk;
+		u1 *= sk;
+	    }
+	    u = u1*si;
+	    if (ok && u <= xmax)
+	    {
+		(*s)++;
+		x4 = hash(n, e, pi, pj);
+		for (i = 0; i<t; i++)
+		    if (ts4[i] == x4 && isdup(e, pi, pj, ppww[tww1[i]], pdd[tww2[i]]))
+		    {
+			ok = 0;
+			break;
+		    }
+		if (!ok)
+		    continue;
+		for (i = 0; i<u; i++)
+		    aa[i] = 1.0;
+		pk = pj[0];
+		sk = sj[0];
+		qi = z1*pi;
+		qk = z1*pk;
+		for (k = 1; k<e; k++)
+		    qj[k] = z1*pj[k];
+		for (j = 0; j<z1; j++)
+		{
+		    for (k = 1, a = sk*phh1[qi + j] + phh1[qk + j]; k<e; k++)
+			a = sj[k] * a + phh1[qj[k] + j];
+		    aa[a] += 1.0;
+		}
+		for (a1 = 0.0, i = 0; i<u; i++)
+		    a1 += alngam(aa[i]);
+		for (i = 0; i<u; i++)
+		    aa[i] = 1.0;
+		qi = z2*pi;
+		qk = z2*pk;
+		for (k = 1; k<e; k++)
+		    qj[k] = z2*pj[k];
+		for (j = 0; j<z2; j++)
+		{
+		    for (k = 1, a = sk*phh2[qi + j] + phh2[qk + j]; k<e; k++)
+			a = sj[k] * a + phh2[qj[k] + j];
+		    aa[a] += f;
+		}
+		for (b1 = 0.0, i = 0; i<u; i++)
+		    b1 += alngam(aa[i]);
+		for (k = 0; k<e; k++)
+		    yj[k] = 0;
+		for (a2 = 0.0, b2 = 0.0, i = 0; i<si; i++)
+		{
+		    y1 = zf*xx1[pi][i];
+		    y2 = zf*xx2[pi][i];
+		    for (j = 0; j<u1; j++)
+		    {
+			x1 = y1;
+			x2 = y2;
+			for (k = 0; k<e; k++)
+			{
+			    pk = pj[k];
+			    yk = yj[k];
+			    x1 *= xx1[pk][yk];
+			    x2 *= xx2[pk][yk];
+			}
+			a2 += alngam(x1 + 1.0);
+			b2 += alngam(x2 + 1.0);
+			incIndex(e, sj, yj);
+		    }
+		}
+		if (t<omax)
+		{
+		    if (dense)
+		    {
+			c = pow((double)u, 1.0 / ((double)(e + 1)));
+			x1 = (a1 - a2 - b1 + b2) / c;
+			x2 = (b2 - b1) / c;
+		    }
+		    else
+		    {
+			x1 = a1 - a2 - b1 + b2;
+			x2 = b2 - b1;
+		    }
+		    x3 = -u;
+		    tww1[t] = ii;
+		    tww2[t] = ij;
+		    ts1[t] = x1;
+		    ts2[t] = x2;
+		    ts3[t] = x3;
+		    ts4[t] = x4;
+		    t++;
+		    if (t == omax)
+			findm = 1;
+		}
+		else
+		{
+		    if (dense)
+		    {
+			c = pow((double)u, 1.0 / ((double)(e + 1)));
+			x1 = (a1 - a2 - b1 + b2) / c;
+			x2 = (b2 - b1) / c;
+		    }
+		    else
+		    {
+			x1 = a1 - a2 - b1 + b2;
+			x2 = b2 - b1;
+		    }
+		    x3 = -u;
+		    if (t1<x1 || (t1 == x1 && t2<x2) || (t1 == x1 && t2 == x2 && t3<x3))
+		    {
+			tww1[tm] = ii;
+			tww2[tm] = ij;
+			ts1[tm] = x1;
+			ts2[tm] = x2;
+			ts3[tm] = x3;
+			ts4[tm] = x4;
+			findm = 1;
+		    }
+		}
+		if (findm)
+		{
+		    for (t1 = ts1[0], t2 = ts2[0], t3 = ts3[0], tm = 0, i = 1; i<omax; i++)
+		    {
+			x1 = ts1[i];
+			if (t1>x1)
+			{
+			    t1 = x1;
+			    t2 = ts2[i];
+			    t3 = ts3[i];
+			    tm = i;
+			}
+			else if (t1 == x1)
+			{
+			    x2 = ts2[i];
+			    if (t2>x2)
+			    {
+				t2 = x2;
+				t3 = ts3[i];
+				tm = i;
+			    }
+			    else if (t2 == x2)
+			    {
+				x3 = ts3[i];
+				if (t3>x3)
+				{
+				    t3 = x3;
+				    tm = i;
+				}
+			    }
+			}
+		    }
+		    findm = 0;
+		}
+	    }
+	}
+    }
+    return t;
+}
+
+
 long long listListVarsArrayHistoryPairsSetTuplePartitionTop_u(
     long long pmax, double z, long long v, long long n, long long* svv, long long q, double y1,
     long long* qm, long long* ql, long long* qs, long long* qp, double* aa1, double* aa2,
