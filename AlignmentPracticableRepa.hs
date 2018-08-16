@@ -1042,15 +1042,17 @@ parametersSystemsBuilderDerivedVarsHighestNoSumlayerRepa_ui wmax omax uu vv ff h
     f = (fromIntegral z)/(fromIntegral zrr)
     vshh = SV.unsafeCast (UV.convert (R.toUnboxed (historyRepasArray hh))) :: SV.Vector CLLong
     vshhrr = SV.unsafeCast (UV.convert (R.toUnboxed (historyRepasArray hhrr))) :: SV.Vector CLLong
+    cc = Set.fromList [(w,u) | w <- Set.toList (fvars ff `minus` vv), let gg = depends ff w, 
+	                           u <- Set.toList (fvars gg `minus` vv), u /= w]
     yy = fvars ff `minus` vv
-    (xa,sa) = append wmax omax yy (qqvv (Set.map sgl (fder ff))) hh hhx hhrr hhrrx
+    (xa,sa) = append wmax omax cc yy (qqvv (Set.map sgl (fder ff))) hh hhx hhrr hhrrx
     (x1,s1) = buildb yy xa xa sa
     buildb ww qq nn sn
       | V.null qq = (nn,sn) 
       | not (V.null mm) = buildb ww mm (nn V.++ mm) (sn + sm)
       | otherwise = (nn,sn) 
       where
-        (mm,sm) = append wmax omax ww (snd $ V.unzip qq) hh hhx hhrr hhrrx
+        (mm,sm) = append wmax omax cc ww (snd $ V.unzip qq) hh hhx hhrr hhrrx
     res xx = [((jj, bb, bbrr), (a-b)/c) | jj <- vvll xx, let u = vol uu jj, 
           let bb = reduce 1 jj hh vshh, let bbrr = reduce f jj hhrr vshhrr,
           let bbx = xind z (hhx `xred` jj), let bbrrx = xind z (hhrrx `xred` jj), 
@@ -1061,6 +1063,7 @@ parametersSystemsBuilderDerivedVarsHighestNoSumlayerRepa_ui wmax omax uu vv ff h
     xred hhx vv = setVarsHistogramRepaRedsRed vv hhx
     xind x hhx = histogramRepaRedsIndependent (fromIntegral x) hhx
     append = parametersSetVarsSetSetVarsHistoryRepasSetSetVarsAlignedExcludeHiddenDenseTop_u
+    depends = fudsVarsDepends
     fder = fudsDerived
     fvars = fudsVars
     vol uu vv = systemsSetVarsVolume_u uu vv
@@ -3791,15 +3794,18 @@ parametersSystemsBuilderDerivedVarsLevelHighestNoSumlayerRepa_ui wmax omax uu vv
     f = (fromIntegral z)/(fromIntegral zrr)
     vshh = SV.unsafeCast (UV.convert (R.toUnboxed (historyRepasArray hh))) :: SV.Vector CLLong
     vshhrr = SV.unsafeCast (UV.convert (R.toUnboxed (historyRepasArray hhrr))) :: SV.Vector CLLong
-    yy = fvars ff `minus` vv `minus` fvars ffg
-    (xa,sa) = append wmax omax yy (qqvv (Set.map sgl (fder ff))) hh hhx hhrr hhrrx
+    vv' = vv `union` fvars ffg
+    cc = Set.fromList [(w,u) | w <- Set.toList (fvars ff `minus` vv'), let gg = depends ff w, 
+                               u <- Set.toList (fvars gg `minus` vv'), u /= w]
+    yy = fvars ff `minus` vv'
+    (xa,sa) = append wmax omax cc yy (qqvv (Set.map sgl (fder ff))) hh hhx hhrr hhrrx
     (x1,s1) = buildb yy xa xa sa
     buildb ww qq nn sn
       | V.null qq = (nn,sn) 
       | not (V.null mm) = buildb ww mm (nn V.++ mm) (sn + sm)
       | otherwise = (nn,sn) 
       where
-        (mm,sm) = append wmax omax ww (snd $ V.unzip qq) hh hhx hhrr hhrrx
+        (mm,sm) = append wmax omax cc ww (snd $ V.unzip qq) hh hhx hhrr hhrrx
     res xx = [((jj, bb, bbrr), (a-b)/c) | jj <- vvll xx, let u = vol uu jj, 
           let bb = reduce 1 jj hh vshh, let bbrr = reduce f jj hhrr vshhrr,
           let bbx = xind z (hhx `xred` jj), let bbrrx = xind z (hhrrx `xred` jj), 
@@ -3810,10 +3816,12 @@ parametersSystemsBuilderDerivedVarsLevelHighestNoSumlayerRepa_ui wmax omax uu vv
     xred hhx vv = setVarsHistogramRepaRedsRed vv hhx
     xind x hhx = histogramRepaRedsIndependent (fromIntegral x) hhx
     append = parametersSetVarsSetSetVarsHistoryRepasSetSetVarsAlignedExcludeHiddenDenseTop_u
+    depends = fudsVarsDepends
     fder = fudsDerived
     fvars = fudsVars
     vol uu vv = systemsSetVarsVolume_u uu vv
     maxd mm = snd $ V.unzip $ vectorPairsTop 1 mm
+    union = Set.union
     minus = Set.difference
     sgl = Set.singleton
     vvll = V.toList
