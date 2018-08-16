@@ -2799,8 +2799,8 @@ foreign import ccall unsafe "listVarsListTuplesArrayHistoriesAlignedExcludeHidde
     CLLong -> CLLong -> Ptr CLLong -> Ptr CLLong -> Ptr CLLong -> Ptr CDouble -> Ptr CLLong -> Ptr CDouble -> 
     Ptr CLLong -> Ptr CLLong -> Ptr CDouble -> Ptr CDouble -> Ptr CLLong -> Ptr CLLong -> IO (CLLong)
 
-parametersSetVarsSetSetVarsHistoryRepasSetSetVarsAlignedExcludeHiddenDenseTop_u :: Integer -> Integer -> Set.Set Variable -> V.Vector (Set.Set Variable) -> HistoryRepa -> HistogramRepaRed -> HistoryRepa -> HistogramRepaRed -> (V.Vector ((Double,Double,Integer),Set.Set Variable),Integer) 
-parametersSetVarsSetSetVarsHistoryRepasSetSetVarsAlignedExcludeHiddenDenseTop_u wmax omax ww vdd hh hhx hhrr hhrrx = (qq,s)
+parametersSetVarsSetSetVarsHistoryRepasSetSetVarsAlignedExcludeHiddenDenseTop_u :: Integer -> Integer -> Set.Set (Variable,Variable) -> Set.Set Variable -> V.Vector (Set.Set Variable) -> HistoryRepa -> HistogramRepaRed -> HistoryRepa -> HistogramRepaRed -> (V.Vector ((Double,Double,Integer),Set.Set Variable),Integer) 
+parametersSetVarsSetSetVarsHistoryRepasSetSetVarsAlignedExcludeHiddenDenseTop_u wmax omax cc ww vdd hh hhx hhrr hhrrx = (qq,s)
   where
     HistoryRepa vhh mvv svv aa = hh
     HistogramRepaRed _ _ _ laax = hhx
