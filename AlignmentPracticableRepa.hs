@@ -1043,7 +1043,7 @@ parametersSystemsBuilderDerivedVarsHighestNoSumlayerRepa_ui wmax omax uu vv ff h
     vshh = SV.unsafeCast (UV.convert (R.toUnboxed (historyRepasArray hh))) :: SV.Vector CLLong
     vshhrr = SV.unsafeCast (UV.convert (R.toUnboxed (historyRepasArray hhrr))) :: SV.Vector CLLong
     cc = Set.fromList [(w,u) | w <- Set.toList (fvars ff `minus` vv), let gg = depends ff w, 
-	                           u <- Set.toList (fvars gg `minus` vv), u /= w]
+                               u <- Set.toList (fvars gg `minus` vv), u /= w]
     yy = fvars ff `minus` vv
     (xa,sa) = append wmax omax cc yy (qqvv (Set.map sgl (fder ff))) hh hhx hhrr hhrrx
     (x1,s1) = buildb yy xa xa sa
@@ -1063,7 +1063,7 @@ parametersSystemsBuilderDerivedVarsHighestNoSumlayerRepa_ui wmax omax uu vv ff h
     xred hhx vv = setVarsHistogramRepaRedsRed vv hhx
     xind x hhx = histogramRepaRedsIndependent (fromIntegral x) hhx
     append = parametersSetVarsSetSetVarsHistoryRepasSetSetVarsAlignedExcludeHiddenDenseTop_u
-    depends = fudsVarsDepends
+    depends ff w = fudsVarsDepends ff (Set.singleton w)
     fder = fudsDerived
     fvars = fudsVars
     vol uu vv = systemsSetVarsVolume_u uu vv
@@ -3816,7 +3816,7 @@ parametersSystemsBuilderDerivedVarsLevelHighestNoSumlayerRepa_ui wmax omax uu vv
     xred hhx vv = setVarsHistogramRepaRedsRed vv hhx
     xind x hhx = histogramRepaRedsIndependent (fromIntegral x) hhx
     append = parametersSetVarsSetSetVarsHistoryRepasSetSetVarsAlignedExcludeHiddenDenseTop_u
-    depends = fudsVarsDepends
+    depends ff w = fudsVarsDepends ff (Set.singleton w)
     fder = fudsDerived
     fvars = fudsVars
     vol uu vv = systemsSetVarsVolume_u uu vv
