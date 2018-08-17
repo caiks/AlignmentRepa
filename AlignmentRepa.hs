@@ -2796,7 +2796,7 @@ parametersSetVarsSetSetVarsHistoryRepasSetSetVarsAlignedDenseTop_u wmax omax ww 
 
 foreign import ccall unsafe "listVarsListTuplesArrayHistoriesAlignedExcludeHiddenTop_u" listVarsListTuplesArrayHistoriesAlignedExcludeHiddenTop_u
   :: CLLong -> CLLong -> CLLong -> CLLong -> Ptr CLLong -> CLLong -> CLLong -> CLLong -> 
-    CLLong -> CLLong -> Ptr CLLong -> Ptr CLLong -> Ptr CLLong -> Ptr CDouble -> Ptr CLLong -> Ptr CDouble -> 
+    CLLong -> CLLong -> CLLong -> Ptr CLLong -> Ptr CLLong -> Ptr CLLong -> Ptr CLLong -> Ptr CLLong -> Ptr CDouble -> Ptr CLLong -> Ptr CDouble -> 
     Ptr CLLong -> Ptr CLLong -> Ptr CDouble -> Ptr CDouble -> Ptr CLLong -> Ptr CLLong -> IO (CLLong)
 
 parametersSetVarsSetSetVarsHistoryRepasSetSetVarsAlignedExcludeHiddenDenseTop_u :: Integer -> Integer -> Set.Set (Variable,Variable) -> Set.Set Variable -> V.Vector (Set.Set Variable) -> HistoryRepa -> HistogramRepaRed -> HistoryRepa -> HistogramRepaRed -> (V.Vector ((Double,Double,Integer),Set.Set Variable),Integer) 
@@ -2808,6 +2808,10 @@ parametersSetVarsSetSetVarsHistoryRepasSetSetVarsAlignedExcludeHiddenDenseTop_u 
     HistogramRepaRed _ _ _ laarrx = hhrrx
     R.Z R.:. (!n) R.:. (!z) = R.extent aa
     R.Z R.:. _ R.:. (!zrr) = R.extent aarr
+	!vcc = qqvv cc
+	!ccl = V.length vcc
+	!pccd = V.map (\r -> mvv Map.! (fst r)) vcc
+	!pccu = V.map (\r -> mvv Map.! (snd r)) vcc
     !vww = qqvv ww 
     !m = V.length vww
     !d = V.length vdd
@@ -2819,6 +2823,8 @@ parametersSetVarsSetSetVarsHistoryRepasSetSetVarsAlignedExcludeHiddenDenseTop_u 
     !vshhrr = SV.unsafeCast (UV.convert (R.toUnboxed aarr)) :: SV.Vector CLLong
     !vshhrrx = SV.unsafeCast (UV.convert (UV.concat (V.toList laarrx))) :: SV.Vector CDouble
     !vssvv = SV.unsafeCast (UV.convert svv) :: SV.Vector CLLong
+    !vspccd = SV.unsafeCast (UV.convert pccd) :: SV.Vector CLLong
+    !vspccu = SV.unsafeCast (UV.convert pccu) :: SV.Vector CLLong
     !vspww = SV.unsafeCast (UV.convert pww) :: SV.Vector CLLong
     !vspdd = SV.unsafeCast (UV.convert pdd) :: SV.Vector CLLong
     (!vsqww1,!vsqww2,!vsts1,!vsts2,!vsts3,!s) = unsafePerformIO $ do
@@ -2835,6 +2841,8 @@ parametersSetVarsSetSetVarsHistoryRepasSetSetVarsAlignedExcludeHiddenDenseTop_u 
       mts3 <- SV.unsafeThaw vsts3
       mss <- SV.unsafeThaw vsss
       t <- SV.unsafeWith vssvv $ \psvv -> do
+        SV.unsafeWith vspccd $ \ppccd -> do
+        SV.unsafeWith vspccu $ \ppccu -> do
         SV.unsafeWith vspww $ \ppww -> do
         SV.unsafeWith vspdd $ \ppdd -> do
         SV.unsafeWith vshh $ \phh -> do
@@ -2849,7 +2857,7 @@ parametersSetVarsSetSetVarsHistoryRepasSetSetVarsAlignedExcludeHiddenDenseTop_u 
         SMV.unsafeWith mss $ \pmss -> do
           listVarsListTuplesArrayHistoriesAlignedExcludeHiddenTop_u 1 (fromIntegral wmax) (fromIntegral omax) 
             (fromIntegral n) psvv (fromIntegral m) (fromIntegral d) (fromIntegral e) 
-            (fromIntegral z) (fromIntegral zrr) ppww ppdd phh phhx phhrr phhrrx pmqww1 pmqww2 pmts1 pmts2 pmts3 pmss
+            (fromIntegral z) (fromIntegral zrr) (fromIntegral ccl) ppccd ppccu ppww ppdd phh phhx phhrr phhrrx pmqww1 pmqww2 pmts1 pmts2 pmts3 pmss
       vsqww1' <- SV.unsafeFreeze mqww1 
       vsqww2' <- SV.unsafeFreeze mqww2
       vsts1' <- SV.unsafeFreeze mts1
