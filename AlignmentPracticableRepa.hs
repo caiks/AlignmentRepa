@@ -28,6 +28,7 @@ module AlignmentPracticableRepa (
   parametersSystemsBuilderTupleLevelNoSumlayerMultiEffectiveRepa_u_1,
   parametersSystemsBuilderTupleLevelNoSumlayerMultiEffectiveRepa_ui,
   parametersSystemsBuilderDerivedVarsHighestRepa,
+  parametersSystemsBuilderDerivedVarsHighestNoSumlayerRepa,
   parametersSystemsBuilderDerivedVarsHighestNoSumlayerRepa_u,
   parametersSystemsBuilderDerivedVarsHighestNoSumlayerRepa_ui,
   parametersSystemsBuilderDerivedVarsHighestNoSumlayerIncludeHiddenRepa,
@@ -1018,6 +1019,29 @@ parametersSystemsBuilderDerivedVarsHighestRepa wmax omax uu vv ff hh hhx hhrr hh
     llqq = Set.fromList
     sgl = Set.singleton
     empty = Set.empty
+    vvqq = Set.fromList . V.toList
+
+parametersSystemsBuilderDerivedVarsHighestNoSumlayerRepa :: 
+  Integer -> Integer -> System -> Set.Set Variable -> Fud -> 
+  HistoryRepa -> HistogramRepaRed -> HistoryRepa -> HistogramRepaRed ->   
+  Maybe [((Set.Set Variable, HistogramRepa, HistogramRepa), Double)]
+parametersSystemsBuilderDerivedVarsHighestNoSumlayerRepa wmax omax uu vv ff hh hhx hhrr hhrrx
+  | wmax < 0 || omax < 0 = Nothing
+  | z == 0 || zrr == 0 = Nothing
+  | not (vvqq vhh `subset` uvars uu && vhh == vhhrr && vhh == vhhx && vhhx == vhhrrx && vv `subset` vvqq vhh) = Nothing
+  | not (fvars ff `subset` uvars uu) = Nothing
+  | otherwise = Just $ buildffdervar wmax omax uu vv ff hh hhx hhrr hhrrx
+  where
+    HistoryRepa vhh _ _ aa = hh
+    HistogramRepaRed vhhx _ _ _ = hhx
+    HistoryRepa vhhrr _ _ aarr = hhrr
+    HistogramRepaRed vhhrrx _ _ _ = hhrrx
+    Z :. _ :. z = extent aa
+    Z :. _ :. zrr = extent aarr
+    buildffdervar = parametersSystemsBuilderDerivedVarsHighestNoSumlayerRepa_u
+    fvars = fudsVars
+    uvars = systemsVars
+    subset = Set.isSubsetOf
     vvqq = Set.fromList . V.toList
 
 parametersSystemsBuilderDerivedVarsHighestNoSumlayerRepa_u :: 
