@@ -1537,6 +1537,7 @@ long long listVarsListTuplesArrayHistoriesAlignedExcludeHiddenTop_u(
     long long dense,
     long long xmax, long long omax, long long n, long long* svv, long long m, long long d, long long e,
     long long z1, long long z2,
+    long long ccl, long long* ppccd, long long* ppccu,
     long long* ppww, long long* ppdd,
     long long* phh1, double* pxx1, long long* phh2, double* pxx2,
     long long* tww1, long long* tww2, double* ts1, double* ts2, long long* ts3, long long* s)
@@ -1547,6 +1548,8 @@ long long listVarsListTuplesArrayHistoriesAlignedExcludeHiddenTop_u(
     double aa[xmax];
     double* xx1[n];
     double* xx2[n];
+    long long ppccx[ccl];
+    long long ccx;
     long long ts4[omax];
     double zf = (double)z1;
     double f = (double)z1 / (double)z2;
@@ -1583,6 +1586,7 @@ long long listVarsListTuplesArrayHistoriesAlignedExcludeHiddenTop_u(
     long long i;
     long long j;
     long long k;
+    long long h;
     long long a;
     long long ok;
 
@@ -1602,6 +1606,12 @@ long long listVarsListTuplesArrayHistoriesAlignedExcludeHiddenTop_u(
     {
 	pi = ppww[ii];
 	si = svv[pi];
+	for (ccx = 0, h = 0; h < ccl; h++)
+	    if (ppccu[h] == pi)
+	    {
+		ppccx[ccx] = ppccd[h];
+		ccx++;
+	    }
 	for (ij = 0; ij<d; ij++)
 	{
 	    pj = pdd[ij];
@@ -1609,10 +1619,12 @@ long long listVarsListTuplesArrayHistoriesAlignedExcludeHiddenTop_u(
 	    {
 		pk = pj[k];
 		if (pk == pi)
-		{
 		    ok = 0;
+		for (h = 0; h<ccx; h++)
+		    if (pk == ppccx[h])
+			ok = 0;
+		if (!ok)
 		    break;
-		}
 		sk = svv[pk];
 		sj[k] = sk;
 		u1 *= sk;
