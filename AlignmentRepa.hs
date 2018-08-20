@@ -2808,10 +2808,10 @@ parametersSetVarsSetSetVarsHistoryRepasSetSetVarsAlignedExcludeHiddenDenseTop_u 
     HistogramRepaRed _ _ _ laarrx = hhrrx
     R.Z R.:. (!n) R.:. (!z) = R.extent aa
     R.Z R.:. _ R.:. (!zrr) = R.extent aarr
-	!vcc = qqvv cc
-	!ccl = V.length vcc
-	!pccd = V.map (\r -> mvv Map.! (fst r)) vcc
-	!pccu = V.map (\r -> mvv Map.! (snd r)) vcc
+    !vcc = qqvv cc
+    !ccl = V.length vcc
+    !pccd = V.map (\r -> mvv Map.! (fst r)) vcc
+    !pccu = V.map (\r -> mvv Map.! (snd r)) vcc
     !vww = qqvv ww 
     !m = V.length vww
     !d = V.length vdd
