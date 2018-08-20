@@ -97,6 +97,7 @@ module AlignmentPracticableRepa (
   parametersSystemsDecomperMaximumRollExcludedSelfHighestFmaxLabelModalDeLabelGoodnessRepa,
   systemsDecompFudsHistoryRepasAlignmentContentShuffleSummation_u,
   systemsDecompFudsHistoryRepasTreeAlignmentContentShuffleSummation_u,
+  systemsDecompFudsHistoryRepasAlgnDensPerSizesStripped_u,
   parametersSystemsBuilderLabelTupleRepa
 )
 where
@@ -3392,6 +3393,18 @@ systemsDecompFudsHistoryRepasTreeAlignmentContentShuffleSummation_u mult seed uu
     resize z aa = if z > 0 then (fromJust $ histogramsResize z aa) else empty
     empty = histogramEmpty
     vol uu vv = fromJust $ systemsVarsVolume uu vv
+
+systemsDecompFudsHistoryRepasAlgnDensPerSizesStripped_u :: 
+  Integer -> Integer -> System -> DecompFud -> HistoryRepa -> Double -> DecompFud
+systemsDecompFudsHistoryRepasAlgnDensPerSizesStripped_u mult seed uu df aa r =
+    zzdf $ llzz $ List.map (fst . unzip . takeWhile (\(_,adz) -> adz > r)) $ 
+      zzll $ funcsTreesMap (\((ss,ff),(zc, (a, ad))) -> ((ss,ff),ad / fromIntegral zc)) $ 
+        sumtree mult seed uu df aa
+  where
+    sumtree = systemsDecompFudsHistoryRepasTreeAlignmentContentShuffleSummation_u
+    zzdf zz = fromJust $ treePairStateFudsDecompFud zz
+    zzll zz = Set.toList $ treesPaths zz
+    llzz ll = pathsTree $ Set.fromList ll
 
 parametersSystemsBuilderTupleLevelNoSumlayerRepa_u :: 
   Integer -> Integer -> Integer -> Integer -> System -> Set.Set Variable -> Fud -> Fud -> 
