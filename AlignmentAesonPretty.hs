@@ -6,7 +6,8 @@ module AlignmentAesonPretty (
   transformPersistentsEncodePrefixed,
   fudPersistentsEncode,
   fudPersistentsEncodePrefixed,
-  decompFudsPersistentsEncode
+  decompFudsPersistentsEncode,
+  decompFudsPersistentsEncode_1
 )
 where
 import Data.List as List
@@ -63,6 +64,15 @@ decompFudsPersistentsEncode df =
   mconcat $ ["{\n\t\"paths\":[\n"] ++ 
     List.intersperse ",\n" ["\t\t" <> Data.Aeson.encode ss | ss <- paths df] ++ 
     ["\n\t],\n\t\"nodes\":[\n"] ++ 
+    List.intersperse ",\n" ["\t\t[\n\t\t\t" <> historyPersistentsEncodePrefixed 3 hh <> ",\n\t\t\t" <> fudPersistentsEncodePrefixed 3 ff <> "\n\t\t]" | (hh,ff) <- nodes df] ++ 
+    ["\n\t]\n}"]
+
+decompFudsPersistentsEncode_1 :: DecompFudPersistent -> ByteString
+decompFudsPersistentsEncode_1 df =
+  mconcat $ ["{\n\t\"paths\":[\n"] ++ 
+    List.intersperse ",\n" ["\t\t" <> Data.Aeson.encode ss | ss <- paths df] ++ 
+    ["\n\t],\n\t\"nodes\":[\n"] ++ 
     List.intersperse ",\n" ["\t[" <> historyPersistentsEncodePrefixed 2 hh <> ",\n\t" <> fudPersistentsEncodePrefixed 1 ff <> "]" | (hh,ff) <- nodes df] ++ 
     ["\t]\n}"]
+
 
