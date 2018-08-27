@@ -127,6 +127,9 @@ import AlignmentRepa
 import AlignmentRandomRepa
 import GHC.Real
 
+data MaxRollType = MaximumRoll | MaxRollByM
+                     deriving (Eq, Ord, Read, Show)
+
 repaRounding :: Double 
 repaRounding = 1e-6
 
@@ -2543,8 +2546,15 @@ parametersSystemsLayererMaximumRollExcludedSelfHighestRepa_u ::
   Integer -> Integer -> Integer -> Integer -> Integer -> Integer -> Integer -> Integer -> 
   System -> Set.Set Variable -> HistoryRepa -> HistogramRepaRed -> HistoryRepa -> HistogramRepaRed -> Integer ->
   (System, Fud, [(Set.Set Variable, Double)])
-parametersSystemsLayererMaximumRollExcludedSelfHighestRepa_u 
-  wmax lmax xmax omax bmax mmax umax pmax uu vv xx xxp xxrr xxrrp f = 
+parametersSystemsLayererMaximumRollExcludedSelfHighestRepa_u = 
+   parametersSystemsLayererMaxRollTypeExcludedSelfHighestRepa_u MaximumRoll
+
+parametersSystemsLayererMaxRollTypeExcludedSelfHighestRepa_u :: 
+  MaxRollType -> Integer -> Integer -> Integer -> Integer -> Integer -> Integer -> Integer -> Integer -> 
+  System -> Set.Set Variable -> HistoryRepa -> HistogramRepaRed -> HistoryRepa -> HistogramRepaRed -> Integer ->
+  (System, Fud, [(Set.Set Variable, Double)])
+parametersSystemsLayererMaxRollTypeExcludedSelfHighestRepa_u 
+  mroll wmax lmax xmax omax bmax mmax umax pmax uu vv xx xxp xxrr xxrrp f = 
     layer vv uu fudEmpty [] xx xxp xxrr xxrrp f 1
   where
     layer vv uu ff mm xx xxp xxrr xxrrp f l = 
@@ -2572,7 +2582,8 @@ parametersSystemsLayererMaximumRollExcludedSelfHighestRepa_u
         mm' = buildffdervar uu' vv gg xx' xxp' xxrr' xxrrp'
     buildfftup uu vv ff hh hhp hhrr hhrrp = 
       parametersSystemsBuilderTupleNoSumlayerMultiEffectiveRepa_u xmax omax bmax mmax uu vv ff hh hhp hhrr hhrrp
-    parter uu kk bb y1 = parametersSystemsPartitionerRepa_u mmax umax pmax uu kk bb y1
+    parter uu kk bb y1 = (if mroll == MaxRollByM then parametersSystemsPartitionerMaxRollByMRepa_u else parametersSystemsPartitionerRepa_u) 
+                           mmax umax pmax uu kk bb y1
     roller qq = parametersRollerMaximumRollExcludedSelfRepa qq
     buildffdervar uu vv ff xx xxp xxrr xxrrp = (List.map (\((kk,_,_),a) -> (kk,a)) $
       parametersSystemsBuilderDerivedVarsHighestNoSumlayerRepa_u wmax omax uu vv ff xx xxp xxrr xxrrp)
@@ -2678,59 +2689,8 @@ parametersSystemsLayererMaxRollByMExcludedSelfHighestRepa_u ::
   Integer -> Integer -> Integer -> Integer -> Integer -> Integer -> Integer -> Integer -> 
   System -> Set.Set Variable -> HistoryRepa -> HistogramRepaRed -> HistoryRepa -> HistogramRepaRed -> Integer ->
   (System, Fud, [(Set.Set Variable, Double)])
-parametersSystemsLayererMaxRollByMExcludedSelfHighestRepa_u 
-  wmax lmax xmax omax bmax mmax umax pmax uu vv xx xxp xxrr xxrrp f = 
-    layer vv uu fudEmpty [] xx xxp xxrr xxrrp f 1
-  where
-    layer vv uu ff mm xx xxp xxrr xxrrp f l = 
-      if l <= lmax && hh /= fudEmpty && (mm == [] || maxr mm' > maxr mm + repaRounding) then 
-        layer vv uu' gg mm' xx' xxp' xxrr' xxrrp' f (l+1) else (uu,ff,mm) 
-      where
-        ll = [(tt,(w,ww)) | (ii,b) <- zip [ii | 
-               ((kk,bb),y1) <- buildfftup uu vv ff xx xxp xxrr xxrrp, 
-               qq <- parter uu kk bb y1, (yy,pp) <- roller qq, 
-               (jj,p) <- zip (qqll yy) (V.toList pp), UV.maximum p + 1 < UV.length p,
-               let ii = zip (qqll (cart uu jj)) (UV.toList p)] [1..], 
-                 let w = VarPair (VarPair (VarInt f, VarInt l), VarInt b), 
-                 let ww = llqq $ List.map (\(_,u) -> (nnww u)) ii, 
-                 let tt = trans (unit [ss `sunion` ssgl w (nnww u) | (ss,u) <- ii]) (sgl w)]
-        ll' = [(tt,(w,ww)) | (tt,(w,ww)) <- ll, 
-                and [Set.size ww /= Set.size ww' || und tt /= und tt' || ttpp tt /= ttpp tt' | (tt',(w',ww')) <- ll, w > w']]
-        hh = qqff $ llqq $ fst $ unzip ll'
-        uu' = uu `uunion` (lluu $ snd $ unzip ll')
-        ffr = V.fromList $ List.map (tttr uu') $ fst $ unzip ll'
-        xx' = apply xx ffr
-        xxp' = historyRepasRed xx'
-        xxrr' = apply xxrr ffr
-        xxrrp' = historyRepasRed xxrr'
-        gg = ff `funion` hh
-        mm' = buildffdervar uu' vv gg xx' xxp' xxrr' xxrrp'
-    buildfftup uu vv ff hh hhp hhrr hhrrp = 
-      parametersSystemsBuilderTupleNoSumlayerMultiEffectiveRepa_u xmax omax bmax mmax uu vv ff hh hhp hhrr hhrrp
-    parter uu kk bb y1 = parametersSystemsPartitionerMaxRollByMRepa_u mmax umax pmax uu kk bb y1
-    roller qq = parametersRollerMaximumRollExcludedSelfRepa qq
-    buildffdervar uu vv ff xx xxp xxrr xxrrp = (List.map (\((kk,_,_),a) -> (kk,a)) $
-      parametersSystemsBuilderDerivedVarsHighestNoSumlayerRepa_u wmax omax uu vv ff xx xxp xxrr xxrrp)
-    apply = historyRepasListTransformRepasApply_u
-    tttr uu tt = systemsTransformsTransformRepa_u uu tt
-    qqff = setTransformsFud_u
-    ffqq = fudsSetTransform
-    funion ff gg = qqff (ffqq ff `Set.union` ffqq gg)
-    ttpp = transformsPartition
-    und = transformsUnderlying
-    trans = histogramsSetVarsTransform_u
-    unit qq = listsHistogram_u $ List.map (\ss -> (ss,1)) $ qq
-    sunion = pairStatesUnionLeft
-    ssgl = stateSingleton
-    cart uu vv = systemsSetVarsSetStateCartesian_u uu vv
-    uunion = pairSystemsUnion
-    lluu = listsSystem_u
-    nnww = ValInt . toInteger
-    maxr mm = if mm /= [] then (last $ sort $ snd $ unzip $ mm) else 0
-    llqq :: forall a. (Ord a) => [a] -> Set.Set a
-    llqq = Set.fromList
-    sgl = Set.singleton
-    qqll = Set.toList
+parametersSystemsLayererMaxRollByMExcludedSelfHighestRepa_u  = 
+  parametersSystemsLayererMaxRollTypeExcludedSelfHighestRepa_u MaxRollByM
 
 parametersSystemsDecomperHighestRepa :: 
   Integer -> Integer -> Integer -> Integer -> Integer -> Integer -> Integer -> Integer -> 
@@ -4185,8 +4145,16 @@ parametersSystemsLayererLevelMaximumRollExcludedSelfHighestRepa_u ::
   System -> Set.Set Variable -> Fud -> 
   HistoryRepa -> HistogramRepaRed -> HistoryRepa -> HistogramRepaRed -> Integer -> Integer ->
   (System, Fud, [(Set.Set Variable, Double)])
-parametersSystemsLayererLevelMaximumRollExcludedSelfHighestRepa_u 
-  wmax lmax xmax omax bmax mmax umax pmax uu vvg ffg xx xxp xxrr xxrrp f g = 
+parametersSystemsLayererLevelMaximumRollExcludedSelfHighestRepa_u = 
+  parametersSystemsLayererLevelMaxRollTypeExcludedSelfHighestRepa_u MaximumRoll
+
+parametersSystemsLayererLevelMaxRollTypeExcludedSelfHighestRepa_u :: 
+  MaxRollType -> Integer -> Integer -> Integer -> Integer -> Integer -> Integer -> Integer -> Integer -> 
+  System -> Set.Set Variable -> Fud -> 
+  HistoryRepa -> HistogramRepaRed -> HistoryRepa -> HistogramRepaRed -> Integer -> Integer ->
+  (System, Fud, [(Set.Set Variable, Double)])
+parametersSystemsLayererLevelMaxRollTypeExcludedSelfHighestRepa_u 
+  mroll wmax lmax xmax omax bmax mmax umax pmax uu vvg ffg xx xxp xxrr xxrrp f g = 
     layer uu fudEmpty [] xx xxp xxrr xxrrp 1
   where
     layer uu ff mm xx xxp xxrr xxrrp l = 
@@ -4214,7 +4182,8 @@ parametersSystemsLayererLevelMaximumRollExcludedSelfHighestRepa_u
         mm' = buildffdervar uu' vvg ffg gg xx' xxp' xxrr' xxrrp'
     buildfftup uu vvg ffg ff hh hhp hhrr hhrrp = 
       parametersSystemsBuilderTupleLevelNoSumlayerMultiEffectiveRepa_u xmax omax bmax mmax uu vvg ffg ff hh hhp hhrr hhrrp
-    parter uu kk bb y1 = parametersSystemsPartitionerRepa_u mmax umax pmax uu kk bb y1
+    parter uu kk bb y1 = (if mroll == MaxRollByM then parametersSystemsPartitionerMaxRollByMRepa_u else parametersSystemsPartitionerRepa_u) 
+                           mmax umax pmax uu kk bb y1
     roller qq = parametersRollerMaximumRollExcludedSelfRepa qq
     buildffdervar uu vv ffg ff xx xxp xxrr xxrrp = (List.map (\((kk,_,_),a) -> (kk,a)) $
       parametersSystemsBuilderDerivedVarsLevelHighestNoSumlayerRepa_u 
@@ -4309,62 +4278,8 @@ parametersSystemsLayererLevelMaxRollByMExcludedSelfHighestRepa_u ::
   System -> Set.Set Variable -> Fud -> 
   HistoryRepa -> HistogramRepaRed -> HistoryRepa -> HistogramRepaRed -> Integer -> Integer ->
   (System, Fud, [(Set.Set Variable, Double)])
-parametersSystemsLayererLevelMaxRollByMExcludedSelfHighestRepa_u 
-  wmax lmax xmax omax bmax mmax umax pmax uu vvg ffg xx xxp xxrr xxrrp f g = 
-    layer uu fudEmpty [] xx xxp xxrr xxrrp 1
-  where
-    layer uu ff mm xx xxp xxrr xxrrp l = 
-      if l <= lmax && hh /= fudEmpty && (mm == [] || maxr mm' > maxr mm + repaRounding) then 
-        layer uu' gg mm' xx' xxp' xxrr' xxrrp' (l+1) else (uu,ff,mm) 
-      where
-        ll = [(tt,(w,ww)) | (ii,b) <- zip [ii | 
-               ((kk,bb),y1) <- buildfftup uu vvg ffg ff xx xxp xxrr xxrrp, 
-               qq <- parter uu kk bb y1, (yy,pp) <- roller qq, 
-               (jj,p) <- zip (qqll yy) (V.toList pp), UV.maximum p + 1 < UV.length p,
-               let ii = zip (qqll (cart uu jj)) (UV.toList p)] [1..], 
-                 let w = VarPair (VarPair (VarPair (VarInt f, VarInt g), VarInt l), VarInt b), 
-                 let ww = llqq $ List.map (\(_,u) -> (nnww u)) ii, 
-                 let tt = trans (unit [ss `sunion` ssgl w (nnww u) | (ss,u) <- ii]) (sgl w)]
-        ll' = [(tt,(w,ww)) | (tt,(w,ww)) <- ll, 
-                and [Set.size ww /= Set.size ww' || und tt /= und tt' || ttpp tt /= ttpp tt' | (tt',(w',ww')) <- ll, w > w']]
-        hh = qqff $ llqq $ fst $ unzip ll'
-        uu' = uu `uunion` (lluu $ snd $ unzip ll')
-        ffr = V.fromList $ List.map (tttr uu') $ fst $ unzip ll'
-        xx' = apply xx ffr
-        xxp' = historyRepasRed xx'
-        xxrr' = apply xxrr ffr
-        xxrrp' = historyRepasRed xxrr'
-        gg = ff `funion` hh `funion` depends ffg (fund hh)
-        mm' = buildffdervar uu' vvg ffg gg xx' xxp' xxrr' xxrrp'
-    buildfftup uu vvg ffg ff hh hhp hhrr hhrrp = 
-      parametersSystemsBuilderTupleLevelNoSumlayerMultiEffectiveRepa_u xmax omax bmax mmax uu vvg ffg ff hh hhp hhrr hhrrp
-    parter uu kk bb y1 = parametersSystemsPartitionerMaxRollByMRepa_u mmax umax pmax uu kk bb y1
-    roller qq = parametersRollerMaximumRollExcludedSelfRepa qq
-    buildffdervar uu vv ffg ff xx xxp xxrr xxrrp = (List.map (\((kk,_,_),a) -> (kk,a)) $
-      parametersSystemsBuilderDerivedVarsLevelHighestNoSumlayerRepa_u 
-        wmax omax uu vv ffg ff xx xxp xxrr xxrrp)
-    apply = historyRepasListTransformRepasApply_u
-    tttr uu tt = systemsTransformsTransformRepa_u uu tt
-    depends = fudsVarsDepends
-    qqff = setTransformsFud_u
-    ffqq = fudsSetTransform
-    funion ff gg = qqff (ffqq ff `Set.union` ffqq gg)
-    ttpp = transformsPartition
-    und = transformsUnderlying
-    fund = fudsUnderlying
-    trans = histogramsSetVarsTransform_u
-    unit qq = listsHistogram_u $ List.map (\ss -> (ss,1)) $ qq
-    sunion = pairStatesUnionLeft
-    ssgl = stateSingleton
-    cart uu vv = systemsSetVarsSetStateCartesian_u uu vv
-    uunion = pairSystemsUnion
-    lluu = listsSystem_u
-    nnww = ValInt . toInteger
-    maxr mm = if mm /= [] then (last $ sort $ snd $ unzip $ mm) else 0
-    llqq :: forall a. (Ord a) => [a] -> Set.Set a
-    llqq = Set.fromList
-    sgl = Set.singleton
-    qqll = Set.toList
+parametersSystemsLayererLevelMaxRollByMExcludedSelfHighestRepa_u =
+  parametersSystemsLayererLevelMaxRollTypeExcludedSelfHighestRepa_u MaxRollByM
 
 parametersSystemsDecomperLevelMaximumRollExcludedSelfHighestFmaxRepa :: 
   Integer -> Integer -> Integer -> Integer -> Integer -> Integer -> Integer -> Integer -> 
