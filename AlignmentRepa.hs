@@ -54,6 +54,7 @@ module AlignmentRepa (
   setSetVarsHistogramRepaVecsPartitionIndependentVec_u,
   setSetVarsHistogramRepaPairStorablesPartitionIndependentPair_u,
   parametersHistogramRepaVecsSetTuplePartitionTop_u,
+  parametersHistogramRepaVecsSetTuplePartitionTopByM_u,
   historyRepaEmpty,
   arraysHistoryRepa_u,
   arraysHistoryRepaCardinal_u,
@@ -2264,11 +2265,55 @@ parametersHistogramRepaVecsSetTuplePartitionTop_u mmax umax pmax rrv y1 = (tt, t
         SV.unsafeWith vsaa $ \paa -> do
         SV.unsafeWith vsaarr $ \paarr -> do
         SMV.unsafeWith mtt $ \pmtt -> do
-          listListVarsArrayHistoryPairsSetTuplePartitionTop_u (fromIntegral pmax) (realToFrac z) (fromIntegral v) (fromIntegral n) psvv (fromIntegral q) (realToFrac y1) pqm pql pqs pqp paa paarr pmtt
+          listListVarsArrayHistoryPairsSetTuplePartitionTop_u (fromIntegral pmax) (realToFrac z) (fromIntegral v) (fromIntegral n) 
+            psvv (fromIntegral q) (realToFrac y1) pqm pql pqs pqp paa paarr pmtt
       vstt' <- SV.unsafeFreeze mtt 
       return (SV.take (fromIntegral t) vstt',t)
     !tt = Set.fromList (List.map (\p -> let (_,_,_,_,yy) = qq !! (fromIntegral p) in yy) (SV.toList vstt))
     nlluv n ll = let d = n - length ll in if d > 0 then UV.fromList ll UV.++ UV.replicate d 0 else UV.fromListN n ll
+    perm = UV.unsafeBackpermute
+
+parametersHistogramRepaVecsSetTuplePartitionTopByM_u :: 
+  Integer -> Integer -> Integer -> HistogramRepaVec -> Double -> (Set.Set (Set.Set (Set.Set Variable)),Integer)
+parametersHistogramRepaVecsSetTuplePartitionTopByM_u mmax umax pmax rrv y1 = (tt, toInteger q)
+  where
+    HistogramRepaVec vvv _ z svv vaa = rrv
+    [aa, _, aarr, _] = V.toList vaa 
+    !vsaa = SV.unsafeCast (UV.convert aa) :: SV.Vector CDouble
+    !vsaarr = SV.unsafeCast (UV.convert aarr) :: SV.Vector CDouble
+    !vssvv = SV.unsafeCast (UV.convert svv) :: SV.Vector CLLong
+    !v = R.size svv
+    !n = rank svv
+    qq = [(length pp, List.map length pp, rr, concat pp, 
+             Set.fromList (List.map (\cc -> Set.fromList (List.map (\p -> vvv V.! p) cc)) pp)) | 
+           ll <- tail (foldl (\mm i -> [j:xx | xx <- mm , j <- [0..i-1], j < (fromIntegral mmax), j <= maximum xx + 1]) [[0]] [2..n]), 
+           let pp = List.map Set.toList (Map.elems (Map.fromListWith Set.union [(c, Set.singleton p) | (c,p) <- zip ll [0..]])),
+           let rr = List.map (\cc -> R.size (perm svv (UV.fromList cc))) pp, and [u <= (fromIntegral umax) | u <- rr]]
+    !q = length qq
+    !tt = foldl Set.union Set.empty [parter qq' | m <- [2 .. fromIntegral mmax], let qq' = filter (\(m',_,_,_,_) -> m' == m) qq]
+    parter !qq = Set.fromList (List.map (\p -> let (_,_,_,_,yy) = qq !! (fromIntegral p) in yy) (SV.toList vstt))
+      where
+        !q = length qq
+        !vsqm = SV.unsafeCast (UV.convert (UV.fromList (List.map (\(m,_,_,_,_) -> m) qq))) :: SV.Vector CLLong
+        !vsql = SV.unsafeCast (UV.convert (UV.concat (List.map (\(_,ll,_,_,_) -> nlluv n ll) qq))) :: SV.Vector CLLong
+        !vsqs = SV.unsafeCast (UV.convert (UV.concat (List.map (\(_,_,ss,_,_) -> nlluv n ss) qq))) :: SV.Vector CLLong
+        !vsqp = SV.unsafeCast (UV.convert (UV.concat (List.map (\(_,_,_,pp,_) -> nlluv n pp) qq))) :: SV.Vector CLLong
+        (!vstt,!t) = unsafePerformIO $ do
+          let vstt = SV.replicate (fromIntegral pmax) 0
+          mtt <- SV.unsafeThaw vstt
+          t <- SV.unsafeWith vssvv $ \psvv -> do
+            SV.unsafeWith vsqm $ \pqm -> do
+            SV.unsafeWith vsql $ \pql -> do
+            SV.unsafeWith vsqs $ \pqs -> do
+            SV.unsafeWith vsqp $ \pqp -> do
+            SV.unsafeWith vsaa $ \paa -> do
+            SV.unsafeWith vsaarr $ \paarr -> do
+            SMV.unsafeWith mtt $ \pmtt -> do
+              listListVarsArrayHistoryPairsSetTuplePartitionTop_u (fromIntegral pmax) (realToFrac z) (fromIntegral v) (fromIntegral n) 
+                psvv (fromIntegral q) (realToFrac y1) pqm pql pqs pqp paa paarr pmtt
+          vstt' <- SV.unsafeFreeze mtt 
+          return (SV.take (fromIntegral t) vstt',t)
+        nlluv n ll = let d = n - length ll in if d > 0 then UV.fromList ll UV.++ UV.replicate d 0 else UV.fromListN n ll
     perm = UV.unsafeBackpermute
 
 parametersSetVarsHistoryRepasSetSetVarsAlignedTop :: Integer -> Integer -> Set.Set Variable -> HistoryRepa -> HistogramRepaRed -> HistoryRepa -> HistogramRepaRed -> Maybe (V.Vector ((Double,Double,Integer),Set.Set Variable),Integer)

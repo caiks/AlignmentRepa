@@ -58,6 +58,9 @@ module AlignmentPracticableRepa (
   parametersSystemsPartitionerRepa_ui_1,
   parametersSystemsPartitionerRepa_ui_2,
   parametersSystemsPartitionerRepa_ui_3,
+  parametersSystemsPartitionerMaxRollByMRepa,
+  parametersSystemsPartitionerMaxRollByMRepa_u,
+  parametersSystemsPartitionerMaxRollByMRepa_ui,
   parametersRollerRepa,
   parametersRollerMaximumRollRepa,
   parametersRollerMaximumRollExcludedSelfRepa,
@@ -1871,6 +1874,61 @@ parametersSystemsPartitionerRepa_ui_3 mmax umax pmax uu kk (rrv,ggv,ssv) y1 = (m
     qqll = Set.toList
     llqq :: forall a. (Ord a) => [a] -> Set.Set a
     llqq = Set.fromList
+
+parametersSystemsPartitionerMaxRollByMRepa :: 
+  Integer -> Integer -> Integer -> System -> Set.Set Variable -> 
+  (HistogramRepaVec, HistogramRepaVec, UV.Vector Double) -> Double ->
+  Maybe [(Set.Set (Set.Set Variable),(HistogramRepaVec,HistogramRepaVec))]
+parametersSystemsPartitionerMaxRollByMRepa mmax umax pmax uu kk bb y1
+  | umax < 0 || mmax < 0 || pmax < 0 = Nothing
+  | not (vvqq vbb `subset` uvars uu && kk `subset` vvqq vbb) = Nothing
+  | otherwise = Just $ parter mmax umax pmax uu kk bb y1
+  where
+    (rrv,_,_) = bb
+    HistogramRepaVec vbb _ _ _ _ = rrv 
+    parter = parametersSystemsPartitionerMaxRollByMRepa_u 
+    uvars = systemsVars
+    subset = Set.isSubsetOf
+    vvqq = Set.fromList . V.toList
+
+parametersSystemsPartitionerMaxRollByMRepa_u :: 
+  Integer -> Integer -> Integer -> System -> Set.Set Variable -> 
+  (HistogramRepaVec, HistogramRepaVec, UV.Vector Double) -> Double ->
+  [(Set.Set (Set.Set Variable),(HistogramRepaVec,HistogramRepaVec))]
+parametersSystemsPartitionerMaxRollByMRepa_u mmax umax pmax uu kk bb y1 = 
+    fst $ parter mmax umax pmax uu kk bb y1
+  where
+    parter = parametersSystemsPartitionerMaxRollByMRepa_ui
+
+parametersSystemsPartitionerMaxRollByMRepa_ui :: 
+  Integer -> Integer -> Integer -> System -> Set.Set Variable -> 
+  (HistogramRepaVec, HistogramRepaVec, UV.Vector Double) -> Double ->
+  ([(Set.Set (Set.Set Variable),(HistogramRepaVec,HistogramRepaVec))],Integer)
+parametersSystemsPartitionerMaxRollByMRepa_ui mmax umax pmax uu kk (rrv,_,_) y1 = (mm3, q)
+  where
+    HistogramRepaVec vbb mbb z sbb rbb = rrv 
+    [bb, _, bbrr, _] = V.toList rbb 
+    nnv = HistogramRepaVec vbb mbb z sbb (V.fromListN 2 [bb, bbrr])
+    vsbb = SV.unsafeCast (UV.convert bb) :: SV.Vector CDouble
+    vsbbrr = SV.unsafeCast (UV.convert bbrr) :: SV.Vector CDouble
+    n = toInteger $ UV.length sbb
+    (mm2,q) = rrvqqy mmax umax pmax rrv y1
+    mm3 = [(yy, (HistogramRepaVec vcc mcc z scc (V.fromListN 4 [cc, ccx, ccrr, ccrrx]), 
+            HistogramRepaVec vcc mcc 1 scc (V.fromListN 4 [ff, ffx, ffrr, ffrrx]))) | 
+              yy <- Set.toList mm2, 
+              let ccv = pprr yy nnv,
+              let HistogramRepaVec vcc mcc _ scc rcc = ccv,
+              let [cc, ccrr] = V.toList rcc, 
+              let [ccx, ccrrx] = V.toList (rrvvrr (ppxx yy nnv vsbb vsbbrr)),
+              let ff = facln cc, let ffrr = facln ccrr,
+              let ffx = facln ccx, let ffrrx = facln ccrrx]
+    pprr pp rrv = setSetVarsHistogramRepaVecsPartitionVec_u pp rrv
+    ppxx pp rrv vsaa vsaarr = setSetVarsHistogramRepaPairStorablesPartitionIndependentPair_u pp rrv vsaa vsaarr
+    rrvqqy = parametersHistogramRepaVecsSetTuplePartitionTopByM_u 
+    rrvvrr = histogramRepaVecsArray
+    facln rr = UV.map (\x -> logGamma (x + 1)) rr
+
+
 
 parametersRollerRepa :: 
   Integer -> [(Set.Set (Set.Set Variable),(HistogramRepaVec,HistogramRepaVec))] -> Maybe [(Set.Set (Set.Set Variable),V.Vector (UV.Vector Int))]

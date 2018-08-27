@@ -45,9 +45,10 @@ uunion = pairSystemsUnion
 uvars = systemsVars
 vol uu vv = fromJust $ systemsVarsVolume uu vv
 uull = systemsList
-umap uu ll = Map.fromList [(v,(v',Map.fromList (zip (Set.toList ww) (map ValInt [1..])))) | ((v,ww),v') <- zip (uull uu) ll]
+umap uu ll = Map.fromList [(v,(v',Map.fromList (zip (Set.toList ww) (map ValInt [1..])))) | ((v,ww),v') <- zip [(v,ww) | (v,ww) <- uull uu, variablesIsPartition v] ll]
 
 ph x = represent x
+aat aa ss = fromJust $ histogramsStatesCount aa ss
 aall = histogramsList
 llaa ll = fromJust $ listsHistogram ll
 aarr aa = map (\(ss,c) -> (ss,fromRational c)) (histogramsList aa) :: [(State,Double)]
@@ -61,6 +62,7 @@ apply = setVarsSetVarsSetHistogramsHistogramsApply
 leq = pairHistogramsLeq
 size = histogramsSize
 resize z aa = fromJust $ histogramsResize z aa
+norm aa = resize 1 aa
 vars = histogramsVars
 cdvars ll = Set.fromList $ map VarInt ll
 states = histogramsStates
@@ -68,6 +70,7 @@ dim = histogramsDimension
 card = histogramsCardinality
 recip = histogramsReciprocal
 red aa vv = setVarsHistogramsReduce vv aa
+ared aa vv = setVarsHistogramsReduce vv aa
 cdred aa ll = red aa $ Set.fromList $ map VarInt ll
 scalar q = fromJust $ histogramScalar q
 single ss c = fromJust $ histogramSingleton ss c
@@ -86,6 +89,8 @@ regline d n = fromJust $ histogramRegularUnitLine d n
 regaxial d n = fromJust $ histogramRegularUnitAxial d n
 regpivot d n = fromJust $ histogramRegularUnitPivot d n
 regantipivot d n = trim $ regcart d n `sub` regpivot d n
+reframe aa ll = fromJust $ histogramsMapVarsFrame aa (Map.fromList ll)
+cdtp aa ll = reframe aa (zip (Set.toList (vars aa)) (map VarInt ll))
 cdaa ll = llaa [(llss (map (\(i,j) -> (VarInt i, ValInt j)) (zip [1..] ss)),1) | ss <- ll]
 frame f aa = fromJust $ histogramsMapVarsFrame aa (Map.fromList $ map (\(VarInt i) -> (VarInt i, VarInt (f i))) $ Set.toList $ vars aa)
 regtranspose ll aa = frame (\ i -> toInteger (ll !! fromInteger (i-1))) aa
@@ -151,7 +156,7 @@ ffaa  = ttaa . fftt
 layer ff = fudsSetVarsLayer ff (fder ff)
 fsys = fudsSystemImplied
 fmp ff ll = qqff (Set.map (\tt -> fromJust (transformsMapVarMapValsFrame tt (umap (fsys ff) ll))) (ffqq ff))
-fmpi ff = fmp ff [VarInt i | i <- [1..]]
+fmpi ff = fmp ff [VarInt i | i <- [1..], VarInt i `Set.notMember` fvars ff]
 
 fregb d n b m = map qqff $ foldl (\qq pp -> [Set.insert tt ff | ff <- qq, tt <- pp]) [Set.empty] [map (\tt -> tframell tt [(n+1,n+k)]) (treg2b d n b) | k <- [1 .. m]]
 fregbno d n b m = map qqff $ foldl (\qq pp -> [Set.insert tt ff | ff <- qq, tt <- pp]) [Set.empty] [map (\tt -> tframell tt ([(i,n*(k-1)+i) | i <- [1..n]] ++ [(n+1,n*m+k)])) (treg2b d n b) | k <- [1 .. m]]
@@ -190,7 +195,7 @@ hrsize = historyRepasSize
 hralgn = systemsDecompFudsHistoryRepasAlignmentContentShuffleSummation_u
 hralgntree = systemsDecompFudsHistoryRepasTreeAlignmentContentShuffleSummation_u
 
-
+ent = histogramsEntropy 
 algn = histogramsAlignment
 algnden aa = let v = fromIntegral (vol (sys aa) (vars aa)); n = fromIntegral (dim aa) in algn aa  / (v ** (1/n))
 
