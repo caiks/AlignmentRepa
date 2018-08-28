@@ -94,7 +94,9 @@ module AlignmentPracticableRepa (
   parametersSystemsDecomperMaximumRollExcludedSelfHighestFmaxRepa_4,
   parametersSystemsDecomperMaximumRollExcludedSelfHighestFmaxBatchRepa,
   parametersSystemsDecomperLevelMaximumRollExcludedSelfHighestFmaxRepa,
+  parametersSystemsDecomperLevelMaximumRollExcludedSelfHighestFmaxRepa_1,
   parametersSystemsDecomperMaximumRollExcludedSelfHighestFmaxLabelMinEntropyRepa,
+  parametersSystemsDecomperLevelMaximumRollExcludedSelfHighestFmaxLabelMinEntropyRepa,
   parametersSystemsDecomperMaximumRollExcludedSelfHighestFmaxLabelMinEntropyDeLabelRepa,
   parametersSystemsDecomperLevelMaximumRollExcludedSelfHighestFmaxLabelMinEntropyDeLabelRepa,
   parametersSystemsDecomperMaximumRollExcludedSelfHighestFmaxLabelMinEntropyDeLabelGoodnessRepa,
@@ -4288,8 +4290,110 @@ parametersSystemsDecomperLevelMaximumRollExcludedSelfHighestFmaxRepa ::
   Maybe (System, DecompFud)
 parametersSystemsDecomperLevelMaximumRollExcludedSelfHighestFmaxRepa 
   lmax xmax omax bmax mmax umax pmax fmax mult seed uu aa zzg =
+    parametersSystemsDecomperLevelMaximumRollExcludedSelfHighestFmaxLabelMinEntropyRepa 
+      lmax xmax omax bmax mmax umax pmax fmax mult seed uu aa zzg Set.empty
+
+parametersSystemsDecomperLevelMaximumRollExcludedSelfHighestFmaxRepa_1 :: 
+  Integer -> Integer -> Integer -> Integer -> Integer -> Integer -> Integer -> Integer -> 
+  Integer -> Integer ->
+  System -> Histogram -> Tree (Integer, Set.Set Variable, Fud) -> 
+  Maybe (System, DecompFud)
+parametersSystemsDecomperLevelMaximumRollExcludedSelfHighestFmaxRepa_1 
+  lmax xmax omax bmax mmax umax pmax fmax mult seed uu aa zzg =
     parametersSystemsDecomperLevelMaximumRollExcludedSelfHighestFmaxLabelMinEntropyDeLabelRepa 
       lmax xmax omax bmax mmax umax pmax fmax mult seed uu aa zzg Set.empty Set.empty
+
+parametersSystemsDecomperLevelMaximumRollExcludedSelfHighestFmaxLabelMinEntropyRepa :: 
+  Integer -> Integer -> Integer -> Integer -> Integer -> Integer -> Integer -> Integer -> 
+  Integer -> Integer ->
+  System -> Histogram -> Tree (Integer, Set.Set Variable, Fud) -> 
+  Set.Set Variable -> 
+  Maybe (System, DecompFud)
+parametersSystemsDecomperLevelMaximumRollExcludedSelfHighestFmaxLabelMinEntropyRepa 
+  lmax xmax omax bmax mmax umax pmax fmax mult seed uu aa zzg ll
+  | lmax < 0 || xmax < 0 || omax < 0 || bmax < 0 || mmax < 1 || bmax < mmax || umax < 0 || pmax < 0 = Nothing
+  | not (isint aa) || size aa == 0 || mult < 1 = Nothing
+  | not (qq `subset` uvars uu && ll `subset` qq) = Nothing
+  | not (okLevel zzg) = Nothing
+  | otherwise = Just $ decomp uu emptyTree 1
+  where
+    qq = vars aa
+    decomp uu zz f
+      | zz == emptyTree && ffr == fudEmpty = (uu, decompFudEmpty)
+      | zz == emptyTree = decomp uur zzr (f+1)
+      | (fmax > 0 && f > fmax) || mm == [] = (uu, zzdf (zztrim zz)) 
+      | otherwise = decomp uuc zzc (f+1)
+      where
+        (uur,ffr,_) = level uu aa zzg f 1
+        zzr = tsgl ((stateEmpty,ffr),(aa, apply qq (fder ffr `cup` ll) (fhis ffr) aa))
+        mm = [(b,nn,ss,ff,bb) | (nn,yy) <- qqll (treesPlaces zz), 
+                 let ((_,ff),(bb,bb')) = last nn, ff /= fudEmpty,
+                 (ss,a) <- aall (bb' `red` fder ff), a > 0, ss `notin` dom (dom (treesRoots yy)),
+                 let b = if Set.null ll then fromRational a else fromRational a * entropy (bb' `mul` unit ss `red` ll), 
+                 b > 0]
+        (_,nn,ss,ffb,bb) = last $ sort mm
+        cc = apply qq qq (fhis ffb `add` unit ss) bb
+        (uuc,ffc,_) = level uu cc zzg f 1
+        zzc = pathsTree $ treesPaths zz `add` (nn List.++ [((ss,ffc),(cc, apply qq (fder ffc) (fhis ffc) cc))])
+    level uu aa (Tree ttg) f g = foldl next (uu,fudEmpty,g) (Map.toList ttg)
+      where       
+        next (uu,ff,g) ((wmaxg,vvg,ffg),xxg) = (uu',ff `funion` gg',gh+1)
+          where
+            (uuh,ffh,gh) = level uu aa xxg f g
+            (uu',gg,nn) = layerer wmaxg uuh vvg (ffg `funion` ffh) aa f gh
+            (a,kk) = maxd nn
+            gg' = if a > repaRounding then depends gg kk else fudEmpty
+    layerer wmax uu vvg ffg aa f g = parametersSystemsLayererLevelMaximumRollExcludedSelfHighestRepa_u 
+                                        wmax lmax xmax omax bmax mmax umax pmax uu vvg ffg xx' xxp' xxrr' xxrrp' f g
+      where
+        xx = systemsHistoriesHistoryRepa_u uu $ aahh aa
+        z = historyRepasSize xx
+        xxrr = vectorHistoryRepasConcat_u $ V.fromListN (fromInteger mult) $ 
+                 [historyRepasShuffle_u xx (fromInteger seed + i*z) | i <- [1..]]
+        xx' = applyhr uu ffg xx
+        xxp' = historyRepasRed xx'   
+        xxrr' = applyhr uu ffg xxrr
+        xxrrp' = historyRepasRed xxrr'   
+    okLevel zzg = and [wmaxg >= 0 && vvg `subset` vars aa && fvars ffg `subset` uvars uu && fund ffg `subset` vars aa |
+                       (wmaxg,vvg,ffg) <- Set.toList (treesElements zzg)]
+    zztrim = pathsTree . Set.map lltrim . treesPaths
+    lltrim ll = let ((_,ff),_) = last ll in if ff == fudEmpty then init ll else ll
+    zzdf zz = fromJust $ treePairStateFudsDecompFud $ funcsTreesMap fst zz
+    depends = fudsVarsDepends
+    qqff = fromJust . setTransformsFud
+    ffqq = fudsSetTransform
+    fder = fudsDerived
+    fvars = fudsVars
+    fund = fudsUnderlying
+    funion ff gg = qqff (ffqq ff `Set.union` ffqq gg)
+    fhis = fudsSetHistogram
+    entropy = histogramsEntropy
+    applyhr uu ff hh = historyRepasListTransformRepasApply hh (llvv $ List.map (tttr uu) $ qqll $ ffqq ff)
+    tttr uu tt = systemsTransformsTransformRepa_u uu tt
+    apply = setVarsSetVarsSetHistogramsHistogramsApply
+    aahh aa = fromJust $ histogramsHistory aa
+    isint = histogramsIsIntegral
+    aadd xx yy = fromJust $ pairHistogramsAdd xx yy
+    unit = fromJust . setStatesHistogramUnit . Set.singleton 
+    red aa vv = setVarsHistogramsReduce vv aa
+    mul = pairHistogramsMultiply
+    aall = histogramsList
+    size = histogramsSize
+    vars = histogramsVars
+    cart = systemsSetVarsSetStateCartesian_u
+    uvars = systemsVars
+    tsgl r = Tree $ Map.singleton r emptyTree
+    maxd mm = if mm /= [] then (head $ take 1 $ reverse $ sort $ flip $ mm) else (0,empty)
+    dom :: (Ord a, Ord b) => Set.Set (a,b) -> Set.Set a
+    dom = relationsDomain
+    add qq x = Set.insert x qq
+    qqll = Set.toList
+    empty = Set.empty
+    subset = Set.isSubsetOf
+    notin = Set.notMember
+    cup = Set.union
+    llvv = V.fromList
+    flip = List.map (\(a,b) -> (b,a))
 
 parametersSystemsDecomperLevelMaximumRollExcludedSelfHighestFmaxLabelMinEntropyDeLabelRepa :: 
   Integer -> Integer -> Integer -> Integer -> Integer -> Integer -> Integer -> Integer -> 

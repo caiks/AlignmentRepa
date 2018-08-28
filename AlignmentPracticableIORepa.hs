@@ -23,7 +23,9 @@ module AlignmentPracticableIORepa (
   parametersSystemsHistoryRepasDecomperMaximumRollExcludedSelfHighestFmaxIORepa_3,
   parametersSystemsHistoryRepasDecomperMaximumRollExcludedSelfHighestFmaxBatchIORepa,
   parametersSystemsHistoryRepasDecomperLevelMaximumRollExcludedSelfHighestFmaxIORepa,
+  parametersSystemsHistoryRepasDecomperLevelMaximumRollExcludedSelfHighestFmaxIORepa_1,
   parametersSystemsHistoryRepasDecomperMaximumRollExcludedSelfHighestFmaxLabelMinEntropyIORepa,
+  parametersSystemsHistoryRepasDecomperLevelMaximumRollExcludedSelfHighestFmaxLabelMinEntropyIORepa,
   parametersSystemsHistoryRepasDecomperMaximumRollExcludedSelfHighestFmaxLabelMinEntropyDeLabelIORepa,
   parametersSystemsHistoryRepasDecomperLevelMaximumRollExcludedSelfHighestFmaxLabelMinEntropyDeLabelIORepa,
   parametersSystemsHistoryRepasDecomperMaximumRollExcludedSelfHighestFmaxLabelMinEntropyDeLabelGoodnessIORepa,
@@ -2390,8 +2392,188 @@ parametersSystemsHistoryRepasDecomperLevelMaximumRollExcludedSelfHighestFmaxIORe
   IO (Maybe (System, DecompFud))
 parametersSystemsHistoryRepasDecomperLevelMaximumRollExcludedSelfHighestFmaxIORepa 
   lmax xmax omax bmax mmax umax pmax fmax mult seed uu aa zzg =
+    parametersSystemsHistoryRepasDecomperLevelMaximumRollExcludedSelfHighestFmaxLabelMinEntropyIORepa
+      lmax xmax omax bmax mmax umax pmax fmax mult seed uu aa zzg Set.empty
+
+parametersSystemsHistoryRepasDecomperLevelMaximumRollExcludedSelfHighestFmaxIORepa_1 :: 
+  Integer -> Integer -> Integer -> Integer -> Integer -> Integer -> Integer -> Integer -> 
+  Integer -> Integer ->
+  System -> HistoryRepa -> Tree (Integer, Set.Set Variable, Fud) -> 
+  IO (Maybe (System, DecompFud))
+parametersSystemsHistoryRepasDecomperLevelMaximumRollExcludedSelfHighestFmaxIORepa_1 
+  lmax xmax omax bmax mmax umax pmax fmax mult seed uu aa zzg =
     parametersSystemsHistoryRepasDecomperLevelMaximumRollExcludedSelfHighestFmaxLabelMinEntropyDeLabelIORepa
       lmax xmax omax bmax mmax umax pmax fmax mult seed uu aa zzg Set.empty Set.empty
+
+parametersSystemsHistoryRepasDecomperLevelMaximumRollExcludedSelfHighestFmaxLabelMinEntropyIORepa :: 
+  Integer -> Integer -> Integer -> Integer -> Integer -> Integer -> Integer -> Integer -> 
+  Integer -> Integer ->
+  System -> HistoryRepa -> Tree (Integer, Set.Set Variable, Fud) -> 
+  Set.Set Variable -> 
+  IO (Maybe (System, DecompFud))
+parametersSystemsHistoryRepasDecomperLevelMaximumRollExcludedSelfHighestFmaxLabelMinEntropyIORepa 
+  lmax xmax omax bmax mmax umax pmax fmax mult seed uu aa zzg ll
+  | lmax < 0 || xmax <= 0 || omax <= 0 || bmax < 0 || mmax < 1 || bmax < mmax || umax < 0 || pmax < 0 = 
+      return $ Nothing
+  | size aa == 0 || mult < 1 = return $ Nothing
+  | not (vars aa `subset` uvars uu && ll `subset` vars aa) = return $ Nothing
+  | not (okLevel zzg) = return $ Nothing
+  | otherwise = 
+    do
+      printf ">>> decomper repa\n"
+      hFlush stdout
+      t1 <- getCurrentTime
+      x1 <- decomp uu emptyTree 1
+      printf "nodes: %d\n" $ card $ treesNodes $ dfzz $ snd x1
+      t2 <- getCurrentTime
+      printf "<<< decomper repa %s\n" $ show $ diffUTCTime t2 t1
+      hFlush stdout
+      return $ Just $ x1
+  where
+    decomp uu zz f
+      | zz == emptyTree =
+        do
+          (uur,ffr,_) <- level uu aa zzg f 1
+          if ffr == fudEmpty then
+              return $ (uu, decompFudEmpty)
+            else do
+              printf ">>> slicing\n"
+              hFlush stdout
+              t3 <- getCurrentTime
+              printf "dependent fud cardinality : %d\n" $ card $ ffqq ffr
+              let wwr = fder ffr
+              let aar = apply uur ffr aa
+              let aa' = trim $ reduce uur (wwr `cup` ll) aar
+              printf "derived cardinality : %d\n" $ acard $ aa' `red` wwr
+              let zzr = tsgl ((stateEmpty,ffr),(aar, aa'))
+              t4 <- getCurrentTime
+              printf "<<< slicing %s\n" $ show $ diffUTCTime t4 t3
+              hFlush stdout
+              decomp uur zzr (f+1)
+      | otherwise = 
+        do
+          if fmax > 0 && f > fmax then
+              return $ (uu, zzdf (zztrim zz))
+            else do
+              printf ">>> slice  selection\n"
+              hFlush stdout
+              t1 <- getCurrentTime
+              let mm = V.fromList [((b,a),(nn,ss,bb)) | (nn,yy) <- qqll (treesPlaces zz), 
+                    let ((_,ff),(bb,bb')) = last nn, ff /= fudEmpty, 
+                    let tt = dom (dom (treesRoots yy)),
+                    (ss,a) <- aall (bb' `red` fder ff), a > 0, ss `notin` tt,
+                    let b = fromRational a * if Set.null ll then 1 else entropy (bb' `mul` unit ss `red` ll), 
+                    b > 0]
+              printf "slices: %d\n" $ V.length mm
+              if V.null mm then do
+                  t2 <- getCurrentTime
+                  printf "<<< slice selection %s\n" $ show $ diffUTCTime t2 t1
+                  hFlush stdout
+                  return $ (uu, zzdf (zztrim zz))
+                else do
+                  let ((b,a),(nn,ss,bb)) = V.head $ vectorPairsTop 1 mm
+                  let cc = select uu ss bb `hrred` (vars aa)
+                  printf "decomp path length : %d\n" $ length nn
+                  printf "slice size : %d\n" $ numerator a
+                  printf "slice label entropy : %.2f\n" $ b
+                  t2 <- getCurrentTime
+                  printf "<<< slice selection %s\n" $ show $ diffUTCTime t2 t1
+                  hFlush stdout
+                  (uuc,ffc,_) <- level uu cc zzg f 1
+                  printf ">>> slicing\n"
+                  hFlush stdout
+                  t3 <- getCurrentTime
+                  printf "dependent fud cardinality : %d\n" $ card $ ffqq ffc
+                  let wwc = fder ffc
+                  let ccc = apply uuc ffc cc
+                  let cc' = trim $ reduce uuc (wwc `cup` ll) ccc
+                  printf "derived cardinality : %d\n" $ acard $ cc' `red` wwc
+                  let zzc = pathsTree $ treesPaths zz `add` (nn List.++ [((ss,ffc),(ccc, cc'))])
+                  t4 <- getCurrentTime
+                  printf "<<< slicing %s\n" $ show $ diffUTCTime t4 t3
+                  hFlush stdout
+                  decomp uuc zzc (f+1)
+    level uu aa (Tree ttg) f g = foldM next (uu,fudEmpty,g) (Map.toList ttg)
+      where       
+        next (uu,ff,g) ((wmaxg,vvg,ffg),xxg) = 
+          do
+            (uuh,ffh,gh) <- level uu aa xxg f g
+            (uu',gg,nn) <- layerer wmaxg uuh vvg (ffg `funion` ffh) aa f gh
+            let (a,kk) = maxd nn
+            let gg' = if a > repaRounding then depends gg kk else fudEmpty
+            return (uu',ff `funion` gg',gh+1)
+    layerer wmax uu vvg ffg xx f g =
+      do
+        printf ">>> repa shuffle\n"
+        hFlush stdout
+        t1 <- getCurrentTime
+        let z = historyRepasSize xx
+        let !xxrr = vectorHistoryRepasConcat_u $ V.fromListN (fromInteger mult) $ 
+                 [historyRepasShuffle_u xx (fromInteger seed + i*z) | i <- [1..]]
+        t2 <- getCurrentTime
+        printf "<<< repa shuffle %s\n" $ show $ diffUTCTime t2 t1
+        printf ">>> repa perimeters\n"
+        hFlush stdout
+        t1 <- getCurrentTime
+        let !xx' = apply uu ffg xx
+        let !xxp' = historyRepasRed xx'   
+        let !xxrr' = apply uu ffg xxrr
+        let !xxrrp' = historyRepasRed xxrr'   
+        let !x2 = V.maximum $ V.map UV.maximum $ histogramRepaRedsVectorArray xxp'
+        let !x3 = V.maximum $ V.map UV.maximum $ histogramRepaRedsVectorArray xxrrp'
+        t2 <- getCurrentTime
+        printf "<<< repa perimeters %s\n" $ show $ diffUTCTime t2 t1
+        hFlush stdout
+        parametersSystemsLayererLevelMaximumRollExcludedSelfHighestIORepa_u 
+          wmax lmax xmax omax bmax mmax umax pmax uu vvg ffg xx' xxp' xxrr' xxrrp' f g
+    okLevel zzg = and [wmaxg >= 0 && vvg `subset` vars aa && fvars ffg `subset` uvars uu && fund ffg `subset` vars aa |
+                       (wmaxg,vvg,ffg) <- Set.toList (treesElements zzg)]
+    zztrim = pathsTree . Set.map lltrim . treesPaths
+    lltrim ll = let ((_,ff),_) = last ll in if ff == fudEmpty then init ll else ll
+    zzdf zz = fromJust $ treePairStateFudsDecompFud $ funcsTreesMap fst zz
+    dfzz = decompFudsTreePairStateFud
+    depends = fudsVarsDepends
+    qqff = setTransformsFud_u
+    ffqq = fudsSetTransform
+    funion ff gg = qqff (ffqq ff `Set.union` ffqq gg)
+    fder = fudsDerived
+    fvars = fudsVars
+    fund = fudsUnderlying
+    fhis = fudsSetHistogram
+    apply uu ff hh = historyRepasListTransformRepasApply hh (llvv $ List.map (tttr uu) $ qqll $ ffqq ff)
+    tttr uu tt = systemsTransformsTransformRepa_u uu tt
+    aahh aa = fromJust $ histogramsHistory aa
+    hhhr uu hh = fromJust $ systemsHistoriesHistoryRepa uu hh
+    aadd xx yy = fromJust $ pairHistogramsAdd xx yy
+    select uu ss hh = historyRepasHistoryRepasHistoryRepaSelection_u (hhhr uu (aahh (unit ss))) hh
+    reduce uu ww hh = fromJust $ systemsHistogramRepasHistogram uu $ setVarsHistoryRepasReduce 1 ww hh
+    hrred aa vv = setVarsHistoryRepasHistoryRepaReduced vv aa
+    entropy = histogramsEntropy
+    unit = fromJust . setStatesHistogramUnit . Set.singleton 
+    red aa vv = setVarsHistogramsReduce vv aa
+    mul = pairHistogramsMultiply
+    trim = histogramsTrim
+    acard = histogramsCardinality
+    aall = histogramsList
+    size = historyRepasSize
+    vars = Set.fromList . V.toList . historyRepasVectorVar
+    cart = systemsSetVarsSetStateCartesian_u
+    uvars = systemsVars
+    tsgl r = Tree $ Map.singleton r emptyTree
+    maxd mm = if mm /= [] then (head $ take 1 $ reverse $ sort $ flip $ mm) else (0,empty)
+    llvv = V.fromList
+    bigcup :: Ord a => Set.Set (Set.Set a) -> Set.Set a
+    bigcup = setSetsUnion
+    dom :: (Ord a, Ord b) => Set.Set (a,b) -> Set.Set a
+    dom = relationsDomain
+    add qq x = Set.insert x qq
+    qqll = Set.toList
+    empty = Set.empty
+    subset = Set.isSubsetOf
+    card = Set.size
+    cup = Set.union
+    notin = Set.notMember
+    flip = List.map (\(a,b) -> (b,a))
 
 parametersSystemsHistoryRepasDecomperLevelMaximumRollExcludedSelfHighestFmaxLabelMinEntropyDeLabelIORepa :: 
   Integer -> Integer -> Integer -> Integer -> Integer -> Integer -> Integer -> Integer -> 
