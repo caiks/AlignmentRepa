@@ -94,7 +94,11 @@ module AlignmentPracticableRepa (
   parametersSystemsDecomperMaximumRollExcludedSelfHighestFmaxRepa_4,
   parametersSystemsHistoryRepasDecomperMaximumRollExcludedSelfHighestFmaxRepa,
   parametersSystemsHistoryRepasDecomperMaximumRollExcludedSelfHighestFmaxRepa_1,
+  parametersSystemsHistoryRepasDecomperMaximumRollExcludedSelfHighestFmaxRepa_2,
   parametersSystemsHistoryRepasDecomperMaxRollByMExcludedSelfHighestFmaxRepa,
+  parametersSystemsHistoryRepasDecomperMaxRollByMExcludedSelfHighestFmaxRepa_1,
+  parametersSystemsHistoryRepasDecomperMaxRollByMExcludedSelfHighestFmaxLabelMinEntropyRepa,
+  parametersSystemsHistoryRepasDecomperMaxRollByMExcludedSelfHighestFmaxLabelModalRepa,
   parametersSystemsDecomperMaximumRollExcludedSelfHighestFmaxBatchRepa,
   parametersSystemsDecomperLevelMaximumRollExcludedSelfHighestFmaxRepa,
   parametersSystemsDecomperLevelMaximumRollExcludedSelfHighestFmaxRepa_1,
@@ -133,6 +137,9 @@ import AlignmentRandomRepa
 import GHC.Real
 
 data MaxRollType = MaximumRoll | MaxRollByM
+                     deriving (Eq, Ord, Read, Show)
+
+data LabelType = LabelNone | LabelMinEntropy | LabelModal
                      deriving (Eq, Ord, Read, Show)
 
 repaRounding :: Double 
@@ -3301,15 +3308,139 @@ parametersSystemsHistoryRepasDecomperMaximumRollExcludedSelfHighestFmaxRepa ::
   Integer -> Integer ->
   System -> Set.Set Variable -> HistoryRepa -> 
   Maybe (System, DecompFud)
-parametersSystemsHistoryRepasDecomperMaximumRollExcludedSelfHighestFmaxRepa =
-  parametersSystemsHistoryRepasDecomperMaxRollTypeExcludedSelfHighestFmaxRepa MaximumRoll
+parametersSystemsHistoryRepasDecomperMaximumRollExcludedSelfHighestFmaxRepa 
+  wmax lmax xmax omax bmax mmax umax pmax fmax mult seed uu vv aa =
+    parametersSystemsHistoryRepasDecomperMaxRollTypeExcludedSelfHighestFmaxLabelTypeRepa 
+      MaximumRoll LabelNone wmax lmax xmax omax bmax mmax umax pmax fmax mult seed uu vv aa Set.empty
 
 parametersSystemsHistoryRepasDecomperMaxRollByMExcludedSelfHighestFmaxRepa :: 
   Integer -> Integer -> Integer -> Integer -> Integer -> Integer -> Integer -> Integer -> Integer -> 
   Integer -> Integer ->
   System -> Set.Set Variable -> HistoryRepa -> 
   Maybe (System, DecompFud)
-parametersSystemsHistoryRepasDecomperMaxRollByMExcludedSelfHighestFmaxRepa =
+parametersSystemsHistoryRepasDecomperMaxRollByMExcludedSelfHighestFmaxRepa 
+  wmax lmax xmax omax bmax mmax umax pmax fmax mult seed uu vv aa =
+    parametersSystemsHistoryRepasDecomperMaxRollTypeExcludedSelfHighestFmaxLabelTypeRepa 
+      MaxRollByM LabelNone wmax lmax xmax omax bmax mmax umax pmax fmax mult seed uu vv aa Set.empty
+
+parametersSystemsHistoryRepasDecomperMaxRollByMExcludedSelfHighestFmaxLabelMinEntropyRepa :: 
+  Integer -> Integer -> Integer -> Integer -> Integer -> Integer -> Integer -> Integer -> Integer -> 
+  Integer -> Integer ->
+  System -> Set.Set Variable -> HistoryRepa -> Set.Set Variable ->
+  Maybe (System, DecompFud)
+parametersSystemsHistoryRepasDecomperMaxRollByMExcludedSelfHighestFmaxLabelMinEntropyRepa =
+    parametersSystemsHistoryRepasDecomperMaxRollTypeExcludedSelfHighestFmaxLabelTypeRepa 
+      MaxRollByM LabelMinEntropy
+
+parametersSystemsHistoryRepasDecomperMaxRollByMExcludedSelfHighestFmaxLabelModalRepa :: 
+  Integer -> Integer -> Integer -> Integer -> Integer -> Integer -> Integer -> Integer -> Integer -> 
+  Integer -> Integer ->
+  System -> Set.Set Variable -> HistoryRepa -> Set.Set Variable ->
+  Maybe (System, DecompFud)
+parametersSystemsHistoryRepasDecomperMaxRollByMExcludedSelfHighestFmaxLabelModalRepa =
+    parametersSystemsHistoryRepasDecomperMaxRollTypeExcludedSelfHighestFmaxLabelTypeRepa 
+      MaxRollByM LabelModal
+
+parametersSystemsHistoryRepasDecomperMaxRollTypeExcludedSelfHighestFmaxLabelTypeRepa :: 
+  MaxRollType -> LabelType -> Integer -> Integer -> Integer -> Integer -> Integer -> Integer -> Integer -> Integer -> Integer -> 
+  Integer -> Integer ->
+  System -> Set.Set Variable -> HistoryRepa -> Set.Set Variable ->
+  Maybe (System, DecompFud)
+parametersSystemsHistoryRepasDecomperMaxRollTypeExcludedSelfHighestFmaxLabelTypeRepa 
+  mrollt labelt wmax lmax xmax omax bmax mmax umax pmax fmax mult seed uu vv aa ll
+  | wmax < 0 || lmax < 0 || xmax <= 0 || omax <= 0 || bmax < 0 || mmax < 1 || bmax < mmax || umax < 0 || pmax < 0 = Nothing
+  | size aa == 0 || mult < 1 = Nothing
+  | not (vars aa `subset` uvars uu && vv `subset` vars aa && ll `subset` vars aa) = Nothing
+  | otherwise = Just $ decomp uu emptyTree 1
+  where
+    decomp uu zz f
+      | zz == emptyTree && (ffr == fudEmpty || nnr == [] || ar <= repaRounding) = (uu, decompFudEmpty)
+      | zz == emptyTree = decomp uur zzr (f+1)
+      | (fmax > 0 && f > fmax) || V.null mm = (uu, zzdf (zztrim zz)) 
+      | otherwise = decomp uuc zzc (f+1)
+      where
+        (uur,ffr,nnr) = layerer uu aa f
+        (ar,kkr) = maxd nnr
+        ffr' = if ar > repaRounding then depends ffr kkr else fudEmpty
+        aar = apply uur ffr' aa
+        aa' = trim $ reduce uur (fder ffr' `cup` ll) aar
+        zzr = tsgl ((stateEmpty,ffr'),(aar, aa'))
+        mm = V.fromList [((b,a),(nn,ss,bb)) | (nn,yy) <- qqll (treesPlaces zz), 
+                 let ((_,ff),(bb,bb')) = last nn, ff /= fudEmpty, 
+                 let tt = dom (dom (treesRoots yy)),
+                 (ss,a) <- aall (bb' `red` fder ff), a > 0, ss `notin` tt,
+                 let b = labmeasure labelt ll a bb' ss, b > 0]
+        (_,(nn,ss,bb)) = V.head $ vectorPairsTop 1 mm
+        cc = select uu ss bb `hrred` (vars aa)
+        (uuc,ffc,nnc) = layerer uu cc f
+        (ac,kkc) = maxd nnc
+        ffc' = if ac > repaRounding then depends ffc kkc else fudEmpty
+        ccc = apply uuc ffc' cc
+        cc' = trim $ reduce uuc (fder ffc' `cup` ll) ccc
+        zzc = pathsTree $ treesPaths zz `add` (nn List.++ [((ss,ffc'),(ccc, cc'))])
+    layerer uu xx f = parametersSystemsLayererMaxRollTypeExcludedSelfHighestRepa_u mrollt 
+                                        wmax lmax xmax omax bmax mmax umax pmax uu vv xx xxp xxrr xxrrp f
+      where
+        z = historyRepasSize xx
+        !xxp = historyRepasRed xx   
+        !xxrr = vectorHistoryRepasConcat_u $ V.fromListN (fromInteger mult) $ 
+                 [historyRepasShuffle_u xx (fromInteger seed + i*z) | i <- [1..]]
+        !xxrrp = historyRepasRed xxrr  
+    labmeasure labelt ll a bb' ss
+      | Set.null ll = fromRational a
+      | labelt == LabelModal = fromRational (a - aamax (bb' `mul` unit ss `red` ll))
+      | labelt == LabelMinEntropy = fromRational a * entropy (bb' `mul` unit ss `red` ll)
+      | otherwise = fromRational a
+    zztrim = pathsTree . Set.map lltrim . treesPaths
+    lltrim ll = let ((_,ff),_) = last ll in if ff == fudEmpty then init ll else ll
+    zzdf zz = fromJust $ treePairStateFudsDecompFud $ funcsTreesMap fst zz
+    depends = fudsVarsDepends
+    ffqq = fudsSetTransform
+    fder = fudsDerived
+    apply uu ff hh = historyRepasListTransformRepasApply hh (llvv $ List.map (tttr uu) $ qqll $ ffqq ff)
+    tttr uu tt = systemsTransformsTransformRepa_u uu tt
+    aahh aa = fromJust $ histogramsHistory aa
+    hhhr uu hh = fromJust $ systemsHistoriesHistoryRepa uu hh
+    select uu ss hh = historyRepasHistoryRepasHistoryRepaSelection_u (hhhr uu (aahh (unit ss))) hh
+    reduce uu ww hh = fromJust $ systemsHistogramRepasHistogram uu $ setVarsHistoryRepasReduce 1 ww hh
+    hrred aa vv = setVarsHistoryRepasHistoryRepaReduced vv aa
+    entropy = histogramsEntropy
+    aamax aa = if histogramsSize aa > 0 then (last $ sort $ snd $ unzip $ aall aa) else 0
+    mul = pairHistogramsMultiply
+    unit = fromJust . setStatesHistogramUnit . Set.singleton 
+    red aa vv = setVarsHistogramsReduce vv aa
+    trim = histogramsTrim
+    aall = histogramsList
+    size = historyRepasSize
+    vars = Set.fromList . V.toList . historyRepasVectorVar
+    uvars = systemsVars
+    tsgl r = Tree $ Map.singleton r emptyTree
+    maxd mm = if mm /= [] then (head $ take 1 $ reverse $ sort $ flip $ mm) else (0,empty)
+    llvv = V.fromList
+    dom :: (Ord a, Ord b) => Set.Set (a,b) -> Set.Set a
+    dom = relationsDomain
+    add qq x = Set.insert x qq
+    qqll = Set.toList
+    cup = Set.union
+    empty = Set.empty
+    subset = Set.isSubsetOf
+    notin = Set.notMember
+    flip = List.map (\(a,b) -> (b,a))
+
+parametersSystemsHistoryRepasDecomperMaximumRollExcludedSelfHighestFmaxRepa_2 :: 
+  Integer -> Integer -> Integer -> Integer -> Integer -> Integer -> Integer -> Integer -> Integer -> 
+  Integer -> Integer ->
+  System -> Set.Set Variable -> HistoryRepa -> 
+  Maybe (System, DecompFud)
+parametersSystemsHistoryRepasDecomperMaximumRollExcludedSelfHighestFmaxRepa_2 =
+  parametersSystemsHistoryRepasDecomperMaxRollTypeExcludedSelfHighestFmaxRepa MaximumRoll
+
+parametersSystemsHistoryRepasDecomperMaxRollByMExcludedSelfHighestFmaxRepa_1 :: 
+  Integer -> Integer -> Integer -> Integer -> Integer -> Integer -> Integer -> Integer -> Integer -> 
+  Integer -> Integer ->
+  System -> Set.Set Variable -> HistoryRepa -> 
+  Maybe (System, DecompFud)
+parametersSystemsHistoryRepasDecomperMaxRollByMExcludedSelfHighestFmaxRepa_1 =
   parametersSystemsHistoryRepasDecomperMaxRollTypeExcludedSelfHighestFmaxRepa MaxRollByM
 
 parametersSystemsHistoryRepasDecomperMaxRollTypeExcludedSelfHighestFmaxRepa :: 
