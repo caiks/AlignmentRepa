@@ -21,6 +21,8 @@ module AlignmentPracticableIORepa (
   parametersSystemsHistoryRepasDecomperMaximumRollExcludedSelfHighestFmaxIORepa_1,
   parametersSystemsHistoryRepasDecomperMaximumRollExcludedSelfHighestFmaxIORepa_2,
   parametersSystemsHistoryRepasDecomperMaximumRollExcludedSelfHighestFmaxIORepa_3,
+  parametersSystemsHistoryRepasDecomperMaximumRollExcludedSelfHighestFmaxIORepa_4,
+  parametersSystemsHistoryRepasDecomperMaxRollByMExcludedSelfHighestFmaxIORepa,
   parametersSystemsHistoryRepasDecomperMaximumRollExcludedSelfHighestFmaxBatchIORepa,
   parametersSystemsHistoryRepasDecomperLevelMaximumRollExcludedSelfHighestFmaxIORepa,
   parametersSystemsHistoryRepasDecomperLevelMaximumRollExcludedSelfHighestFmaxIORepa_1,
@@ -754,7 +756,171 @@ parametersSystemsHistoryRepasDecomperMaximumRollExcludedSelfHighestFmaxIORepa ::
   Integer -> Integer ->
   System -> Set.Set Variable -> HistoryRepa -> 
   IO (Maybe (System, DecompFud))
-parametersSystemsHistoryRepasDecomperMaximumRollExcludedSelfHighestFmaxIORepa 
+parametersSystemsHistoryRepasDecomperMaximumRollExcludedSelfHighestFmaxIORepa =
+  parametersSystemsHistoryRepasDecomperMaxRollTypeExcludedSelfHighestFmaxIORepa MaximumRoll
+
+parametersSystemsHistoryRepasDecomperMaxRollByMExcludedSelfHighestFmaxIORepa :: 
+  Integer -> Integer -> Integer -> Integer -> Integer -> Integer -> Integer -> Integer -> Integer -> 
+  Integer -> Integer ->
+  System -> Set.Set Variable -> HistoryRepa -> 
+  IO (Maybe (System, DecompFud))
+parametersSystemsHistoryRepasDecomperMaxRollByMExcludedSelfHighestFmaxIORepa =
+  parametersSystemsHistoryRepasDecomperMaxRollTypeExcludedSelfHighestFmaxIORepa MaxRollByM
+
+parametersSystemsHistoryRepasDecomperMaxRollTypeExcludedSelfHighestFmaxIORepa :: 
+  MaxRollType -> Integer -> Integer -> Integer -> Integer -> Integer -> Integer -> Integer -> Integer -> Integer -> 
+  Integer -> Integer ->
+  System -> Set.Set Variable -> HistoryRepa -> 
+  IO (Maybe (System, DecompFud))
+parametersSystemsHistoryRepasDecomperMaxRollTypeExcludedSelfHighestFmaxIORepa 
+  mroll wmax lmax xmax omax bmax mmax umax pmax fmax mult seed uu vv aa
+  | wmax < 0 || lmax < 0 || xmax <= 0 || omax <= 0 || bmax < 0 || mmax < 1 || bmax < mmax || umax < 0 || pmax < 0 = 
+      return $ Nothing
+  | size aa == 0 || mult < 1 = return $ Nothing
+  | not (vars aa `subset` uvars uu && vv `subset` vars aa) = return $ Nothing
+  | otherwise = 
+    do
+      printf ">>> decomper repa\n"
+      hFlush stdout
+      t1 <- getCurrentTime
+      x1 <- decomp uu emptyTree 1
+      printf "nodes: %d\n" $ card $ treesNodes $ dfzz $ snd x1
+      t2 <- getCurrentTime
+      printf "<<< decomper repa %s\n" $ show $ diffUTCTime t2 t1
+      hFlush stdout
+      return $ Just $ x1
+  where
+    decomp uu zz f
+      | zz == emptyTree =
+        do
+          (uur,ffr,nnr) <- layerer uu aa f
+          let (ar,kkr) = maxd nnr
+          if ffr == fudEmpty || nnr == [] || ar <= repaRounding then
+              return $ (uu, decompFudEmpty)
+            else do
+              printf ">>> slicing\n"
+              hFlush stdout
+              t3 <- getCurrentTime
+              let ffr' = if ar > repaRounding then depends ffr kkr else fudEmpty
+              printf "dependent fud cardinality : %d\n" $ card $ ffqq ffr'
+              let wwr = fder ffr'
+              let aar = apply uur ffr' aa
+              let aa' = trim $ reduce uur wwr aar
+              printf "derived cardinality : %d\n" $ acard $ aa'
+              let zzr = tsgl ((stateEmpty,ffr'),(aar, aa'))
+              t4 <- getCurrentTime
+              printf "<<< slicing %s\n" $ show $ diffUTCTime t4 t3
+              hFlush stdout
+              decomp uur zzr (f+1)
+      | otherwise = 
+        do
+          if fmax > 0 && f > fmax then
+              return $ (uu, zzdf (zztrim zz))
+            else do
+              printf ">>> slice  selection\n"
+              hFlush stdout
+              t1 <- getCurrentTime
+              let mm = V.fromList [(a,(nn,ss,bb)) | (nn,yy) <- qqll (treesPlaces zz), 
+                    let ((_,ff),(bb,bb')) = last nn, ff /= fudEmpty, 
+                    let tt = dom (dom (treesRoots yy)),
+                    (ss,a) <- aall (bb' `red` fder ff), a > 0, ss `notin` tt]
+              printf "slices: %d\n" $ V.length mm
+              if V.null mm then do
+                  t2 <- getCurrentTime
+                  printf "<<< slice selection %s\n" $ show $ diffUTCTime t2 t1
+                  hFlush stdout
+                  return $ (uu, zzdf (zztrim zz))
+                else do
+                  let (a,(nn,ss,bb)) = V.head $ vectorPairsTop 1 mm
+                  let cc = select uu ss bb `hrred` (vars aa)
+                  printf "decomp path length : %d\n" $ length nn
+                  printf "slice size : %d\n" $ numerator a
+                  t2 <- getCurrentTime
+                  printf "<<< slice selection %s\n" $ show $ diffUTCTime t2 t1
+                  hFlush stdout
+                  (uuc,ffc,nnc) <- layerer uu cc f
+                  printf ">>> slicing\n"
+                  hFlush stdout
+                  t3 <- getCurrentTime
+                  let (ac,kkc) = maxd nnc
+                  let ffc' = if ac > repaRounding then depends ffc kkc else fudEmpty
+                  printf "dependent fud cardinality : %d\n" $ card $ ffqq ffc'
+                  let wwc = fder ffc'
+                  let ccc = apply uuc ffc' cc
+                  let cc' = trim $ reduce uuc wwc ccc
+                  printf "derived cardinality : %d\n" $ acard $ cc'
+                  let zzc = pathsTree $ treesPaths zz `add` (nn List.++ [((ss,ffc'),(ccc, cc'))])
+                  t4 <- getCurrentTime
+                  printf "<<< slicing %s\n" $ show $ diffUTCTime t4 t3
+                  hFlush stdout
+                  decomp uuc zzc (f+1)
+    layerer uu xx f = 
+      do
+        printf ">>> repa shuffle\n"
+        hFlush stdout
+        t1 <- getCurrentTime
+        let z = historyRepasSize xx
+        let !xxrr = vectorHistoryRepasConcat_u $ V.fromListN (fromInteger mult) $ 
+                 [historyRepasShuffle_u xx (fromInteger seed + i*z) | i <- [1..]]
+        t2 <- getCurrentTime
+        printf "<<< repa shuffle %s\n" $ show $ diffUTCTime t2 t1
+        printf ">>> repa perimeters\n"
+        hFlush stdout
+        t1 <- getCurrentTime
+        let !xxp = historyRepasRed xx   
+        let !x2 = V.maximum $ V.map UV.maximum $ histogramRepaRedsVectorArray xxp
+        let !xxrrp = historyRepasRed xxrr   
+        let !x3 = V.maximum $ V.map UV.maximum $ histogramRepaRedsVectorArray xxrrp
+        t2 <- getCurrentTime
+        printf "<<< repa perimeters %s\n" $ show $ diffUTCTime t2 t1
+        hFlush stdout
+        parametersSystemsLayererMaxRollTypeExcludedSelfHighestIORepa_u mroll
+                                        wmax lmax xmax omax bmax mmax umax pmax uu vv xx xxp xxrr xxrrp f
+    zztrim = pathsTree . Set.map lltrim . treesPaths
+    lltrim ll = let ((_,ff),_) = last ll in if ff == fudEmpty then init ll else ll
+    zzdf zz = fromJust $ treePairStateFudsDecompFud $ funcsTreesMap fst zz
+    dfzz = decompFudsTreePairStateFud
+    depends = fudsVarsDepends
+    qqff = fromJust . setTransformsFud
+    ffqq = fudsSetTransform
+    fder = fudsDerived
+    apply uu ff hh = historyRepasListTransformRepasApply hh (llvv $ List.map (tttr uu) $ qqll $ ffqq ff)
+    tttr uu tt = systemsTransformsTransformRepa_u uu tt
+    aahh aa = fromJust $ histogramsHistory aa
+    hhhr uu hh = fromJust $ systemsHistoriesHistoryRepa uu hh
+    aadd xx yy = fromJust $ pairHistogramsAdd xx yy
+    select uu ss hh = historyRepasHistoryRepasHistoryRepaSelection_u (hhhr uu (aahh (unit ss))) hh
+    reduce uu ww hh = fromJust $ systemsHistogramRepasHistogram uu $ setVarsHistoryRepasReduce 1 ww hh
+    hrred aa vv = setVarsHistoryRepasHistoryRepaReduced vv aa
+    unit = fromJust . setStatesHistogramUnit . Set.singleton 
+    red aa vv = setVarsHistogramsReduce vv aa
+    trim = histogramsTrim
+    acard = histogramsCardinality
+    aall = histogramsList
+    size = historyRepasSize
+    vars = Set.fromList . V.toList . historyRepasVectorVar
+    uvars = systemsVars
+    tsgl r = Tree $ Map.singleton r emptyTree
+    maxd mm = if mm /= [] then (head $ take 1 $ reverse $ sort $ flip $ mm) else (0,empty)
+    llvv = V.fromList
+    bigcup :: Ord a => Set.Set (Set.Set a) -> Set.Set a
+    bigcup = setSetsUnion
+    dom :: (Ord a, Ord b) => Set.Set (a,b) -> Set.Set a
+    dom = relationsDomain
+    add qq x = Set.insert x qq
+    qqll = Set.toList
+    empty = Set.empty
+    subset = Set.isSubsetOf
+    card = Set.size
+    notin = Set.notMember
+    flip = List.map (\(a,b) -> (b,a))
+
+parametersSystemsHistoryRepasDecomperMaximumRollExcludedSelfHighestFmaxIORepa_4 :: 
+  Integer -> Integer -> Integer -> Integer -> Integer -> Integer -> Integer -> Integer -> Integer -> 
+  Integer -> Integer ->
+  System -> Set.Set Variable -> HistoryRepa -> 
+  IO (Maybe (System, DecompFud))
+parametersSystemsHistoryRepasDecomperMaximumRollExcludedSelfHighestFmaxIORepa_4 
   wmax lmax xmax omax bmax mmax umax pmax fmax mult seed uu vv aa
   | wmax < 0 || lmax < 0 || xmax <= 0 || omax <= 0 || bmax < 0 || mmax < 1 || bmax < mmax || umax < 0 || pmax < 0 = 
       return $ Nothing
