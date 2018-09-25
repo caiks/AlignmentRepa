@@ -6,7 +6,7 @@ The AlignmentRepa repository uses high performance arrays. Single-dimensional ar
 
 The *induced models* are made persistent using the JSON format which is implemented in the [aeson](http://hackage.haskell.org/package/aeson) library.
 
-There are a couple of useful libraries that should be installed along with repa and aeson to ensure consistent package versions -
+There are a couple of useful libraries that should be installed along with repa and aeson to ensure consistent package versions:
 
 [zlib](http://hackage.haskell.org/package/zlib): Compression and decompression in the gzip and zlib formats
 
@@ -38,7 +38,7 @@ git clone https://github.com/caiks/AlignmentRepa.git
 
 Typically we wish to force compilation in ghci in order to have the highest performance. See [Compiling to object code inside GHCi](https://downloads.haskell.org/~ghc/8.4.1/docs/html/users_guide/ghci.html#compiling-to-object-code-inside-ghci).
 Load `AlignmentDevRepa` to import the modules and define various useful abbreviated functions,
-```
+```sh
 cd ../Alignment
 rm *.o *.hi
 
@@ -71,7 +71,7 @@ Set.fromList [1,2,3]
 <interactive>:9:1: Not in scope: ‘Set.fromList’
 ```
 then module `AlignmentDevRepa` can be interpreted by itself. Exit `ghci` and then delete `AlignmentDevRepa.o`,
-```
+```sh
 rm AlignmentDevRepa.o
 
 ghci -i../Alignment -i../AlignmentRepa ../AlignmentRepa/AlignmentForeign.o
