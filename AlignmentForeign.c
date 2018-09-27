@@ -1790,6 +1790,11 @@ long long listVarsListTuplesArrayHistoriesAlignedExcludeHiddenTop_u(
 		ppccx[ccx] = ppccd[h];
 		ccx++;
 	    }
+	    else if (ppccd[h] == pi)
+	    {
+		ppccx[ccx] = ppccu[h];
+		ccx++;
+	    }
 	for (ij = 0; ij<d; ij++)
 	{
 	    pj = pdd[ij];
