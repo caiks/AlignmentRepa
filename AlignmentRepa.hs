@@ -65,6 +65,7 @@ module AlignmentRepa (
   historyRepasSize,
   historyRepasDimension,
   historyRepasSetVariable,
+  setVarsHistoryRepasCountApproxs,
   setVarsHistoryRepasReduce,
   setVarsHistoryRepasReduce_1,
   setVarsHistoryRepasReduce_2,
@@ -1104,6 +1105,26 @@ setSetVarsHistogramRepaVecsPartitionRedVec_u_1 pp rrv = HistogramRepaRedVec vyy 
     vvll = V.toList
     qqll :: forall a. Set.Set a -> [a]
     qqll = Set.toList
+
+setVarsHistoryRepasCountApproxs :: Set.Set Variable -> HistoryRepa -> [Int] 
+setVarsHistoryRepasCountApproxs kk hh 
+  | V.null vkk = [z]
+  | otherwise = IntMap.elems ll
+  where
+    HistoryRepa vvv mvv svv !rr = hh
+    vv = llqq $ vvll vvv
+    Z :. _ :. (!z) = extent rr
+    vkk = llvv $ qqll (kk `cap` vv)
+    !pkk = llvu $ vvll $ V.map (mvv Map.!) vkk
+    !rr' = UV.generate z (\j -> UV.foldl' (\a i -> a * 23 + (rr R.! (Z :. i :. j))) 0 pkk)
+    ll = IntMap.fromListWith (+) [(i,1) | i <- vull rr']
+    qqll = Set.toList
+    llqq = Set.fromList
+    cap = Set.intersection
+    llvv = V.fromList
+    vvll = V.toList
+    llvu = UV.fromList
+    vull = UV.toList
 
 setVarsHistoryRepasReduce :: Double -> Set.Set Variable -> HistoryRepa -> HistogramRepa 
 setVarsHistoryRepasReduce f kk hh

@@ -113,7 +113,8 @@ module AlignmentPracticableRepa (
   systemsDecompFudsHistoryRepasAlignmentContentShuffleSummation_u,
   systemsDecompFudsHistoryRepasTreeAlignmentContentShuffleSummation_u,
   systemsDecompFudsHistoryRepasAlgnDensPerSizesStripped_u,
-  parametersSystemsBuilderLabelTupleRepa
+  parametersSystemsBuilderLabelTupleRepa,
+  parametersBuilderConditionalVarsRepa
 )
 where
 import Data.List as List
@@ -5298,3 +5299,36 @@ parametersSystemsDecomperMaximumRollExcludedSelfHighestFmaxBatchRepa
     notin = Set.notMember
     flip = List.map (\(a,b) -> (b,a))
     min x y = if x<y then x else y
+
+parametersBuilderConditionalVarsRepa :: 
+  Integer -> Integer -> Set.Set Variable -> HistoryRepa -> 
+  Maybe (Map.Map (Set.Set Variable) Double)
+parametersBuilderConditionalVarsRepa kmax omax ll aa
+  | kmax < 0 || omax < 0 = Nothing
+  | otherwise = Just $ bot omax $ buildc rr rr
+  where
+    !z = fromIntegral $ historyRepasSize aa
+    vvk = vars aa `minus` ll
+    rr = bot omax $ llmm [(sgl w, ent (aa `red` (ll `add` w)) - ent (aa `red` (sgl w))) | w <- qqll vvk]
+    buildc qq nn = if mm /= Map.empty then buildc mm (nn `Map.union` mm) else nn
+      where
+        pp = llqq [jj | (kk,e) <- mmll qq, e > 0, w <- qqll (vvk `minus` kk), let jj = kk `add` w]
+        mm = bot omax $ llmm [(jj, ent (aa `red` (ll `union` jj)) - ent (aa `red` jj)) |
+          jj <- qqll pp, card jj <= kmax]
+    ent xx = - sum [a * log a | i <- xx, let a = fromIntegral i / z]
+    red aa vv = setVarsHistoryRepasCountApproxs vv aa
+    vars = historyRepasSetVariable
+    bot amax mm = llmm $ flip $ take (fromInteger amax) $ sort $ flip $ mmll mm
+    flip = List.map (\(a,b) -> (b,a))
+    llmm = Map.fromList
+    mmll = Map.toList
+    add xx x = x `Set.insert` xx
+    union = Set.union
+    minus = Set.difference
+    card = toInteger . Set.size
+    qqll :: forall a. Set.Set a -> [a]
+    qqll = Set.toList
+    llqq :: forall a. (Ord a) => [a] -> Set.Set a
+    llqq = Set.fromList
+    sgl = Set.singleton
+
