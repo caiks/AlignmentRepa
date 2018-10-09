@@ -5301,11 +5301,11 @@ parametersSystemsDecomperMaximumRollExcludedSelfHighestFmaxBatchRepa
     min x y = if x<y then x else y
 
 parametersBuilderConditionalVarsRepa :: 
-  Integer -> Integer -> Set.Set Variable -> HistoryRepa -> 
+  Integer -> Integer -> Integer -> Set.Set Variable -> HistoryRepa -> 
   Maybe (Map.Map (Set.Set Variable) Double)
-parametersBuilderConditionalVarsRepa kmax omax ll aa
-  | kmax < 0 || omax < 0 = Nothing
-  | otherwise = Just $ bot omax $ buildc rr rr
+parametersBuilderConditionalVarsRepa kmax omax qmax ll aa
+  | kmax < 0 || omax < 0 || qmax < 0 = Nothing
+  | otherwise = Just $ bot qmax $ buildc rr rr
   where
     !z = fromIntegral $ historyRepasSize aa
     vvk = vars aa `minus` ll
