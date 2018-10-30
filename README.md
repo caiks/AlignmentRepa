@@ -86,5 +86,6 @@ fromList [1,2,3]
 
 ## Documentation
 
-Note that a discussion of the implementation of higher performance *inducers* is to follow.
+The [Haskell implementation of fast Practicable Inducers](https://greenlake.co.uk/pages/inducer_haskell_impl_repa) discusses the implementation of the *inducers* using this repository. 
+
 
