@@ -187,11 +187,13 @@ hrhx = historyRepasRed
 aahx = hrhx . aahr 
 hrred hh vv = setVarsHistoryRepasReduce 1 vv hh
 hrev = eventsHistoryRepasHistoryRepaSelection
+hrvars = historyRepasSetVariable
+hrsize = historyRepasSize
+hrfmul uu ff hh = fromJust $ systemsFudsHistoryRepasMultiply uu ff hh
+hrhrred hh vv = setVarsHistoryRepasHistoryRepaReduced vv hh
 hrmult = systemsDecompFudsHistoryRepasMultiply
 hrquery = systemsDecompFudsHistoryRepasHistoriesQuery
 hrtest = systemsDecompFudsHistoryRepasHistoryRepasSetVariablesTest
-hrvars = historyRepasSetVariable
-hrsize = historyRepasSize
 hralgn = systemsDecompFudsHistoryRepasAlignmentContentShuffleSummation_u
 hralgntree = systemsDecompFudsHistoryRepasTreeAlignmentContentShuffleSummation_u
 
