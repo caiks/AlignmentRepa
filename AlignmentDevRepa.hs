@@ -38,6 +38,8 @@ sunion = pairStatesUnionLeft
 ssll = statesList
 llss = listsState
 
+ssplit = setVarsSetStatesSplit 
+
 cart uu vv = fromJust $ systemsVarsCartesian uu vv
 sysreg d n = fromJust $ systemRegular d n
 syscart d n = fromJust $ let uu = sysreg d n in systemsVarsCartesian uu (systemsVars uu)
