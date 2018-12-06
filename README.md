@@ -66,11 +66,29 @@ HistogramRepa {histogramRepasVectorVar = [VarInt 1,VarInt 2], histogramRepasMapV
 ```
 Note that if forcing compilation causes functions to be unresolved, for example,
 ```hs
-Set.fromList [1,2,3]
+rp $ Set.fromList [1,2,3]
 
 <interactive>:9:1: Not in scope: ‘Set.fromList’
 ```
-then module `AlignmentDevRepa` can be interpreted by itself. Exit `ghci` and then delete `AlignmentDevRepa.o`,
+or 
+```hs
+rp $ fudEmpty
+
+<interactive>:10:6: Not in scope: ‘fudEmpty’
+```
+then either (a) import the modules explicitly, for example,
+```hs
+import qualified Data.Set as Set
+import qualified Data.Map as Map
+import Alignment
+
+rp $ Set.fromList [1,2,3]
+"{1,2,3}"
+
+rp $ fudEmpty
+"{}"
+```
+or (b) interpret module `AlignmentDevRepa` by itself. Exit `ghci` and then delete `AlignmentDevRepa.o`,
 ```sh
 rm AlignmentDevRepa.o
 
@@ -80,8 +98,11 @@ ghci -i../Alignment -i../AlignmentRepa ../AlignmentRepa/AlignmentForeign.o
 :set +m
 :l AlignmentDevRepa
 
-Set.fromList [1,2,3]
-fromList [1,2,3]
+rp $ Set.fromList [1,2,3]
+"{1,2,3}"
+
+rp $ fudEmpty
+"{}"
 ```
 
 ## Documentation

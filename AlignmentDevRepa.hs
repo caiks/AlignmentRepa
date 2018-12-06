@@ -1,7 +1,7 @@
 module AlignmentDevRepa
 where
 
-import Data.List
+import Data.List hiding (union)
 import qualified Data.ByteString.Lazy as BL
 import qualified Data.Set as Set
 import qualified Data.Map as Map
@@ -32,12 +32,41 @@ import AlignmentRandomRepa
 import AlignmentPracticableRepa
 import AlignmentPracticableIORepa
 
-pv x = represent x
-sunion = pairStatesUnionLeft
+qqll :: Set.Set a -> [a]
+qqll = Set.toList
 
+llqq :: (Ord a) => [a] -> Set.Set a
+llqq = Set.fromList
+
+sgl :: a -> Set.Set a
+sgl = Set.singleton
+
+card :: Set.Set a -> Int
+card = Set.size
+
+union :: Ord a => Set.Set a -> Set.Set a -> Set.Set a
+union = Set.union
+
+minus :: Ord a => Set.Set a -> Set.Set a -> Set.Set a
+minus = Set.difference
+
+inter :: Ord a => Set.Set a -> Set.Set a -> Set.Set a
+inter = Set.intersection
+
+least :: Set.Set a -> a
+least = Set.findMin
+
+most :: Set.Set a -> a
+most = Set.findMax
+
+rp x = represent x
+rj (Just x) = represent x
+rj Nothing = "Nothing"
+rpln ll = mapM_ (print . rp) ll
+
+sunion = pairStatesUnionLeft
 ssll = statesList
 llss = listsState
-
 ssplit = setVarsSetStatesSplit 
 
 cart uu vv = fromJust $ systemsVarsCartesian uu vv
@@ -49,7 +78,6 @@ vol uu vv = fromJust $ systemsVarsVolume uu vv
 uull = systemsList
 umap uu ll = Map.fromList [(v,(v',Map.fromList (zip (Set.toList ww) (map ValInt [1..])))) | ((v,ww),v') <- zip [(v,ww) | (v,ww) <- uull uu, variablesIsPartition v] ll]
 
-ph x = represent x
 aat aa ss = fromJust $ histogramsStatesCount aa ss
 aall = histogramsList
 llaa ll = fromJust $ listsHistogram ll
@@ -69,7 +97,7 @@ vars = histogramsVars
 cdvars ll = Set.fromList $ map VarInt ll
 states = histogramsStates
 dim = histogramsDimension
-card = histogramsCardinality
+acard = histogramsCardinality
 recip = histogramsReciprocal
 red aa vv = setVarsHistogramsReduce vv aa
 ared aa vv = setVarsHistogramsReduce vv aa
@@ -109,14 +137,18 @@ rreg d n i = let qq = [regsing d n, regcart d n, regdiag d n, regcrown d n, regp
 rregz d n i z = [resize z aa | aa <- rreg d n i, z >= 0, size aa > 0]
 perturb aa e = [aa `add` single ss e `sub` single tt e | (ss,c) <- aall (trim aa), (tt,d) <- aall (trim aa), tt /= ss, d >= e]
 
+llhh = fromJust . listsHistory  
+hhll = historyToList
+hvars = historiesSetVar
+hsize = historiesSize
+hred hh vv = setVarsHistoriesReduce vv hh
+hadd hh gg = fromJust $ pairHistoriesAdd hh gg
+hmul = pairHistoriesMultiply
 aahh aa = fromJust $ histogramsHistory aa
 hhaa hh = historiesHistogram hh
 hshuffle hh r = fromJust $ historiesShuffle hh r
 ashuffle aa r = hhaa $ hshuffle (aahh aa) r
-hvars = historiesSetVar
-hred hh vv = setVarsHistoriesReduce vv hh
 
-pt x = represent x
 und = transformsUnderlying
 der = transformsDerived
 tvars = transformsVars
@@ -144,7 +176,6 @@ qqff = fromJust . setTransformsFud
 llff = qqff . Set.fromList
 ttff = fromJust . setTransformsFud . Set.singleton
 
-pf ff = represent ff
 ffqq = fudsSetTransform
 fvars = fudsVars
 fder = fudsDerived
@@ -178,6 +209,11 @@ dfund = decompFudsUnderlying
 dfapply aa df = decompFudsHistogramsApply df aa
 dfmul aa df = decompFudsHistogramsMultiply df aa
 
+ent = histogramsEntropy 
+lent aa ww vvl = ent (aa `red` (ww `Set.union` vvl)) - ent (aa `red` ww)
+algn = histogramsAlignment
+algnden aa = let v = fromIntegral (vol (sys aa) (vars aa)); n = fromIntegral (dim aa) in algn aa  / (v ** (1/n))
+
 aare aa = map (\(ss,c) -> (ss,fromRational c)) (histogramsList aa) :: [(State,Double)]
 aaar uu aa = fromJust $ systemsHistogramsHistogramRepa uu aa
 araa uu rr = fromJust $ systemsHistogramRepasHistogram uu rr
@@ -199,19 +235,4 @@ hrquery = systemsDecompFudsHistoryRepasHistoriesQuery
 hrtest = systemsDecompFudsHistoryRepasHistoryRepasSetVariablesTest
 hralgn = systemsDecompFudsHistoryRepasAlignmentContentShuffleSummation_u
 hralgntree = systemsDecompFudsHistoryRepasTreeAlignmentContentShuffleSummation_u
-
-ent = histogramsEntropy 
-algn = histogramsAlignment
-algnden aa = let v = fromIntegral (vol (sys aa) (vars aa)); n = fromIntegral (dim aa) in algn aa  / (v ** (1/n))
-
-
-pd x = represent x
-
-rp x = represent x
-rj (Just x) = represent x
-rj Nothing = "Nothing"
-
-rpln ll = mapM_ (print . rp) ll
-
-dp2 x = fromIntegral (truncate (100.0 * x)) / 100.0
 
