@@ -211,6 +211,7 @@ dfmul aa df = decompFudsHistogramsMultiply df aa
 
 ent = histogramsEntropy 
 lent aa ww vvl = ent (aa `red` (ww `Set.union` vvl)) - ent (aa `red` ww)
+rent aa bb = let a = fromRational (size aa); b = fromRational (size bb) in (a+b) * ent (aa `add` bb) - a * ent aa - b * ent bb
 algn = histogramsAlignment
 algnden aa = let v = fromIntegral (vol (sys aa) (vars aa)); n = fromIntegral (dim aa) in algn aa  / (v ** (1/n))
 
