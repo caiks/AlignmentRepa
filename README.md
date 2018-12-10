@@ -12,6 +12,9 @@ There are a couple of useful libraries that should be installed along with repa 
 
 [cassava](http://hackage.haskell.org/package/cassava): A CSV parsing and encoding library
 
+## Documentation
+
+The [Haskell implementation of fast Practicable Inducers](https://greenlake.co.uk/pages/inducer_haskell_impl_repa) discusses the implementation of the *inducers* using this repository. 
 
 ## Installation
 
@@ -104,9 +107,5 @@ rp $ Set.fromList [1,2,3]
 rp $ fudEmpty
 "{}"
 ```
-
-## Documentation
-
-The [Haskell implementation of fast Practicable Inducers](https://greenlake.co.uk/pages/inducer_haskell_impl_repa) discusses the implementation of the *inducers* using this repository. 
 
 
