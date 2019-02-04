@@ -240,3 +240,6 @@ hralgn = systemsDecompFudsHistoryRepasAlignmentContentShuffleSummation_u
 hralgntree = systemsDecompFudsHistoryRepasTreeAlignmentContentShuffleSummation_u
 hrlent uu hh ww vvl = ent (hhaa $ hrhh uu $ hh `hrhrred` (ww `union` vvl)) - ent (hhaa $ hrhh uu $ hh `hrhrred` ww)
 
+summation = systemsDecompFudsHistoryRepasAlignmentContentShuffleSummation_u
+
+
