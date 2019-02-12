@@ -229,6 +229,7 @@ aahx = hrhx . aahr
 hrred hh vv = setVarsHistoryRepasReduce 1 vv hh
 hrredhr hh vv = setVarsHistoryRepasHistoryRepaReduced vv hh
 hrev = eventsHistoryRepasHistoryRepaSelection
+hrhrsel hr ss = historyRepasHistoryRepasHistoryRepaSelection_u ss hr
 hrvars = historyRepasSetVariable
 hrsize = historyRepasSize
 hrfmul uu ff hh = fromJust $ systemsFudsHistoryRepasMultiply uu ff hh
