@@ -114,7 +114,8 @@ module AlignmentPracticableRepa (
   systemsDecompFudsHistoryRepasTreeAlignmentContentShuffleSummation_u,
   systemsDecompFudsHistoryRepasAlgnDensPerSizesStripped_u,
   parametersSystemsBuilderLabelTupleRepa,
-  parametersBuilderConditionalVarsRepa
+  parametersBuilderConditionalVarsRepa,
+  parametersSystemsHistoryRepasDecomperConditionalFmaxRepa
 )
 where
 import Data.List as List
@@ -5331,4 +5332,85 @@ parametersBuilderConditionalVarsRepa kmax omax qmax ll aa
     llqq :: forall a. (Ord a) => [a] -> Set.Set a
     llqq = Set.fromList
     sgl = Set.singleton
+
+parametersSystemsHistoryRepasDecomperConditionalFmaxRepa :: 
+  Integer -> Integer -> Integer -> System -> Set.Set Variable -> HistoryRepa -> 
+  Maybe (System, DecompFud)
+parametersSystemsHistoryRepasDecomperConditionalFmaxRepa kmax omax fmax uu ll aa
+  | kmax < 0 || omax < 0 = Nothing
+  | otherwise = Just $ decomp uu emptyTree 1
+  where
+    vv = vars aa
+    decomp uu zz f
+      | zz == emptyTree && nnr == [] = (uu, decompFudEmpty)
+      | zz == emptyTree = decomp uur zzr (f+1)
+      | (fmax > 0 && f > fmax) || V.null mm || nnc == [] = (uu, zzdf zz) 
+      | otherwise = decomp uuc zzc (f+1)
+      where
+        nnr = lenter kmax omax ll aa
+        [(kkr,_)] = nnr
+        ffr = vvff uu kkr f
+        uur = uu `uunion` fsys ffr
+        aar = apply uur ffr aa
+        aa' = trim $ reduce uur (fder ffr `union` ll) aar
+        zzr = tsgl ((stateEmpty,ffr),(aar, aa'))
+        mm = V.fromList [(e,(nn,ss,bb)) | (nn,yy) <- qqll (treesPlaces zz), 
+                 let ((_,ff),(bb,bb')) = last nn, 
+                 let tt = dom (dom (treesRoots yy)),
+                 (ss,a) <- aall (bb' `red` fder ff), a > 0, ss `notin` tt,
+                 let e = fromRational a * ent (bb' `mul` unit (sgl ss) `red` ll), e > rounding]
+        (_,(nn,ss,bb)) = V.head $ vectorPairsTop 1 mm
+        cc = select uu ss bb `hrred` vv
+        nnc = lenter kmax omax ll cc
+        [(kkc,_)] = nnc
+        ffc = vvff uu kkc f
+        uuc = uu `uunion` fsys ffc
+        ccc = apply uuc ffc cc
+        cc' = trim $ reduce uuc (fder ffc `union` ll) ccc
+        zzc = pathsTree $ treesPaths zz `add` (nn List.++ [((ss,ffc),(ccc, cc'))])
+    lenter kmax omax ll aa = mmll $ fromJust $ parametersBuilderConditionalVarsRepa kmax omax 1 ll aa
+    vvff uu vv f = ff
+      where
+        v = VarPair (VarPair (VarInt f, VarInt 1), VarInt 1)
+        qq = llqq [ss `sunion` llss [(v, ValInt i)] | (ss,i) <- zip (qqll (cart uu vv)) [1..]]
+        ff = ttff (trans (unit qq) (sgl v))
+    zzdf zz = fromJust $ treePairStateFudsDecompFud $ funcsTreesMap fst zz
+    ffqq = fudsSetTransform
+    fsys = fudsSystemImplied
+    fder = fudsDerived
+    ttff = fromJust . setTransformsFud . sgl
+    trans xx ww = fromJust $ histogramsSetVarsTransform xx ww
+    apply uu ff hh = historyRepasListTransformRepasApply hh (llvv $ List.map (tttr uu) $ qqll $ ffqq ff)
+    tttr uu tt = systemsTransformsTransformRepa_u uu tt
+    aahh aa = fromJust $ histogramsHistory aa
+    hhhr uu hh = fromJust $ systemsHistoriesHistoryRepa uu hh
+    select uu ss hh = historyRepasHistoryRepasHistoryRepaSelection_u (hhhr uu (aahh (unit (sgl ss)))) hh
+    reduce uu ww hh = fromJust $ systemsHistogramRepasHistogram uu $ setVarsHistoryRepasReduce 1 ww hh
+    hrred aa vv = setVarsHistoryRepasHistoryRepaReduced vv aa
+    ent = histogramsEntropy
+    mul = pairHistogramsMultiply
+    unit = fromJust . setStatesHistogramUnit
+    red aa vv = setVarsHistogramsReduce vv aa
+    trim = histogramsTrim
+    aall = histogramsList
+    vars = Set.fromList . V.toList . historyRepasVectorVar
+    sunion = pairStatesUnionLeft
+    llss = listsState
+    cart = systemsSetVarsSetStateCartesian_u
+    uunion = pairSystemsUnion
+    tsgl r = Tree $ Map.singleton r emptyTree
+    llvv = V.fromList
+    mmll = Map.toList
+    dom :: (Ord a, Ord b) => Set.Set (a,b) -> Set.Set a
+    dom = relationsDomain
+    add qq x = Set.insert x qq
+    qqll = Set.toList
+    llqq = Set.fromList
+    union = Set.union
+    notin = Set.notMember
+    sgl :: a -> Set.Set a
+    sgl = Set.singleton
+    rounding :: Double 
+    rounding = 1e-14
+
 
