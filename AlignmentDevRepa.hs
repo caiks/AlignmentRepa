@@ -204,6 +204,8 @@ dmul aa dd = decompsHistogramsApply dd aa
 
 zzdf zz = fromJust $ treePairStateFudsDecompFud zz
 dfzz = decompFudsTreePairStateFud
+dfll = qqll . treesPaths . dfzz 
+lldf = zzdf . pathsTree . llqq
 dfdd df = fromJust $ decompFudsDecomp df
 dfff = decompFudsFud
 dfund = decompFudsUnderlying
