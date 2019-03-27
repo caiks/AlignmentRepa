@@ -173,7 +173,7 @@ tframell tt ll = fromJust $ transformsMapVarsFrame tt (Map.fromList $ map (\(i,j
 conind aa tt = fromJust $ histogramsTransformsConverseIndependent aa tt
 conact aa tt = fromJust $ histogramsTransformsConverseActual aa tt
 
-qqff = fromJust . setTransformsFud
+qqff = setTransformsFud_u
 llff = qqff . Set.fromList
 ttff = fromJust . setTransformsFud . Set.singleton
 
