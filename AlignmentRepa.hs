@@ -89,6 +89,7 @@ module AlignmentRepa (
   systemsDecompFudsHistoryRepasHistoryRepasSetVariablesTest_1,
   systemsDecompFudsHistoryRepasHistoryRepasSetVariablesTest_2,
   systemsDecompFudsHistoryRepasHistoryRepasSetVariablesTest_3,
+  systemsDecompFudsHistoryRepasDecompFudReduced,
   historyRepasRed,
   setVarsHistoryRepasRed,
   setVarsHistoryRepasHistoryRepaReduced,
@@ -1997,6 +1998,33 @@ systemsDecompFudsHistoryRepasHistoryRepasSetVariablesTest_3 uu df hha hht kk =
     aall = histogramsList
     sempty = stateEmpty
     minus = Set.difference
+
+systemsDecompFudsHistoryRepasDecompFudReduced :: System -> DecompFud -> HistoryRepa -> DecompFud
+systemsDecompFudsHistoryRepasDecompFudReduced uu df aa = df'
+  where
+    [(((ss,ff),_),yy)] = zzll $ funcsTreesMap (\(xx,hr) -> (xx,hrsize hr)) $ hrmult uu df aa
+    w = least (fder ff)
+    df' = zzdf $ llzz [((ss, ff `fdep` w), apply w yy)]
+    apply :: Variable -> Tree ((State,Fud),Int) -> Tree (State,Fud)
+    apply w zz = Tree $ llmm $ List.map (\(x,(_,yy)) -> (x,yy)) $ mmll $ llmmw larger $ 
+      [((ss `red` w, ff `fdep` u),(a,apply u yy)) | (((ss,ff),a),yy) <- zzll zz, let u = least (fder ff)]
+    hrmult = systemsDecompFudsHistoryRepasMultiply
+    hrsize = historyRepasSize
+    fder = fudsDerived
+    fdep ff x = fudsVarsDepends ff (sgl x)
+    red ss v = setVarsStatesStateFiltered (sgl v) ss
+    larger (a,xx1) (b,xx2) = if a>b then (a,xx1) else (b,xx2)
+    dfzz = decompFudsTreePairStateFud
+    zzdf zz = fromJust $ treePairStateFudsDecompFud zz
+    zzll (Tree mm) = mmll mm
+    llzz ll = Tree (llmm ll)
+    llmmw = Map.fromListWith
+    llmm = Map.fromList
+    mmll = Map.toList
+    least :: Set.Set a -> a
+    least = Set.findMin
+    sgl :: a -> Set.Set a
+    sgl = Set.singleton
 
 vectorHistoryRepasConcat_u :: V.Vector HistoryRepa -> HistoryRepa 
 vectorHistoryRepasConcat_u ll = HistoryRepa vaa maa saa rbb
