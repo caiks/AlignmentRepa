@@ -8,6 +8,7 @@ module AlignmentPracticableIORepa (
   parametersSystemsLayererMaximumRollExcludedSelfHighestIORepa_u_4,
   parametersSystemsLayererMaximumRollExcludedSelfHighestIORepa_u_5,
   parametersSystemsLayererMaxRollByMExcludedSelfHighestIORepa_u,
+  parametersSystemsLayererMaxRollByMExcludedSelfHighestIORepa_u_1,
   parametersSystemsLayererLevelMaximumRollExcludedSelfHighestIORepa_u,
   parametersSystemsLayererLevelMaximumRollExcludedSelfHighestIORepa_u_1,
   parametersSystemsLayererLevelMaximumRollExcludedSelfHighestIORepa_u_2,
@@ -25,6 +26,7 @@ module AlignmentPracticableIORepa (
   parametersSystemsHistoryRepasDecomperMaximumRollExcludedSelfHighestFmaxIORepa_5,
   parametersSystemsHistoryRepasDecomperMaxRollByMExcludedSelfHighestFmaxIORepa,
   parametersSystemsHistoryRepasDecomperMaxRollByMExcludedSelfHighestFmaxIORepa_1,
+  parametersSystemsHistoryRepasDecomperMaxRollByMExcludedSelfHighestFmaxIORepa_2,
   parametersSystemsHistoryRepasDecomperMaximumRollExcludedSelfHighestFmaxBatchIORepa,
   parametersSystemsHistoryRepasDecomperLevelMaximumRollExcludedSelfHighestFmaxIORepa,
   parametersSystemsHistoryRepasDecomperLevelMaximumRollExcludedSelfHighestFmaxIORepa_1,
@@ -735,6 +737,140 @@ parametersSystemsLayererMaxRollByMExcludedSelfHighestIORepa_u ::
 parametersSystemsLayererMaxRollByMExcludedSelfHighestIORepa_u =
   parametersSystemsLayererMaxRollTypeExcludedSelfHighestIORepa_u MaxRollByM
 
+parametersSystemsLayererMaxRollByMExcludedSelfHighestIORepa_u_1 :: 
+  Integer -> Integer -> Integer -> Integer -> Integer -> Integer -> Integer -> Integer -> 
+  System -> Set.Set Variable -> HistoryRepa -> HistogramRepaRed -> HistoryRepa -> HistogramRepaRed -> Integer ->
+  IO (System, Fud, [(Set.Set Variable, Double)])
+parametersSystemsLayererMaxRollByMExcludedSelfHighestIORepa_u_1 
+  wmax lmax xmax omax bmax mmax umax pmax uu vv xx xxp xxrr xxrrp f = 
+    do
+      printf ">>> layerer\n"
+      hFlush stdout
+      t1 <- getCurrentTime
+      x1 <- layer vv uu fudEmpty [] xx xxp xxrr xxrrp f 1
+      t2 <- getCurrentTime
+      printf "<<< layerer %s\n" $ show $ diffUTCTime t2 t1
+      hFlush stdout
+      return $ x1
+  where
+    layer vv uu ff mm xx xxp xxrr xxrrp f l = 
+      do
+        printf ">>> layer\tfud: %d\t" f
+        printf "layer: %d\n" l
+        performGC
+        t1 <- getCurrentTime
+        printf ">>> tupler\n"
+        printf "substrate cardinality: %d\n" $ card vv
+        printf "fud cardinality: %d\n" $ card $ ffqq ff
+        hFlush stdout
+        let (x2,s2) = buildfftup uu vv ff xx xxp xxrr xxrrp
+        if x2 /= [] then do
+            printf "tuple cardinality: %d\n" $ length x2
+            printf "max tuple algn: %.2f\n" $ maximum $ snd $ unzip x2
+          else do
+            printf "no tuples\n"
+        performGC
+        t2 <- getCurrentTime
+        printf "tupler\tsearched: %d\t" $ s2
+        printf "rate: %.2f\n" $ fromIntegral s2 / diffTime t2 t1
+        printf "<<< tupler %s\n" $ show $ diffUTCTime t2 t1
+        printf ">>> parter\n"
+        hFlush stdout
+        let (x3a,s3a) = unzip [parter uu kk bb y1 | ((kk,bb),y1) <- x2]
+        let x3 = concat x3a
+        let s3 = sum s3a
+        if x3 /= [] then do
+            printf "partitions cardinality: %d\n" $ length x3
+          else
+            printf "no tuple partitions\n"
+        performGC
+        t3 <- getCurrentTime
+        printf "parter\tsearched: %d\t" $ s3
+        printf "rate: %.2f\n" $ fromIntegral s3 / diffTime t3 t2
+        printf "<<< parter %s\n" $ show $ diffUTCTime t3 t2
+        printf ">>> roller\n"
+        hFlush stdout
+        let (x4a,s4a) = unzip [roller qq | qq <- x3]
+        let x4 = concat x4a
+        let s4 = sum s4a
+        if x4 /= [] then do
+            printf "roll cardinality: %d\n" $ length x4
+          else
+            printf "no rolls\n"
+        performGC
+        t4 <- getCurrentTime
+        printf "roller\tsearched: %d\t" $ s4
+        printf "rate: %.2f\n" $ fromIntegral s4 / diffTime t4 t3
+        printf "<<< roller %s\n" $ show $ diffUTCTime t4 t3
+        printf ">>> application\n"
+        hFlush stdout
+        let ll = [(tt,(w,ww)) | (ii,b) <- zip [ii | (yy,pp) <- x4, 
+               (jj,p) <- zip (qqll yy) (V.toList pp), UV.maximum p + 1 < UV.length p,
+               let ii = zip (qqll (cart uu jj)) (UV.toList p)] [1..], 
+                 let w = VarPair (VarPair (VarInt f, VarInt l), VarInt b), 
+                 let ww = llqq $ List.map (\(_,u) -> (nnww u)) ii, 
+                 let tt = trans (unit [ss `sunion` ssgl w (nnww u) | (ss,u) <- ii]) (sgl w)]
+        let ll' = [(tt,(w,ww)) | (tt,(w,ww)) <- ll, 
+                and [Set.size ww /= Set.size ww' || und tt /= und tt' || ttpp tt /= ttpp tt' | (tt',(w',ww')) <- ll, w > w']]
+        let hh = qqff $ llqq $ fst $ unzip ll'
+        let uu' = uu `uunion` (lluu $ snd $ unzip ll')
+        let ffr = V.fromList $ List.map (tttr uu') $ fst $ unzip ll'
+        let xx' = apply xx ffr
+        let xxp' = historyRepasRed xx'
+        let xxrr' = apply xxrr ffr
+        let xxrrp' = historyRepasRed xxrr'
+        let gg = ff `funion` hh
+        printf "fud cardinality: %d\n" $ card $ ffqq gg
+        performGC
+        t5 <- getCurrentTime
+        printf "<<< application %s\n" $ show $ diffUTCTime t5 t4
+        printf ">>> dervarser\n"
+        hFlush stdout
+        let (mm',s5) = buildffdervar uu' vv gg xx' xxp' xxrr' xxrrp'
+        if mm' /= [] then do
+            printf "der vars algn density: %.2f\n" $ maxr mm'
+          else
+            printf "no der vars sets\n"
+        performGC
+        t6 <- getCurrentTime
+        printf "dervarser\tsearched: %d\t" $ s5
+        printf "rate: %.2f\n" $ fromIntegral s5 / diffTime t6 t5
+        printf "<<< dervarser %s\n" $ show $ diffUTCTime t6 t5
+        printf "<<< layer %s\n" $ show $ diffUTCTime t6 t1
+        hFlush stdout
+        if l <= lmax && hh /= fudEmpty && (mm == [] || maxr mm' > maxr mm + repaRounding) then do
+            layer vv uu' gg mm' xx' xxp' xxrr' xxrrp' f (l+1) 
+          else do
+            return (uu,ff,mm) 
+      where
+    buildfftup uu vv ff hh hhp hhrr hhrrp = 
+      parametersSystemsBuilderTupleNoSumlayerMultiEffectiveRepa_ui xmax omax bmax mmax uu vv ff hh hhp hhrr hhrrp
+    parter uu kk bb y1 = parametersSystemsPartitionerMaxRollByMRepa_ui mmax umax pmax uu kk bb y1
+    roller qq = parametersRollerMaximumRollExcludedSelfRepa_i qq
+    buildffdervar uu vv ff xx xxp xxrr xxrrp = (\(x1,s1) -> (List.map (\((kk,_,_),a) -> (kk,a)) x1,s1)) $
+      parametersSystemsBuilderDerivedVarsHighestNoSumlayerRepa_ui wmax omax uu vv ff xx xxp xxrr xxrrp
+    apply = historyRepasListTransformRepasApply_u
+    tttr uu tt = systemsTransformsTransformRepa_u uu tt
+    qqff = setTransformsFud_u
+    ffqq = fudsSetTransform
+    funion ff gg = qqff (ffqq ff `Set.union` ffqq gg)
+    ttpp = transformsPartition
+    und = transformsUnderlying
+    trans = histogramsSetVarsTransform_u
+    unit qq = listsHistogram_u $ List.map (\ss -> (ss,1)) $ qq
+    sunion = pairStatesUnionLeft
+    ssgl = stateSingleton
+    cart uu vv = systemsSetVarsSetStateCartesian_u uu vv
+    uunion = pairSystemsUnion
+    lluu = listsSystem_u
+    nnww = ValInt . toInteger
+    maxr mm = if mm /= [] then (last $ sort $ snd $ unzip $ mm) else 0
+    llqq :: forall a. (Ord a) => [a] -> Set.Set a
+    llqq = Set.fromList
+    sgl = Set.singleton
+    qqll = Set.toList
+    card = Set.size
+
 parametersSystemsDecomperMaximumRollExcludedSelfHighestFmaxIORepa :: 
   Integer -> Integer -> Integer -> Integer -> Integer -> Integer -> Integer -> Integer -> Integer -> 
   Integer -> Integer ->
@@ -1090,6 +1226,154 @@ parametersSystemsHistoryRepasDecomperMaxRollTypeExcludedSelfHighestFmaxIORepa
         printf "<<< repa perimeters %s\n" $ show $ diffUTCTime t2 t1
         hFlush stdout
         parametersSystemsLayererMaxRollTypeExcludedSelfHighestIORepa_u mroll
+                                        wmax lmax xmax omax bmax mmax umax pmax uu vv xx xxp xxrr xxrrp f
+    zztrim = pathsTree . Set.map lltrim . treesPaths
+    lltrim ll = let ((_,ff),_) = last ll in if ff == fudEmpty then init ll else ll
+    zzdf zz = fromJust $ treePairStateFudsDecompFud $ funcsTreesMap fst zz
+    dfzz = decompFudsTreePairStateFud
+    depends = fudsVarsDepends
+    qqff = fromJust . setTransformsFud
+    ffqq = fudsSetTransform
+    fder = fudsDerived
+    apply uu ff hh = historyRepasListTransformRepasApply hh (llvv $ List.map (tttr uu) $ qqll $ ffqq ff)
+    tttr uu tt = systemsTransformsTransformRepa_u uu tt
+    aahh aa = fromJust $ histogramsHistory aa
+    hhhr uu hh = fromJust $ systemsHistoriesHistoryRepa uu hh
+    aadd xx yy = fromJust $ pairHistogramsAdd xx yy
+    select uu ss hh = historyRepasHistoryRepasHistoryRepaSelection_u (hhhr uu (aahh (unit ss))) hh
+    reduce uu ww hh = fromJust $ systemsHistogramRepasHistogram uu $ setVarsHistoryRepasReduce 1 ww hh
+    hrred aa vv = setVarsHistoryRepasHistoryRepaReduced vv aa
+    unit = fromJust . setStatesHistogramUnit . Set.singleton 
+    red aa vv = setVarsHistogramsReduce vv aa
+    trim = histogramsTrim
+    acard = histogramsCardinality
+    aall = histogramsList
+    size = historyRepasSize
+    vars = Set.fromList . V.toList . historyRepasVectorVar
+    uvars = systemsVars
+    tsgl r = Tree $ Map.singleton r emptyTree
+    maxd mm = if mm /= [] then (head $ take 1 $ reverse $ sort $ flip $ mm) else (0,empty)
+    llvv = V.fromList
+    bigcup :: Ord a => Set.Set (Set.Set a) -> Set.Set a
+    bigcup = setSetsUnion
+    dom :: (Ord a, Ord b) => Set.Set (a,b) -> Set.Set a
+    dom = relationsDomain
+    add qq x = Set.insert x qq
+    qqll = Set.toList
+    empty = Set.empty
+    subset = Set.isSubsetOf
+    card = Set.size
+    notin = Set.notMember
+    flip = List.map (\(a,b) -> (b,a))
+
+parametersSystemsHistoryRepasDecomperMaxRollByMExcludedSelfHighestFmaxIORepa_2 :: 
+  Integer -> Integer -> Integer -> Integer -> Integer -> Integer -> Integer -> Integer -> Integer -> 
+  Integer -> Integer ->
+  System -> Set.Set Variable -> HistoryRepa -> 
+  IO (Maybe (System, DecompFud))
+parametersSystemsHistoryRepasDecomperMaxRollByMExcludedSelfHighestFmaxIORepa_2 
+  wmax lmax xmax omax bmax mmax umax pmax fmax mult seed uu vv aa
+  | wmax < 0 || lmax < 0 || xmax <= 0 || omax <= 0 || bmax < 0 || mmax < 1 || bmax < mmax || umax < 0 || pmax < 0 = 
+      return $ Nothing
+  | size aa == 0 || mult < 1 = return $ Nothing
+  | not (vars aa `subset` uvars uu && vv `subset` vars aa) = return $ Nothing
+  | otherwise = 
+    do
+      printf ">>> decomper repa\n"
+      hFlush stdout
+      t1 <- getCurrentTime
+      x1 <- decomp uu emptyTree 1
+      printf "nodes: %d\n" $ card $ treesNodes $ dfzz $ snd x1
+      t2 <- getCurrentTime
+      printf "<<< decomper repa %s\n" $ show $ diffUTCTime t2 t1
+      hFlush stdout
+      return $ Just $ x1
+  where
+    decomp uu zz f
+      | zz == emptyTree =
+        do
+          (uur,ffr,nnr) <- layerer uu aa f
+          let (ar,kkr) = maxd nnr
+          if ffr == fudEmpty || nnr == [] || ar <= repaRounding then
+              return $ (uu, decompFudEmpty)
+            else do
+              printf ">>> slicing\n"
+              hFlush stdout
+              t3 <- getCurrentTime
+              let ffr' = if ar > repaRounding then depends ffr kkr else fudEmpty
+              printf "dependent fud cardinality : %d\n" $ card $ ffqq ffr'
+              let wwr = fder ffr'
+              let aar = apply uur ffr' aa
+              let aa' = trim $ reduce uur wwr aar
+              printf "derived cardinality : %d\n" $ acard $ aa'
+              let zzr = tsgl ((stateEmpty,ffr'),(aar, aa'))
+              t4 <- getCurrentTime
+              printf "<<< slicing %s\n" $ show $ diffUTCTime t4 t3
+              hFlush stdout
+              decomp uur zzr (f+1)
+      | otherwise = 
+        do
+          if fmax > 0 && f > fmax then
+              return $ (uu, zzdf (zztrim zz))
+            else do
+              printf ">>> slice  selection\n"
+              hFlush stdout
+              t1 <- getCurrentTime
+              let mm = V.fromList [(a,(nn,ss,bb)) | (nn,yy) <- qqll (treesPlaces zz), 
+                    let ((_,ff),(bb,bb')) = last nn, ff /= fudEmpty, 
+                    let tt = dom (dom (treesRoots yy)),
+                    (ss,a) <- aall (bb' `red` fder ff), a > 0, ss `notin` tt]
+              printf "slices: %d\n" $ V.length mm
+              if V.null mm then do
+                  t2 <- getCurrentTime
+                  printf "<<< slice selection %s\n" $ show $ diffUTCTime t2 t1
+                  hFlush stdout
+                  return $ (uu, zzdf (zztrim zz))
+                else do
+                  let (a,(nn,ss,bb)) = V.head $ vectorPairsTop 1 mm
+                  let cc = select uu ss bb `hrred` (vars aa)
+                  printf "decomp path length : %d\n" $ length nn
+                  printf "slice size : %d\n" $ numerator a
+                  t2 <- getCurrentTime
+                  printf "<<< slice selection %s\n" $ show $ diffUTCTime t2 t1
+                  hFlush stdout
+                  (uuc,ffc,nnc) <- layerer uu cc f
+                  printf ">>> slicing\n"
+                  hFlush stdout
+                  t3 <- getCurrentTime
+                  let (ac,kkc) = maxd nnc
+                  let ffc' = if ac > repaRounding then depends ffc kkc else fudEmpty
+                  printf "dependent fud cardinality : %d\n" $ card $ ffqq ffc'
+                  let wwc = fder ffc'
+                  let ccc = apply uuc ffc' cc
+                  let cc' = trim $ reduce uuc wwc ccc
+                  printf "derived cardinality : %d\n" $ acard $ cc'
+                  let zzc = pathsTree $ treesPaths zz `add` (nn List.++ [((ss,ffc'),(ccc, cc'))])
+                  t4 <- getCurrentTime
+                  printf "<<< slicing %s\n" $ show $ diffUTCTime t4 t3
+                  hFlush stdout
+                  decomp uuc zzc (f+1)
+    layerer uu xx f = 
+      do
+        printf ">>> repa shuffle\n"
+        hFlush stdout
+        t1 <- getCurrentTime
+        let z = historyRepasSize xx
+        let !xxrr = vectorHistoryRepasConcat_u $ V.fromListN (fromInteger mult) $ 
+                 [historyRepasShuffle_u xx (fromInteger seed + i*z) | i <- [1..]]
+        t2 <- getCurrentTime
+        printf "<<< repa shuffle %s\n" $ show $ diffUTCTime t2 t1
+        printf ">>> repa perimeters\n"
+        hFlush stdout
+        t1 <- getCurrentTime
+        let !xxp = historyRepasRed xx   
+        let !x2 = V.maximum $ V.map UV.maximum $ histogramRepaRedsVectorArray xxp
+        let !xxrrp = historyRepasRed xxrr   
+        let !x3 = V.maximum $ V.map UV.maximum $ histogramRepaRedsVectorArray xxrrp
+        t2 <- getCurrentTime
+        printf "<<< repa perimeters %s\n" $ show $ diffUTCTime t2 t1
+        hFlush stdout
+        parametersSystemsLayererMaxRollByMExcludedSelfHighestIORepa_u_1
                                         wmax lmax xmax omax bmax mmax umax pmax uu vv xx xxp xxrr xxrrp f
     zztrim = pathsTree . Set.map lltrim . treesPaths
     lltrim ll = let ((_,ff),_) = last ll in if ff == fudEmpty then init ll else ll
