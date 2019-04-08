@@ -99,6 +99,7 @@ module AlignmentPracticableRepa (
   parametersSystemsHistoryRepasDecomperMaxRollByMExcludedSelfHighestFmaxRepa,
   parametersSystemsHistoryRepasDecomperMaxRollByMExcludedSelfHighestFmaxRepa_1,
   parametersSystemsHistoryRepasDecomperMaxRollByMExcludedSelfHighestFmaxRepa_2,
+  parametersSystemsHistoryRepasDecomperLevelMaxRollByMExcludedSelfHighestFmaxRepa,
   parametersSystemsDecomperMaximumRollExcludedSelfHighestFmaxBatchRepa,
   parametersSystemsDecomperLevelMaximumRollExcludedSelfHighestFmaxRepa,
   parametersSystemsDecomperLevelMaximumRollExcludedSelfHighestFmaxRepa_1,
@@ -3631,6 +3632,93 @@ parametersSystemsHistoryRepasDecomperMaxRollByMExcludedSelfHighestFmaxRepa_2
     depends = fudsVarsDepends
     ffqq = fudsSetTransform
     fder = fudsDerived
+    apply uu ff hh = historyRepasListTransformRepasApply hh (llvv $ List.map (tttr uu) $ qqll $ ffqq ff)
+    tttr uu tt = systemsTransformsTransformRepa_u uu tt
+    aahh aa = fromJust $ histogramsHistory aa
+    hhhr uu hh = fromJust $ systemsHistoriesHistoryRepa uu hh
+    select uu ss hh = historyRepasHistoryRepasHistoryRepaSelection_u (hhhr uu (aahh (unit ss))) hh
+    reduce uu ww hh = fromJust $ systemsHistogramRepasHistogram uu $ setVarsHistoryRepasReduce 1 ww hh
+    hrred aa vv = setVarsHistoryRepasHistoryRepaReduced vv aa
+    unit = fromJust . setStatesHistogramUnit . Set.singleton 
+    red aa vv = setVarsHistogramsReduce vv aa
+    trim = histogramsTrim
+    aall = histogramsList
+    size = historyRepasSize
+    vars = Set.fromList . V.toList . historyRepasVectorVar
+    uvars = systemsVars
+    tsgl r = Tree $ Map.singleton r emptyTree
+    maxd mm = if mm /= [] then (head $ take 1 $ reverse $ sort $ flip $ mm) else (0,empty)
+    llvv = V.fromList
+    dom :: (Ord a, Ord b) => Set.Set (a,b) -> Set.Set a
+    dom = relationsDomain
+    add qq x = Set.insert x qq
+    qqll = Set.toList
+    empty = Set.empty
+    subset = Set.isSubsetOf
+    notin = Set.notMember
+    flip = List.map (\(a,b) -> (b,a))
+
+parametersSystemsHistoryRepasDecomperLevelMaxRollByMExcludedSelfHighestFmaxRepa :: 
+  Integer -> Integer -> Integer -> Integer -> Integer -> Integer -> Integer -> Integer -> Integer -> 
+  Integer -> Integer ->
+  System -> Tree (Integer, Set.Set Variable, Fud) -> HistoryRepa -> 
+  Maybe (System, DecompFud)
+parametersSystemsHistoryRepasDecomperLevelMaxRollByMExcludedSelfHighestFmaxRepa 
+  wmax lmax xmax omax bmax mmax umax pmax fmax mult seed uu zzg aa
+  | wmax < 0 || lmax < 0 || xmax <= 0 || omax <= 0 || bmax < 0 || mmax < 1 || bmax < mmax || umax < 0 || pmax < 0 = Nothing
+  | size aa == 0 || mult < 1 = Nothing
+  | not (vars aa `subset` uvars uu) = Nothing
+  | not (okLevel zzg) = Nothing
+  | otherwise = Just $ decomp uu emptyTree 1
+  where
+    decomp uu zz f
+      | zz == emptyTree && ffr == fudEmpty = (uu, decompFudEmpty)
+      | zz == emptyTree = decomp uur zzr (f+1)
+      | (fmax > 0 && f > fmax) || V.null mm = (uu, zzdf (zztrim zz)) 
+      | otherwise = decomp uuc zzc (f+1)
+      where
+        (uur,ffr,_) = level uu aa zzg f 1
+        aar = apply uur ffr aa
+        aa' = trim $ reduce uur (fder ffr) aar
+        zzr = tsgl ((stateEmpty,ffr),(aar, aa'))
+        mm = V.fromList [(a,(nn,ss,bb)) | (nn,yy) <- qqll (treesPlaces zz), 
+                 let ((_,ff),(bb,bb')) = last nn, ff /= fudEmpty, 
+                 let tt = dom (dom (treesRoots yy)),
+                 (ss,a) <- aall (bb' `red` fder ff), a > 0, ss `notin` tt]
+        (_,(nn,ss,bb)) = V.head $ vectorPairsTop 1 mm
+        cc = select uu ss bb `hrred` (vars aa)
+        (uuc,ffc,_) = level uu cc zzg f 1
+        ccc = apply uuc ffc cc
+        cc' = trim $ reduce uuc (fder ffc) ccc
+        zzc = pathsTree $ treesPaths zz `add` (nn List.++ [((ss,ffc),(ccc, cc'))])
+    level uu aa (Tree ttg) f g = foldl next (uu,fudEmpty,g) (Map.toList ttg)
+      where       
+        next (uu,ff,g) ((wmaxg,vvg,ffg),xxg) = (uu',ff `funion` gg',gh+1)
+          where
+            (uuh,ffh,gh) = level uu aa xxg f g
+            (uu',gg,nn) = layerer wmaxg uuh vvg (ffg `funion` ffh) aa f gh
+            (a,kk) = maxd nn
+            gg' = if a > repaRounding then depends gg kk else fudEmpty
+    layerer wmax uu vvg ffg xx f g = parametersSystemsLayererLevelMaxRollByMExcludedSelfHighestRepa_u 
+                                        wmax lmax xmax omax bmax mmax umax pmax uu vvg ffg xx xxp xxrr xxrrp f g
+      where
+        z = historyRepasSize xx
+        !xxp = historyRepasRed xx   
+        !xxrr = vectorHistoryRepasConcat_u $ V.fromListN (fromInteger mult) $ 
+                 [historyRepasShuffle_u xx (fromInteger seed + i*z) | i <- [1..]]
+        !xxrrp = historyRepasRed xxrr  
+    okLevel zzg = and [wmaxg >= 0 && vvg `subset` vars aa && fvars ffg `subset` uvars uu && fund ffg `subset` vars aa |
+                       (wmaxg,vvg,ffg) <- Set.toList (treesElements zzg)]
+    zztrim = pathsTree . Set.map lltrim . treesPaths
+    lltrim ll = let ((_,ff),_) = last ll in if ff == fudEmpty then init ll else ll
+    zzdf zz = fromJust $ treePairStateFudsDecompFud $ funcsTreesMap fst zz
+    depends = fudsVarsDepends
+    funion ff gg = qqff (ffqq ff `Set.union` ffqq gg)
+    qqff = setTransformsFud_u
+    ffqq = fudsSetTransform
+    fder = fudsDerived
+    fvars = fudsVars
+    fund = fudsUnderlying
     apply uu ff hh = historyRepasListTransformRepasApply hh (llvv $ List.map (tttr uu) $ qqll $ ffqq ff)
     tttr uu tt = systemsTransformsTransformRepa_u uu tt
     aahh aa = fromJust $ histogramsHistory aa
