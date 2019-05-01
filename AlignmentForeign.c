@@ -1,4 +1,4 @@
-void listVarsArrayHistoriesReduce_u(double f, long long n, long long* ppkk, long long* pskk, long long z, long long* prr, double* pmv)
+void listVarsArrayHistoriesReduce_u(double f, long long n, long long* ppkk, long long* pskk, long long z, short* prr, double* pmv)
 {
     long long j;
     long long k;
@@ -602,7 +602,7 @@ Output, double LNGAMMA, the logarithm of the gamma function of Z.
 
 long long listVarsArrayHistoriesAlignedTop_u(
     long long xmax, long long omax, long long n, long long* svv, long long m, long long z1, long long z2,
-    long long* ppww, long long* phh1, double* pxx1, long long* phh2, double* pxx2,
+    long long* ppww, short* phh1, double* pxx1, short* phh2, double* pxx2,
     long long* tww1, long long* tww2, double* ts1, double* ts2, long long* ts3, long long* s)
 {
     long long t = 0;
@@ -777,7 +777,7 @@ long long listVarsArrayHistoriesAlignedTop_u(
 
 long long listVarsArrayHistoriesAlignedTop_u_1(
     long long xmax, long long omax, long long n, long long* svv, long long m, long long z1, long long z2,
-    long long* ppww, long long* phh1, double* pxx1, long long* phh2, double* pxx2, long long* tww1, long long* tww2)
+    long long* ppww, short* phh1, double* pxx1, short* phh2, double* pxx2, long long* tww1, long long* tww2)
 {
     long long t = 0;
     double aa[xmax];
@@ -1010,7 +1010,7 @@ long long listVarsListTuplesArrayHistoriesAlignedTop_u(
     long long xmax, long long omax, long long n, long long* svv, long long m, long long d, long long e,
     long long z1, long long z2,
     long long* ppww, long long* ppdd,
-    long long* phh1, double* pxx1, long long* phh2, double* pxx2,
+    short* phh1, double* pxx1, short* phh2, double* pxx2,
     long long* tww1, long long* tww2, double* ts1, double* ts2, long long* ts3, long long* s)
 {
     long long t = 0;
@@ -1249,7 +1249,7 @@ long long listVarsListTuplesArrayHistoriesAlignedTop_u_1(
     long long xmax, long long omax, long long n, long long* svv, long long m, long long d, long long e,
     long long z1, long long z2,
     long long* ppww, long long* ppdd,
-    long long* phh1, double* pxx1, long long* phh2, double* pxx2,
+    short* phh1, double* pxx1, short* phh2, double* pxx2,
     long long* tww1, long long* tww2, double* ts1, double* ts2, long long* ts3, long long* s)
 {
     long long t = 0;
@@ -1473,7 +1473,7 @@ long long listVarsListTuplesArrayHistoriesAlignedTop_u_2(
     long long xmax, long long omax, long long n, long long* svv, long long m, long long d, long long e,
     long long z1, long long z2,
     long long* ppww, long long* ppdd,
-    long long* phh1, double* pxx1, long long* phh2, double* pxx2,
+    short* phh1, double* pxx1, short* phh2, double* pxx2,
     long long* tww1, long long* tww2, double* ts1, double* ts2, long long* ts3, long long* s)
 {
     long long t = 0;
@@ -1717,7 +1717,7 @@ long long listVarsListTuplesArrayHistoriesAlignedExcludeHiddenTop_u(
     long long z1, long long z2,
     long long ccl, long long* ppccd, long long* ppccu,
     long long* ppww, long long* ppdd,
-    long long* phh1, double* pxx1, long long* phh2, double* pxx2,
+    short* phh1, double* pxx1, short* phh2, double* pxx2,
     long long* tww1, long long* tww2, double* ts1, double* ts2, long long* ts3, long long* s)
 {
     long long t = 0;

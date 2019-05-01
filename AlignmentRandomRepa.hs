@@ -9,6 +9,7 @@ module AlignmentRandomRepa (
 )
 where
 import AlignmentRepa
+import Data.Int
 import Data.List as List
 import qualified Data.Set as Set
 import qualified Data.Map as Map
@@ -49,13 +50,13 @@ historyRepasShuffle_u_1 aa s = HistoryRepa vaa maa saa rbb
     paa = UV.map (\(_,_,i) -> i) vv2
     rbb = R.fromUnboxed ((Z :. n :. z) :: DIM2) $ UV.unsafeBackpermute (R.toUnboxed raa) paa
 
-historyRepaRegularRandomsUniform_u :: Int -> Int -> Int -> Int -> HistoryRepa
+historyRepaRegularRandomsUniform_u :: Int16 -> Int -> Int -> Int -> HistoryRepa
 historyRepaRegularRandomsUniform_u d n z s = 
-    arraysHistoryRepaCardinal_u (UV.replicate n d) $ R.fromUnboxed (R.Z R.:. n R.:. z) $ UV.fromListN (z*n) $ (drop 1 (randomRs (0,d-1) (mkStdGen s) :: [Int] ))
+    arraysHistoryRepaCardinal_u (UV.replicate n (fromIntegral d)) $ R.fromUnboxed (R.Z R.:. n R.:. z) $ UV.fromListN (z*n) $ (drop 1 (randomRs (0,d-1) (mkStdGen s) :: [Int16] ))
 
-historyRepaRegularRandomsUniform_u_1 :: Int -> Int -> Int -> Int -> HistoryRepa
+historyRepaRegularRandomsUniform_u_1 :: Int16 -> Int -> Int -> Int -> HistoryRepa
 historyRepaRegularRandomsUniform_u_1 d n z s = 
-    arraysHistoryRepaCardinal_u (UV.replicate n d) $ R.fromUnboxed (R.Z R.:. n R.:. z) $ UV.fromListN (z*n) $ (randomRs (0,d-1) (mkStdGen s) :: [Int] )
+    arraysHistoryRepaCardinal_u (UV.replicate n (fromIntegral d)) $ R.fromUnboxed (R.Z R.:. n R.:. z) $ UV.fromListN (z*n) $ (randomRs (0,d-1) (mkStdGen s) :: [Int16] )
 
 
 systemsDecompFudsHistoryRepasMultiplyWithShuffle :: 

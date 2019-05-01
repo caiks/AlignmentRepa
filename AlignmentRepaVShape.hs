@@ -16,6 +16,7 @@ where
 import Control.Monad
 import Control.Monad.Primitive
 import Control.Monad.ST
+import Data.Int
 import Data.Vector.Unboxed as UV
 import qualified Data.Vector.Unboxed.Mutable as MV
 import Data.Array.Repa.Shape
@@ -233,7 +234,7 @@ toIndexInsertM !u !r !q !svv !ivv =
           return a 
 
 {-# INLINE toIndexPermOffsetM #-}
-toIndexPermOffsetM :: (PrimMonad m) => VShape -> VShape -> Int -> (MV.MVector (PrimState m) Int) -> m Int
+toIndexPermOffsetM :: (PrimMonad m) => VShape -> VShape -> Int -> (MV.MVector (PrimState m) Int16) -> m Int
 toIndexPermOffsetM !skk !pkk !r !ivv =  
   do 
     accum 0 0
@@ -247,9 +248,9 @@ toIndexPermOffsetM !skk !pkk !r !ivv =
           if a/=0 
             then do
               let !d = UV.unsafeIndex skk i
-              accum (d*a + y) (i+1)
+              accum (d*a + (fromIntegral y)) (i+1)
             else do
-              accum y (i+1)
+              accum (fromIntegral y) (i+1)
         else do
           return a
 

@@ -47,7 +47,7 @@ persistentsHistoryRepa hh
     uu = fromJust uu'
     SystemPersistent ll' = hsystem hh
     ll = [svar (var x) | x <- ll']
-    hr' = systemsListVariablesListsListsHistoryRepa uu ll (hstates hh)
+    hr' = systemsListVariablesListsListsHistoryRepa uu ll (map (map fromIntegral) (hstates hh))
     hr = fromJust hr' 
     svar = stringsVariable
 
@@ -62,7 +62,7 @@ systemsHistoryRepasPersistent uu hh
 
 systemsHistoryRepasPersistent_u :: System -> HistoryRepa -> HistoryPersistent
 systemsHistoryRepasPersistent_u uu hh = 
-    HistoryPersistent {hsystem = uupp uu (vars hh), hstates = historyRepasListsList hh}
+    HistoryPersistent {hsystem = uupp uu (vars hh), hstates = (map (map fromIntegral) (historyRepasListsList hh))}
   where
     uupp = systemsListVariablesPersistent_u
     vars = V.toList . historyRepasVectorVar

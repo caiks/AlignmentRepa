@@ -661,8 +661,8 @@ parametersSystemsBuilderTupleNoSumlayerRepa_ui xmax omax bmax mmax uu vv ff hh h
     Z :. _ :. z = extent $ historyRepasArray hh
     Z :. _ :. zrr = extent $ historyRepasArray hhrr
     f = (fromIntegral z)/(fromIntegral zrr)
-    vshh = SV.unsafeCast (UV.convert (R.toUnboxed (historyRepasArray hh))) :: SV.Vector CLLong
-    vshhrr = SV.unsafeCast (UV.convert (R.toUnboxed (historyRepasArray hhrr))) :: SV.Vector CLLong
+    vshh = SV.unsafeCast (UV.convert (R.toUnboxed (historyRepasArray hh))) :: SV.Vector CShort
+    vshhrr = SV.unsafeCast (UV.convert (R.toUnboxed (historyRepasArray hhrr))) :: SV.Vector CShort
     (xc,sc) = cross xmax omax vv hh hhx hhrr hhrrx
     yy = fvars ff `union` vv
     (xa,sa) = append xmax omax yy (qqvv (Set.map sgl (fder ff))) hh hhx hhrr hhrrx
@@ -764,8 +764,8 @@ parametersSystemsBuilderTupleNoSumlayerRepa_ui_2 xmax omax bmax mmax uu vv ff hh
     Z :. _ :. z = extent aa
     Z :. _ :. zrr = extent aarr
     f = (fromIntegral z)/(fromIntegral zrr)
-    vshh = SV.unsafeCast (UV.convert (R.toUnboxed aa)) :: SV.Vector CLLong
-    vshhrr = SV.unsafeCast (UV.convert (R.toUnboxed aarr)) :: SV.Vector CLLong
+    vshh = SV.unsafeCast (UV.convert (R.toUnboxed aa)) :: SV.Vector CShort
+    vshhrr = SV.unsafeCast (UV.convert (R.toUnboxed aarr)) :: SV.Vector CShort
     (x0,s0) = buildb vv (init vv) V.empty 0
     (x1,s1) = buildb (fvars ff `union` vv) (init (fder ff)) V.empty 0
     init vv = V.fromListN (card vv) [((0,0,0),((sgl w, (hvempty, hvempty, UV.empty)),0)) | w <- qqll vv]
@@ -819,8 +819,8 @@ parametersSystemsBuilderTupleNoSumlayerRepa_ui_3 xmax omax bmax mmax uu vv ff hh
     Z :. _ :. z = extent aa
     Z :. _ :. zrr = extent aarr
     f = (fromIntegral z)/(fromIntegral zrr)
-    vshh = SV.unsafeCast (UV.convert (R.toUnboxed aa)) :: SV.Vector CLLong
-    vshhrr = SV.unsafeCast (UV.convert (R.toUnboxed aarr)) :: SV.Vector CLLong
+    vshh = SV.unsafeCast (UV.convert (R.toUnboxed aa)) :: SV.Vector CShort
+    vshhrr = SV.unsafeCast (UV.convert (R.toUnboxed aarr)) :: SV.Vector CShort
     xc = initc vv
     (x0,s0) = buildb vv xc xc (toInteger (Set.size vv * (Set.size vv - 1) `div` 2))
     (x1,s1) = buildb (fvars ff `union` vv) (init (fder ff)) V.empty 0
@@ -885,8 +885,8 @@ parametersSystemsBuilderTupleNoSumlayerRepa_ui_4 xmax omax bmax mmax uu vv ff hh
     Z :. _ :. z = extent aa
     Z :. _ :. zrr = extent aarr
     f = (fromIntegral z)/(fromIntegral zrr)
-    vshh = SV.unsafeCast (UV.convert (R.toUnboxed aa)) :: SV.Vector CLLong
-    vshhrr = SV.unsafeCast (UV.convert (R.toUnboxed aarr)) :: SV.Vector CLLong
+    vshh = SV.unsafeCast (UV.convert (R.toUnboxed aa)) :: SV.Vector CShort
+    vshhrr = SV.unsafeCast (UV.convert (R.toUnboxed aarr)) :: SV.Vector CShort
     (xc,sc) = cross xmax omax vv hh hhx hhrr hhrrx
     yy = fvars ff `union` vv
     (xa,sa) = append xmax omax yy (qqvv (Set.map sgl (fder ff))) hh hhx hhrr hhrrx
@@ -948,8 +948,8 @@ parametersSystemsBuilderTupleNoSumlayerMultiEffectiveRepa_ui xmax omax bmax mmax
     Z :. _ :. z = extent $ historyRepasArray hh
     Z :. _ :. zrr = extent $ historyRepasArray hhrr
     f = (fromIntegral z)/(fromIntegral zrr)
-    vshh = SV.unsafeCast (UV.convert (R.toUnboxed (historyRepasArray hh))) :: SV.Vector CLLong
-    vshhrr = SV.unsafeCast (UV.convert (R.toUnboxed (historyRepasArray hhrr))) :: SV.Vector CLLong
+    vshh = SV.unsafeCast (UV.convert (R.toUnboxed (historyRepasArray hh))) :: SV.Vector CShort
+    vshhrr = SV.unsafeCast (UV.convert (R.toUnboxed (historyRepasArray hhrr))) :: SV.Vector CShort
     vv' = meff hhx vv
     (xc,sc) = cross xmax omax vv' hh hhx hhrr hhrrx
     yy = fvars ff `union` vv'
@@ -1091,8 +1091,8 @@ parametersSystemsBuilderDerivedVarsHighestNoSumlayerRepa_ui wmax omax uu vv ff h
     Z :. _ :. z = extent $ historyRepasArray hh
     Z :. _ :. zrr = extent $ historyRepasArray hhrr
     f = (fromIntegral z)/(fromIntegral zrr)
-    vshh = SV.unsafeCast (UV.convert (R.toUnboxed (historyRepasArray hh))) :: SV.Vector CLLong
-    vshhrr = SV.unsafeCast (UV.convert (R.toUnboxed (historyRepasArray hhrr))) :: SV.Vector CLLong
+    vshh = SV.unsafeCast (UV.convert (R.toUnboxed (historyRepasArray hh))) :: SV.Vector CShort
+    vshhrr = SV.unsafeCast (UV.convert (R.toUnboxed (historyRepasArray hhrr))) :: SV.Vector CShort
     cc = Set.fromList [(w,u) | w <- Set.toList (fvars ff `minus` vv), let gg = depends ff w, 
                                u <- Set.toList (fvars gg `minus` vv), u /= w]
     yy = fvars ff `minus` vv
@@ -1320,8 +1320,8 @@ parametersSystemsBuilderDerivedVarsHighestNoSumlayerIncludeHiddenRepa_ui wmax om
     Z :. _ :. z = extent $ historyRepasArray hh
     Z :. _ :. zrr = extent $ historyRepasArray hhrr
     f = (fromIntegral z)/(fromIntegral zrr)
-    vshh = SV.unsafeCast (UV.convert (R.toUnboxed (historyRepasArray hh))) :: SV.Vector CLLong
-    vshhrr = SV.unsafeCast (UV.convert (R.toUnboxed (historyRepasArray hhrr))) :: SV.Vector CLLong
+    vshh = SV.unsafeCast (UV.convert (R.toUnboxed (historyRepasArray hh))) :: SV.Vector CShort
+    vshhrr = SV.unsafeCast (UV.convert (R.toUnboxed (historyRepasArray hhrr))) :: SV.Vector CShort
     yy = fvars ff `minus` vv
     (xa,sa) = append wmax omax yy (qqvv (Set.map sgl (fder ff))) hh hhx hhrr hhrrx
     (x1,s1) = buildb yy xa xa sa
@@ -1411,8 +1411,8 @@ parametersSystemsBuilderDerivedVarsHighestNoSumlayerIncludeHiddenRepa_ui_2 wmax 
     Z :. _ :. z = extent aa
     Z :. _ :. zrr = extent aarr
     f = (fromIntegral z)/(fromIntegral zrr)
-    vshh = SV.unsafeCast (UV.convert (R.toUnboxed aa)) :: SV.Vector CLLong
-    vshhrr = SV.unsafeCast (UV.convert (R.toUnboxed aarr)) :: SV.Vector CLLong
+    vshh = SV.unsafeCast (UV.convert (R.toUnboxed aa)) :: SV.Vector CShort
+    vshhrr = SV.unsafeCast (UV.convert (R.toUnboxed aarr)) :: SV.Vector CShort
     (x1,s1) =  buildd (fvars ff `minus` vv) (init (fder ff)) V.empty 0
     init vv = V.fromListN (card vv) [((0,0,0),(sgl w, hempty, hempty)) | w <- qqll vv]
     buildd ww qq nn s2 = 
@@ -4163,8 +4163,8 @@ parametersSystemsBuilderTupleLevelNoSumlayerRepa_ui xmax omax bmax mmax uu vvg f
     Z :. _ :. z = extent $ historyRepasArray hh
     Z :. _ :. zrr = extent $ historyRepasArray hhrr
     f = (fromIntegral z)/(fromIntegral zrr)
-    vshh = SV.unsafeCast (UV.convert (R.toUnboxed (historyRepasArray hh))) :: SV.Vector CLLong
-    vshhrr = SV.unsafeCast (UV.convert (R.toUnboxed (historyRepasArray hhrr))) :: SV.Vector CLLong
+    vshh = SV.unsafeCast (UV.convert (R.toUnboxed (historyRepasArray hh))) :: SV.Vector CShort
+    vshhrr = SV.unsafeCast (UV.convert (R.toUnboxed (historyRepasArray hhrr))) :: SV.Vector CShort
     vv = vvg `union` fder ffg
     (xc,sc) = cross xmax omax vv hh hhx hhrr hhrrx
     yy = (fvars ff `minus` fvars ffg `union` vv)
@@ -4270,8 +4270,8 @@ parametersSystemsBuilderTupleLevelNoSumlayerRepa_ui_2 xmax omax bmax mmax uu vvg
     Z :. _ :. z = extent $ historyRepasArray hh
     Z :. _ :. zrr = extent $ historyRepasArray hhrr
     f = (fromIntegral z)/(fromIntegral zrr)
-    vshh = SV.unsafeCast (UV.convert (R.toUnboxed (historyRepasArray hh))) :: SV.Vector CLLong
-    vshhrr = SV.unsafeCast (UV.convert (R.toUnboxed (historyRepasArray hhrr))) :: SV.Vector CLLong
+    vshh = SV.unsafeCast (UV.convert (R.toUnboxed (historyRepasArray hh))) :: SV.Vector CShort
+    vshhrr = SV.unsafeCast (UV.convert (R.toUnboxed (historyRepasArray hhrr))) :: SV.Vector CShort
     vv = vvg `union` fder ffg
     (x0,s0) = buildb vv (init vv) V.empty 0
     (x1,s1) = buildb (fvars ff `minus` fvars ffg `union` vv) (init (fder ff)) V.empty 0
@@ -4322,8 +4322,8 @@ parametersSystemsBuilderTupleLevelNoSumlayerRepa_ui_3 xmax omax bmax mmax uu vvg
     Z :. _ :. z = extent $ historyRepasArray hh
     Z :. _ :. zrr = extent $ historyRepasArray hhrr
     f = (fromIntegral z)/(fromIntegral zrr)
-    vshh = SV.unsafeCast (UV.convert (R.toUnboxed (historyRepasArray hh))) :: SV.Vector CLLong
-    vshhrr = SV.unsafeCast (UV.convert (R.toUnboxed (historyRepasArray hhrr))) :: SV.Vector CLLong
+    vshh = SV.unsafeCast (UV.convert (R.toUnboxed (historyRepasArray hh))) :: SV.Vector CShort
+    vshhrr = SV.unsafeCast (UV.convert (R.toUnboxed (historyRepasArray hhrr))) :: SV.Vector CShort
     vv = vvg `union` fder ffg
     xc = initc vv
     (x0,s0) = buildb vv xc xc (toInteger (Set.size vv * (Set.size vv - 1) `div` 2))
@@ -4386,8 +4386,8 @@ parametersSystemsBuilderTupleLevelNoSumlayerMultiEffectiveRepa_ui xmax omax bmax
     Z :. _ :. z = extent $ historyRepasArray hh
     Z :. _ :. zrr = extent $ historyRepasArray hhrr
     f = (fromIntegral z)/(fromIntegral zrr)
-    vshh = SV.unsafeCast (UV.convert (R.toUnboxed (historyRepasArray hh))) :: SV.Vector CLLong
-    vshhrr = SV.unsafeCast (UV.convert (R.toUnboxed (historyRepasArray hhrr))) :: SV.Vector CLLong
+    vshh = SV.unsafeCast (UV.convert (R.toUnboxed (historyRepasArray hh))) :: SV.Vector CShort
+    vshhrr = SV.unsafeCast (UV.convert (R.toUnboxed (historyRepasArray hhrr))) :: SV.Vector CShort
     vv = vvg `union` fder ffg
     vv' = meff hhx vv
     (xc,sc) = cross xmax omax vv' hh hhx hhrr hhrrx
@@ -4457,8 +4457,8 @@ parametersSystemsBuilderDerivedVarsLevelHighestNoSumlayerRepa_ui wmax omax uu vv
     Z :. _ :. z = extent $ historyRepasArray hh
     Z :. _ :. zrr = extent $ historyRepasArray hhrr
     f = (fromIntegral z)/(fromIntegral zrr)
-    vshh = SV.unsafeCast (UV.convert (R.toUnboxed (historyRepasArray hh))) :: SV.Vector CLLong
-    vshhrr = SV.unsafeCast (UV.convert (R.toUnboxed (historyRepasArray hhrr))) :: SV.Vector CLLong
+    vshh = SV.unsafeCast (UV.convert (R.toUnboxed (historyRepasArray hh))) :: SV.Vector CShort
+    vshhrr = SV.unsafeCast (UV.convert (R.toUnboxed (historyRepasArray hhrr))) :: SV.Vector CShort
     vv' = vv `union` fvars ffg
     cc = Set.fromList [(w,u) | w <- Set.toList (fvars ff `minus` vv'), let gg = depends ff w, 
                                u <- Set.toList (fvars gg `minus` vv'), u /= w]
@@ -4552,8 +4552,8 @@ parametersSystemsBuilderDerivedVarsLevelHighestNoSumlayerIncludeHiddenRepa_ui wm
     Z :. _ :. z = extent $ historyRepasArray hh
     Z :. _ :. zrr = extent $ historyRepasArray hhrr
     f = (fromIntegral z)/(fromIntegral zrr)
-    vshh = SV.unsafeCast (UV.convert (R.toUnboxed (historyRepasArray hh))) :: SV.Vector CLLong
-    vshhrr = SV.unsafeCast (UV.convert (R.toUnboxed (historyRepasArray hhrr))) :: SV.Vector CLLong
+    vshh = SV.unsafeCast (UV.convert (R.toUnboxed (historyRepasArray hh))) :: SV.Vector CShort
+    vshhrr = SV.unsafeCast (UV.convert (R.toUnboxed (historyRepasArray hhrr))) :: SV.Vector CShort
     yy = fvars ff `minus` vv `minus` fvars ffg
     (xa,sa) = append wmax omax yy (qqvv (Set.map sgl (fder ff))) hh hhx hhrr hhrrx
     (x1,s1) = buildb yy xa xa sa
@@ -4635,8 +4635,8 @@ parametersSystemsBuilderDerivedVarsLevelHighestNoSumlayerIncludeHiddenRepa_ui_2 
     Z :. _ :. z = extent $ historyRepasArray hh
     Z :. _ :. zrr = extent $ historyRepasArray hhrr
     f = (fromIntegral z)/(fromIntegral zrr)
-    vshh = SV.unsafeCast (UV.convert (R.toUnboxed (historyRepasArray hh))) :: SV.Vector CLLong
-    vshhrr = SV.unsafeCast (UV.convert (R.toUnboxed (historyRepasArray hhrr))) :: SV.Vector CLLong
+    vshh = SV.unsafeCast (UV.convert (R.toUnboxed (historyRepasArray hh))) :: SV.Vector CShort
+    vshhrr = SV.unsafeCast (UV.convert (R.toUnboxed (historyRepasArray hhrr))) :: SV.Vector CShort
     (x1,s1) =  buildd (fvars ff `minus` vv `minus` fvars ffg) (init (fder ff)) V.empty 0
     init vv = V.fromListN (card vv) [((0,0,0),(sgl w, hempty, hempty)) | w <- qqll vv]
     buildd ww qq nn s2 = 

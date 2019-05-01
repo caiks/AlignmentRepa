@@ -120,6 +120,7 @@ where
 import Control.Monad
 import Control.Monad.ST
 import Data.STRef
+import Data.Int
 import Data.List as List
 import qualified Data.Set as Set
 import qualified Data.Map as Map
@@ -182,7 +183,7 @@ data HistoryRepa = HistoryRepa {
   historyRepasVectorVar :: !(V.Vector Variable),
   historyRepasMapVarInt :: Map.Map Variable Int,
   historyRepasShape :: !VShape,
-  historyRepasArray :: !(Array U DIM2 Int)}
+  historyRepasArray :: !(Array U DIM2 Int16)}
                deriving (Eq, Read, Show)
 
 instance Ord HistoryRepa where
@@ -192,8 +193,8 @@ data TransformRepa = TransformRepa {
   transformRepasVectorVar :: !(V.Vector Variable),
   transformRepasMapVarInt :: Map.Map Variable Int,
   transformRepasVarDerived :: !Variable,
-  transformRepasValency :: !Int,
-  transformRepasArray :: !(Array U VShape Int)}
+  transformRepasValency :: !Int16,
+  transformRepasArray :: !(Array U VShape Int16)}
                deriving (Eq, Read, Show)
 
 instance Ord TransformRepa where
@@ -328,7 +329,7 @@ historyRepaEmpty = HistoryRepa vempty mempty vsempty (llrr (Z :. 0 :. 0) [])
     mempty = Map.empty
     vempty = V.empty
 
-arraysHistoryRepa_u :: VShape -> Array U DIM2 Int -> HistoryRepa
+arraysHistoryRepa_u :: VShape -> Array U DIM2 Int16 -> HistoryRepa
 arraysHistoryRepa_u svv rr = HistoryRepa (llvv n vv) mvv svv rr
   where 
     Z :. n :. z = extent rr
@@ -337,7 +338,7 @@ arraysHistoryRepa_u svv rr = HistoryRepa (llvv n vv) mvv svv rr
     llmm = Map.fromList
     llvv = V.fromListN
 
-arraysHistoryRepaCardinal_u :: VShape -> Array U DIM2 Int -> HistoryRepa
+arraysHistoryRepaCardinal_u :: VShape -> Array U DIM2 Int16 -> HistoryRepa
 arraysHistoryRepaCardinal_u svv rr = HistoryRepa (llvv n vv) mvv svv rr
   where 
     Z :. n :. z = extent rr
@@ -405,7 +406,7 @@ systemsHistoryRepasHistory_u :: System -> HistoryRepa -> Maybe History
 systemsHistoryRepasHistory_u uu aa
   | vvqq vv `subset` uvars uu = 
       llhh [(IdInt (toInteger (i+1)), llss [(v,w) | j <- [0..n-1], let v = vv V.! j, 
-        let k = rr R.! (Z :. j :. i), let w = mm Map.! v V.! k]) | i <- [0..z-1]]
+        let k = rr R.! (Z :. j :. i), let w = mm Map.! v V.! (fromIntegral k)]) | i <- [0..z-1]]
   | otherwise = Nothing
   where 
     vv = historyRepasVectorVar aa
@@ -427,7 +428,7 @@ systemsHistoryRepasHistory_u uu aa
 systemsTransformsTransformRepa :: System -> Transform -> Maybe TransformRepa
 systemsTransformsTransformRepa uu tt
   | tt /= empty && isOneFunc uu tt && card (der tt) == 1 = 
-      Just $ TransformRepa (llvv vv) mvv w (uval uu w) (llrr sh (elems nn))
+      Just $ TransformRepa (llvv vv) mvv w (fromIntegral (uval uu w)) (llrr sh (elems nn))
   | otherwise = Nothing
   where 
     vv = qqll $ und tt
@@ -436,7 +437,7 @@ systemsTransformsTransformRepa uu tt
     sh = shapeOfList [Map.size (mm Map.! v) | v <- vv] :: VShape
     w = Set.findMin (der tt)
     nn = llim [(toIndex sh (shapeOfList [mm Map.! v Map.! (ss `sat` v) | v <- vv] :: VShape), 
-                mm Map.! w Map.! (ss `sat` w)) | (ss,_) <- aall (ttaa tt)]
+                fromIntegral (mm Map.! w Map.! (ss `sat` w))) | (ss,_) <- aall (ttaa tt)]
     isOneFunc = systemsTransformsIsOneFunc
     empty = transformEmpty
     und = transformsUnderlying
@@ -457,7 +458,7 @@ systemsTransformsTransformRepa uu tt
     llvv = V.fromList
 
 systemsTransformsTransformRepa_u :: System -> Transform -> TransformRepa
-systemsTransformsTransformRepa_u uu tt = TransformRepa (llvv vv) mvv w (uval uu w) (llrr sh (elems nn))
+systemsTransformsTransformRepa_u uu tt = TransformRepa (llvv vv) mvv w (fromIntegral (uval uu w)) (llrr sh (elems nn))
   where 
     vv = qqll $ und tt
     mvv = llmm (zip vv [0..])
@@ -465,7 +466,7 @@ systemsTransformsTransformRepa_u uu tt = TransformRepa (llvv vv) mvv w (uval uu 
     sh = shapeOfList [Map.size (mm Map.! v) | v <- vv] :: VShape
     w = Set.findMin (der tt)
     nn = llim [(toIndex sh (shapeOfList [mm Map.! v Map.! (ss `sat` v) | v <- vv] :: VShape), 
-                mm Map.! w Map.! (ss `sat` w)) | (ss,_) <- aall (ttaa tt)]
+                fromIntegral (mm Map.! w Map.! (ss `sat` w))) | (ss,_) <- aall (ttaa tt)]
     und = transformsUnderlying
     der = transformsDerived
     ttaa = transformsHistogram
@@ -1118,7 +1119,7 @@ setVarsHistoryRepasCountApproxs kk hh
     vkk = llvv $ qqll (kk `cap` vv)
     !pkk = llvu $ vvll $ V.map (mvv Map.!) vkk
     !rr' = UV.generate z (\j -> UV.foldl' (\a i -> a * 23 + (rr R.! (Z :. i :. j))) 0 pkk)
-    ll = IntMap.fromListWith (+) [(i,1) | i <- vull rr']
+    ll = IntMap.fromListWith (+) [(fromIntegral i,1) | i <- vull rr']
     qqll = Set.toList
     llqq = Set.fromList
     cap = Set.intersection
@@ -1133,7 +1134,7 @@ setVarsHistoryRepasReduce f kk hh
   | otherwise = setVarsHistoryRepaStorablesReduce f kk hh vsh
   where
     HistoryRepa vvv mvv svv rr = hh
-    vsh = SV.unsafeCast (UV.convert (R.toUnboxed rr)) :: SV.Vector CLLong
+    vsh = SV.unsafeCast (UV.convert (R.toUnboxed rr)) :: SV.Vector CShort
     vv = llqq $ vvll vvv
     Z :. _ :. z = extent rr
     vkk = llvv $ qqll (kk `cap` vv)
@@ -1148,9 +1149,9 @@ setVarsHistoryRepasReduce f kk hh
     vvll = V.toList
 
 foreign import ccall unsafe "listVarsArrayHistoriesReduce_u" listVarsArrayHistoriesReduce_u
-    :: CDouble -> CLLong -> Ptr CLLong -> Ptr CLLong -> CLLong -> Ptr CLLong -> Ptr CDouble -> IO ()
+    :: CDouble -> CLLong -> Ptr CLLong -> Ptr CLLong -> CLLong -> Ptr CShort -> Ptr CDouble -> IO ()
 
-setVarsHistoryRepaStorablesReduce :: Double -> Set.Set Variable -> HistoryRepa -> SV.Vector CLLong -> HistogramRepa 
+setVarsHistoryRepaStorablesReduce :: Double -> Set.Set Variable -> HistoryRepa -> SV.Vector CShort -> HistogramRepa 
 setVarsHistoryRepaStorablesReduce !f !kk !hh !vsh
   | V.null vkk = HistogramRepa vempty mempty (llrr vsempty [fromIntegral z])
   | otherwise = HistogramRepa vkk mkk rr'
@@ -1202,7 +1203,7 @@ setVarsHistoryRepasReduce_1 f kk hh
     !rr' = R.fromUnboxed skk $ UV.create $ do
       mv <- MV.replicate (R.size skk) 0
       mapM_ (\i -> do c <- MV.unsafeRead mv i; MV.unsafeWrite mv i (c+f)) 
-            [R.toIndex skk (UV.map (\i -> rr R.! (Z :. i :. j)) pkk) | !j <- [0 .. z-1]]
+            [R.toIndex skk (UV.map (\i -> fromIntegral (rr R.! (Z :. i :. j))) pkk) | !j <- [0 .. z-1]]
       return mv
     vsempty = UV.empty
     llrr = R.fromListUnboxed
@@ -1232,7 +1233,7 @@ setVarsHistoryRepasReduce_2 f kk hh
     !rr' = R.fromUnboxed skk $ UV.create $ do
       mv <- MV.replicate (R.size skk) 0
       mapM_ (\i -> do c <- MV.unsafeRead mv i; MV.unsafeWrite mv i (c+f)) 
-            [UV.ifoldl' (\a k i -> a * (skk UV.! k) + (rr R.! (Z :. i :. j))) 0 pkk | !j <- [0 .. z-1]]
+            [UV.ifoldl' (\a k i -> a * (skk UV.! k) + (fromIntegral (rr R.! (Z :. i :. j)))) 0 pkk | !j <- [0 .. z-1]]
       return mv
     vsempty = UV.empty
     llrr = R.fromListUnboxed
@@ -1266,7 +1267,7 @@ setVarsHistoryRepasReduce_3 !f kk hh
       if j==z then
         return mv
       else do
-        let !p = UV.ifoldl' (\a k i -> a * (UV.unsafeIndex skk k) + (R.unsafeIndex rr (Z :. i :. j))) 0 pkk
+        let !p = UV.ifoldl' (\a k i -> a * (UV.unsafeIndex skk k) + (fromIntegral (R.unsafeIndex rr (Z :. i :. j)))) 0 pkk
         c <- MV.unsafeRead mv p
         MV.unsafeWrite mv p (c+f)
         loop mv (j+1)
@@ -1291,7 +1292,7 @@ historyRepasRed hh = HistogramRepaRed vvv mvv svv lrr
     !f = 1 / fromIntegral z
     !lrr = llvv n $ [(UV.create $ do
       mv <- MV.replicate (svv UV.! i) 0
-      mapM_ (\k -> do c <- MV.read mv k; MV.write mv k (c+f)) [rr R.! (Z :. i :. j) | !j <- [0 .. z-1]]
+      mapM_ (\k -> do c <- MV.read mv k; MV.write mv k (c+f)) [fromIntegral (rr R.! (Z :. i :. j)) | !j <- [0 .. z-1]]
       return mv) 
       | i <- [0 .. n-1]]
     llvv = V.fromListN
@@ -1312,7 +1313,7 @@ setVarsHistoryRepasRed kk hh
     !f = 1 / fromIntegral z
     !lrr = llvv $ [(UV.create $ do
       mv <- MV.replicate (skk UV.! i) 0
-      mapM_ (\k -> do c <- MV.read mv k; MV.write mv k (c+f)) [rr R.! (Z :. p :. j) | !j <- [0 .. z-1]]
+      mapM_ (\k -> do c <- MV.read mv k; MV.write mv k (c+f)) [fromIntegral (rr R.! (Z :. p :. j)) | !j <- [0 .. z-1]]
       return mv) 
       | !i <- [0 .. m-1], let !p = pkk UV.! i]
     perm = UV.unsafeBackpermute
@@ -1624,14 +1625,14 @@ historyRepasTransformRepasApply_u aa tt = HistoryRepa vbb mbb sbb rbb
     Z :. _ :. (!z) = R.extent raa
     vbb = V.singleton w
     mbb = Map.singleton w 0
-    sbb = UV.singleton d
+    sbb = UV.singleton (fromIntegral d)
     !pkk = V.convert $ V.map (maa Map.!) vtt
     !skk = UV.unsafeBackpermute saa pkk
     !utt = R.toUnboxed rtt 
     !rbb = R.fromUnboxed ((Z :. 1 :. z) :: DIM2) $ UV.create $ do
       ubb <- MV.replicate z 0
       mapM_ (\(k,j) -> do MV.unsafeWrite ubb j (UV.unsafeIndex utt k)) 
-            [(R.toIndex skk (UV.map (\i -> raa R.! (Z :. i :. j)) pkk),j) | !j <- [0 .. z-1]]
+            [(R.toIndex skk (UV.map (\i -> fromIntegral (raa R.! (Z :. i :. j))) pkk),j) | !j <- [0 .. z-1]]
       return ubb
 
 historyRepasListTransformRepasApply :: HistoryRepa -> V.Vector TransformRepa -> HistoryRepa 
@@ -1668,7 +1669,7 @@ historyRepasListTransformRepasApply_u aa ff = HistoryRepa vbb mbb sbb rbb
     !raa' = computeS (R.transpose qaa)
     vbb = vaa V.++ V.map transformRepasVarDerived ff
     mbb = Map.fromList $ zip (V.toList vbb) [0..]
-    !sbb = saa UV.++ V.convert (V.map transformRepasValency ff)
+    !sbb = saa UV.++ V.convert (V.map (fromIntegral . transformRepasValency) ff)
     !rbb' = R.fromUnboxed ((Z :. z :. p) :: DIM2) $ UV.create $ do
       qbb <- UV.unsafeThaw (R.toUnboxed raa')
       forM_ [0 .. m-1] $ (\q -> do 
@@ -2124,14 +2125,14 @@ historyRepasDimension hh = n
     HistoryRepa _ _ _ rhh = hh
     Z :. n :. _ = R.extent rhh
 
-historyRepasListsList :: HistoryRepa -> [[Int]] 
+historyRepasListsList :: HistoryRepa -> [[Int16]] 
 historyRepasListsList hh = [UV.toList (UV.slice (i*n) n vrr) | i <- [0..z-1]]
   where
     HistoryRepa _ _ _ !rr = hh
     Z :. n :. z = R.extent rr
     !vrr = R.toUnboxed $ R.computeS $ R.transpose rr
 
-systemsListVariablesListsListsHistoryRepa_u :: System -> [Variable] -> [[Int]] -> HistoryRepa
+systemsListVariablesListsListsHistoryRepa_u :: System -> [Variable] -> [[Int16]] -> HistoryRepa
 systemsListVariablesListsListsHistoryRepa_u uu vv xx = HistoryRepa (llvv vv) mvv (llvu sh) xx'
   where
     mvv = llmm (zip vv [0..])
@@ -2144,7 +2145,7 @@ systemsListVariablesListsListsHistoryRepa_u uu vv xx = HistoryRepa (llvv vv) mvv
     llvv = V.fromList
     llvu = UV.fromList
 
-systemsListVariablesListsListsHistoryRepa :: System -> [Variable] -> [[Int]] -> Maybe HistoryRepa
+systemsListVariablesListsListsHistoryRepa :: System -> [Variable] -> [[Int16]] -> Maybe HistoryRepa
 systemsListVariablesListsListsHistoryRepa uu vv xx 
   | not (llqq vv `subset` uvars uu) = Nothing
   | not $ all (\ll -> length ll == n) xx = Nothing
@@ -2381,7 +2382,7 @@ parametersSetVarsHistoryRepasSetSetVarsAlignedTop xmax omax vv hh hhx hhrr hhrrx
 
 foreign import ccall unsafe "listVarsArrayHistoriesAlignedTop_u" listVarsArrayHistoriesAlignedTop_u
   :: CLLong -> CLLong -> CLLong -> Ptr CLLong -> CLLong -> 
-    CLLong -> CLLong -> Ptr CLLong -> Ptr CLLong -> Ptr CDouble -> Ptr CLLong -> Ptr CDouble -> 
+    CLLong -> CLLong -> Ptr CLLong -> Ptr CShort -> Ptr CDouble -> Ptr CShort -> Ptr CDouble -> 
     Ptr CLLong -> Ptr CLLong -> Ptr CDouble -> Ptr CDouble -> Ptr CLLong -> Ptr CLLong -> IO (CLLong)
 
 parametersSetVarsHistoryRepasSetSetVarsAlignedTop_u :: Integer -> Integer -> Set.Set Variable -> HistoryRepa -> HistogramRepaRed -> HistoryRepa -> HistogramRepaRed -> (V.Vector ((Double,Double,Integer),Set.Set Variable),Integer) 
@@ -2396,9 +2397,9 @@ parametersSetVarsHistoryRepasSetSetVarsAlignedTop_u xmax omax ww hh hhx hhrr hhr
     !vww = llvv $ qqll ww 
     !m = V.length vww
     !pww = V.map (mvv Map.!) vww 
-    !vshh = SV.unsafeCast (UV.convert (R.toUnboxed aa)) :: SV.Vector CLLong
+    !vshh = SV.unsafeCast (UV.convert (R.toUnboxed aa)) :: SV.Vector CShort
     !vshhx = SV.unsafeCast (UV.convert (UV.concat (V.toList laax))) :: SV.Vector CDouble
-    !vshhrr = SV.unsafeCast (UV.convert (R.toUnboxed aarr)) :: SV.Vector CLLong
+    !vshhrr = SV.unsafeCast (UV.convert (R.toUnboxed aarr)) :: SV.Vector CShort
     !vshhrrx = SV.unsafeCast (UV.convert (UV.concat (V.toList laarrx))) :: SV.Vector CDouble
     !vssvv = SV.unsafeCast (UV.convert svv) :: SV.Vector CLLong
     !vspww = SV.unsafeCast (UV.convert pww) :: SV.Vector CLLong
@@ -2454,7 +2455,7 @@ parametersSetVarsHistoryRepasSetSetVarsAlignedTop_1 xmax omax vv hh hhx hhrr hhr
     R.Z R.:. _ R.:. zrr = R.extent aarr
 
 foreign import ccall unsafe "listVarsArrayHistoriesAlignedTop_u_1" listVarsArrayHistoriesAlignedTop_u_1
-    :: CLLong -> CLLong -> CLLong -> Ptr CLLong -> CLLong -> CLLong -> CLLong -> Ptr CLLong -> Ptr CLLong -> Ptr CDouble -> Ptr CLLong -> Ptr CDouble -> Ptr CLLong -> Ptr CLLong -> IO (CLLong)
+    :: CLLong -> CLLong -> CLLong -> Ptr CLLong -> CLLong -> CLLong -> CLLong -> Ptr CLLong -> Ptr CShort -> Ptr CDouble -> Ptr CShort -> Ptr CDouble -> Ptr CLLong -> Ptr CLLong -> IO (CLLong)
 
 parametersSetVarsHistoryRepasSetSetVarsAlignedTop_u_1 :: Integer -> Integer -> Set.Set Variable -> HistoryRepa -> HistogramRepaRed -> HistoryRepa -> HistogramRepaRed -> Set.Set (Set.Set Variable) 
 parametersSetVarsHistoryRepasSetSetVarsAlignedTop_u_1 xmax omax ww hh hhx hhrr hhrrx = qq
@@ -2468,9 +2469,9 @@ parametersSetVarsHistoryRepasSetSetVarsAlignedTop_u_1 xmax omax ww hh hhx hhrr h
     !vww = llvv $ qqll ww 
     !m = V.length vww
     !pww = V.map (mvv Map.!) vww 
-    !vshh = SV.unsafeCast (UV.convert (R.toUnboxed aa)) :: SV.Vector CLLong
+    !vshh = SV.unsafeCast (UV.convert (R.toUnboxed aa)) :: SV.Vector CShort
     !vshhx = SV.unsafeCast (UV.convert (UV.concat (V.toList laax))) :: SV.Vector CDouble
-    !vshhrr = SV.unsafeCast (UV.convert (R.toUnboxed aarr)) :: SV.Vector CLLong
+    !vshhrr = SV.unsafeCast (UV.convert (R.toUnboxed aarr)) :: SV.Vector CShort
     !vshhrrx = SV.unsafeCast (UV.convert (UV.concat (V.toList laarrx))) :: SV.Vector CDouble
     !vssvv = SV.unsafeCast (UV.convert svv) :: SV.Vector CLLong
     !vspww = SV.unsafeCast (UV.convert pww) :: SV.Vector CLLong
@@ -2521,9 +2522,9 @@ parametersSetVarsHistoryRepasSetSetVarsAlignedTop_u_2 xmax omax ww hh hhx hhrr h
     !vww = llvv $ qqll ww 
     !m = V.length vww
     !pww = V.map (mvv Map.!) vww 
-    !vshh = SV.unsafeCast (UV.convert (R.toUnboxed aa)) :: SV.Vector CLLong
+    !vshh = SV.unsafeCast (UV.convert (R.toUnboxed aa)) :: SV.Vector CShort
     !vshhx = SV.unsafeCast (UV.convert (UV.concat (V.toList laax))) :: SV.Vector CDouble
-    !vshhrr = SV.unsafeCast (UV.convert (R.toUnboxed aarr)) :: SV.Vector CLLong
+    !vshhrr = SV.unsafeCast (UV.convert (R.toUnboxed aarr)) :: SV.Vector CShort
     !vshhrrx = SV.unsafeCast (UV.convert (UV.concat (V.toList laarrx))) :: SV.Vector CDouble
     !vssvv = SV.unsafeCast (UV.convert svv) :: SV.Vector CLLong
     !vspww = SV.unsafeCast (UV.convert pww) :: SV.Vector CLLong
@@ -2587,7 +2588,7 @@ parametersSetVarsSetSetVarsHistoryRepasSetSetVarsAlignedTop xmax omax vv dd hh h
 
 foreign import ccall unsafe "listVarsListTuplesArrayHistoriesAlignedTop_u" listVarsListTuplesArrayHistoriesAlignedTop_u
   :: CLLong -> CLLong -> CLLong -> CLLong -> Ptr CLLong -> CLLong -> CLLong -> CLLong -> 
-    CLLong -> CLLong -> Ptr CLLong -> Ptr CLLong -> Ptr CLLong -> Ptr CDouble -> Ptr CLLong -> Ptr CDouble -> 
+    CLLong -> CLLong -> Ptr CLLong -> Ptr CLLong -> Ptr CShort -> Ptr CDouble -> Ptr CShort -> Ptr CDouble -> 
     Ptr CLLong -> Ptr CLLong -> Ptr CDouble -> Ptr CDouble -> Ptr CLLong -> Ptr CLLong -> IO (CLLong)
 
 parametersSetVarsSetSetVarsHistoryRepasSetSetVarsAlignedTop_u :: Integer -> Integer -> Set.Set Variable -> V.Vector (Set.Set Variable) -> HistoryRepa -> HistogramRepaRed -> HistoryRepa -> HistogramRepaRed -> (V.Vector ((Double,Double,Integer),Set.Set Variable),Integer) 
@@ -2605,9 +2606,9 @@ parametersSetVarsSetSetVarsHistoryRepasSetSetVarsAlignedTop_u xmax omax ww vdd h
     !e = Set.size (V.head vdd)
     !pww = V.map (mvv Map.!) vww
     !pdd = V.map (mvv Map.!) (V.concat (V.toList (V.map qqvv vdd)))
-    !vshh = SV.unsafeCast (UV.convert (R.toUnboxed aa)) :: SV.Vector CLLong
+    !vshh = SV.unsafeCast (UV.convert (R.toUnboxed aa)) :: SV.Vector CShort
     !vshhx = SV.unsafeCast (UV.convert (UV.concat (V.toList laax))) :: SV.Vector CDouble
-    !vshhrr = SV.unsafeCast (UV.convert (R.toUnboxed aarr)) :: SV.Vector CLLong
+    !vshhrr = SV.unsafeCast (UV.convert (R.toUnboxed aarr)) :: SV.Vector CShort
     !vshhrrx = SV.unsafeCast (UV.convert (UV.concat (V.toList laarrx))) :: SV.Vector CDouble
     !vssvv = SV.unsafeCast (UV.convert svv) :: SV.Vector CLLong
     !vspww = SV.unsafeCast (UV.convert pww) :: SV.Vector CLLong
@@ -2673,7 +2674,7 @@ parametersSetVarsSetSetVarsHistoryRepasSetSetVarsAlignedTop_1 xmax omax vv dd hh
 
 foreign import ccall unsafe "listVarsListTuplesArrayHistoriesAlignedTop_u_1" listVarsListTuplesArrayHistoriesAlignedTop_u_1
   :: CLLong -> CLLong -> CLLong -> Ptr CLLong -> CLLong -> CLLong -> CLLong -> 
-    CLLong -> CLLong -> Ptr CLLong -> Ptr CLLong -> Ptr CLLong -> Ptr CDouble -> Ptr CLLong -> Ptr CDouble -> 
+    CLLong -> CLLong -> Ptr CLLong -> Ptr CLLong -> Ptr CShort -> Ptr CDouble -> Ptr CShort -> Ptr CDouble -> 
     Ptr CLLong -> Ptr CLLong -> Ptr CDouble -> Ptr CDouble -> Ptr CLLong -> Ptr CLLong -> IO (CLLong)
 
 parametersSetVarsSetSetVarsHistoryRepasSetSetVarsAlignedTop_u_1 :: Integer -> Integer -> Set.Set Variable -> Set.Set (Set.Set Variable) -> HistoryRepa -> HistogramRepaRed -> HistoryRepa -> HistogramRepaRed -> (Set.Set (Set.Set Variable,Double,Double,Integer),Integer) 
@@ -2692,9 +2693,9 @@ parametersSetVarsSetSetVarsHistoryRepasSetSetVarsAlignedTop_u_1 xmax omax ww dd 
     !e = Set.size (V.head vdd)
     !pww = V.map (mvv Map.!) vww
     !pdd = V.map (mvv Map.!) (V.concat (V.toList (V.map qqvv vdd)))
-    !vshh = SV.unsafeCast (UV.convert (R.toUnboxed aa)) :: SV.Vector CLLong
+    !vshh = SV.unsafeCast (UV.convert (R.toUnboxed aa)) :: SV.Vector CShort
     !vshhx = SV.unsafeCast (UV.convert (UV.concat (V.toList laax))) :: SV.Vector CDouble
-    !vshhrr = SV.unsafeCast (UV.convert (R.toUnboxed aarr)) :: SV.Vector CLLong
+    !vshhrr = SV.unsafeCast (UV.convert (R.toUnboxed aarr)) :: SV.Vector CShort
     !vshhrrx = SV.unsafeCast (UV.convert (UV.concat (V.toList laarrx))) :: SV.Vector CDouble
     !vssvv = SV.unsafeCast (UV.convert svv) :: SV.Vector CLLong
     !vspww = SV.unsafeCast (UV.convert pww) :: SV.Vector CLLong
@@ -2757,9 +2758,9 @@ parametersSetVarsSetSetVarsHistoryRepasSetSetVarsAlignedTop_u_2 xmax omax ww vdd
     !e = Set.size (V.head vdd)
     !pww = V.map (mvv Map.!) vww
     !pdd = V.map (mvv Map.!) (V.concat (V.toList (V.map qqvv vdd)))
-    !vshh = SV.unsafeCast (UV.convert (R.toUnboxed aa)) :: SV.Vector CLLong
+    !vshh = SV.unsafeCast (UV.convert (R.toUnboxed aa)) :: SV.Vector CShort
     !vshhx = SV.unsafeCast (UV.convert (UV.concat (V.toList laax))) :: SV.Vector CDouble
-    !vshhrr = SV.unsafeCast (UV.convert (R.toUnboxed aarr)) :: SV.Vector CLLong
+    !vshhrr = SV.unsafeCast (UV.convert (R.toUnboxed aarr)) :: SV.Vector CShort
     !vshhrrx = SV.unsafeCast (UV.convert (UV.concat (V.toList laarrx))) :: SV.Vector CDouble
     !vssvv = SV.unsafeCast (UV.convert svv) :: SV.Vector CLLong
     !vspww = SV.unsafeCast (UV.convert pww) :: SV.Vector CLLong
@@ -2840,9 +2841,9 @@ parametersSetVarsSetSetVarsHistoryRepasSetSetVarsAlignedDenseTop_u wmax omax ww 
     !e = Set.size (V.head vdd)
     !pww = V.map (mvv Map.!) vww
     !pdd = V.map (mvv Map.!) (V.concat (V.toList (V.map qqvv vdd)))
-    !vshh = SV.unsafeCast (UV.convert (R.toUnboxed aa)) :: SV.Vector CLLong
+    !vshh = SV.unsafeCast (UV.convert (R.toUnboxed aa)) :: SV.Vector CShort
     !vshhx = SV.unsafeCast (UV.convert (UV.concat (V.toList laax))) :: SV.Vector CDouble
-    !vshhrr = SV.unsafeCast (UV.convert (R.toUnboxed aarr)) :: SV.Vector CLLong
+    !vshhrr = SV.unsafeCast (UV.convert (R.toUnboxed aarr)) :: SV.Vector CShort
     !vshhrrx = SV.unsafeCast (UV.convert (UV.concat (V.toList laarrx))) :: SV.Vector CDouble
     !vssvv = SV.unsafeCast (UV.convert svv) :: SV.Vector CLLong
     !vspww = SV.unsafeCast (UV.convert pww) :: SV.Vector CLLong
@@ -2890,7 +2891,7 @@ parametersSetVarsSetSetVarsHistoryRepasSetSetVarsAlignedDenseTop_u wmax omax ww 
 
 foreign import ccall unsafe "listVarsListTuplesArrayHistoriesAlignedExcludeHiddenTop_u" listVarsListTuplesArrayHistoriesAlignedExcludeHiddenTop_u
   :: CLLong -> CLLong -> CLLong -> CLLong -> Ptr CLLong -> CLLong -> CLLong -> CLLong -> 
-    CLLong -> CLLong -> CLLong -> Ptr CLLong -> Ptr CLLong -> Ptr CLLong -> Ptr CLLong -> Ptr CLLong -> Ptr CDouble -> Ptr CLLong -> Ptr CDouble -> 
+    CLLong -> CLLong -> CLLong -> Ptr CLLong -> Ptr CLLong -> Ptr CLLong -> Ptr CLLong -> Ptr CShort -> Ptr CDouble -> Ptr CShort -> Ptr CDouble -> 
     Ptr CLLong -> Ptr CLLong -> Ptr CDouble -> Ptr CDouble -> Ptr CLLong -> Ptr CLLong -> IO (CLLong)
 
 parametersSetVarsSetSetVarsHistoryRepasSetSetVarsAlignedExcludeHiddenDenseTop_u :: Integer -> Integer -> Set.Set (Variable,Variable) -> Set.Set Variable -> V.Vector (Set.Set Variable) -> HistoryRepa -> HistogramRepaRed -> HistoryRepa -> HistogramRepaRed -> (V.Vector ((Double,Double,Integer),Set.Set Variable),Integer) 
@@ -2912,9 +2913,9 @@ parametersSetVarsSetSetVarsHistoryRepasSetSetVarsAlignedExcludeHiddenDenseTop_u 
     !e = Set.size (V.head vdd)
     !pww = V.map (mvv Map.!) vww
     !pdd = V.map (mvv Map.!) (V.concat (V.toList (V.map qqvv vdd)))
-    !vshh = SV.unsafeCast (UV.convert (R.toUnboxed aa)) :: SV.Vector CLLong
+    !vshh = SV.unsafeCast (UV.convert (R.toUnboxed aa)) :: SV.Vector CShort
     !vshhx = SV.unsafeCast (UV.convert (UV.concat (V.toList laax))) :: SV.Vector CDouble
-    !vshhrr = SV.unsafeCast (UV.convert (R.toUnboxed aarr)) :: SV.Vector CLLong
+    !vshhrr = SV.unsafeCast (UV.convert (R.toUnboxed aarr)) :: SV.Vector CShort
     !vshhrrx = SV.unsafeCast (UV.convert (UV.concat (V.toList laarrx))) :: SV.Vector CDouble
     !vssvv = SV.unsafeCast (UV.convert svv) :: SV.Vector CLLong
     !vspccd = SV.unsafeCast (UV.convert pccd) :: SV.Vector CLLong
