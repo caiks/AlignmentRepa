@@ -1118,8 +1118,8 @@ setVarsHistoryRepasCountApproxs kk hh
     Z :. _ :. (!z) = extent rr
     vkk = llvv $ qqll (kk `cap` vv)
     !pkk = llvu $ vvll $ V.map (mvv Map.!) vkk
-    !rr' = UV.generate z (\j -> UV.foldl' (\a i -> a * 23 + (rr R.! (Z :. i :. j))) 0 pkk)
-    ll = IntMap.fromListWith (+) [(fromIntegral i,1) | i <- vull rr']
+    !rr' = UV.generate z (\j -> UV.foldl' (\a i -> a * 23 + (fromIntegral (rr R.! (Z :. i :. j)))) 0 pkk)
+    ll = IntMap.fromListWith (+) [(i,1) | i <- vull rr']
     qqll = Set.toList
     llqq = Set.fromList
     cap = Set.intersection
