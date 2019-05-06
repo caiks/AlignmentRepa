@@ -1698,7 +1698,7 @@ historyRepasListTransformRepasApply_u aa ff = HistoryRepa vbb mbb sbb rbb
         forM_ [0 .. z-1] $ (\j -> do 
           let !r = p*j
           !i <- toIndexPermOffsetM skk pkk r qbb
-          MV.unsafeWrite qbb (r+x) (UV.unsafeIndex utt i))) 
+          MV.unsafeWrite qbb (r+x) (UV.unsafeIndex utt i)))
       return qbb
     !rbb = computeS (R.transpose rbb')
 
