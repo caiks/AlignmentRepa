@@ -4,12 +4,15 @@ module AlignmentRandomRepa (
   historyRepasShuffle_u,
   historyRepasShuffle_u_1,
   historyRepasShuffle_u_2,
+  historyRepasShuffle_u_3,
   historyRepaRegularRandomsUniform_u,
   historyRepaRegularRandomsUniform_u_1,  
   systemsDecompFudsHistoryRepasMultiplyWithShuffle,
 )
 where
 import Control.Monad
+import Foreign.Ptr
+import Foreign.C.Types
 import System.IO.Unsafe
 import AlignmentRepa
 import Data.Int
@@ -20,12 +23,40 @@ import qualified Data.Vector as V
 import qualified Data.Vector.Algorithms.Intro as VA
 import qualified Data.Vector.Unboxed as UV
 import qualified Data.Vector.Unboxed.Mutable as MV
+import qualified Data.Vector.Storable as SV
+import qualified Data.Vector.Storable.Mutable as SMV
 import Data.Array.Repa as R
 import GHC.Real
 import AlignmentRepaVShape
 import AlignmentUtil
 import Alignment
 import System.Random
+
+historyRepasShuffle_u_3 :: HistoryRepa -> Int -> HistoryRepa
+historyRepasShuffle_u_3 aa s = HistoryRepa vaa maa saa rbb
+  where
+    HistoryRepa vaa maa saa raa = aa
+    Z :. (!n) :. (!z) = R.extent raa
+    vv1 = UV.imap (\i a -> (i `div` z, a, i)) $ UV.fromListN (z*n) $ (drop 1 (randoms (mkStdGen s) :: [Double]))
+    vv2 = UV.create $ do
+      mv <- UV.unsafeThaw vv1
+      VA.sort mv
+      return mv
+    paa = UV.map (\(_,_,i) -> i) vv2
+    rbb = R.fromUnboxed ((Z :. n :. z) :: DIM2) $ UV.unsafeBackpermute (R.toUnboxed raa) paa
+
+historyRepasShuffle_u_1 :: HistoryRepa -> Int -> HistoryRepa
+historyRepasShuffle_u_1 aa s = HistoryRepa vaa maa saa rbb
+  where
+    HistoryRepa vaa maa saa raa = aa
+    Z :. (!n) :. (!z) = R.extent raa
+    vv1 = UV.imap (\i a -> (i `div` z, a, i)) $ UV.fromListN (z*n) $ (randoms (mkStdGen s) :: [Double])
+    vv2 = UV.create $ do
+      mv <- UV.unsafeThaw vv1
+      VA.sort mv
+      return mv
+    paa = UV.map (\(_,_,i) -> i) vv2
+    rbb = R.fromUnboxed ((Z :. n :. z) :: DIM2) $ UV.unsafeBackpermute (R.toUnboxed raa) paa
 
 iterateUntilM :: (Monad m) => (a -> Bool) -> (a -> m a) -> a -> m a
 iterateUntilM p f v 
@@ -54,33 +85,21 @@ historyRepasShuffle_u_2 aa s = HistoryRepa vaa maa saa rbb
           MV.unsafeWrite qbb (qz+j) (UV.unsafeIndex qaa (qz+i))))
       UV.unsafeFreeze qbb
 
-historyRepasShuffle_u_1 :: HistoryRepa -> Int -> HistoryRepa
-historyRepasShuffle_u_1 aa s = HistoryRepa vaa maa saa rbb
-  where
-    HistoryRepa vaa maa saa raa = aa
-    Z :. (!n) :. (!z) = R.extent raa
-    vv1 = UV.imap (\i a -> (i `div` z, a, i)) $ UV.fromListN (z*n) $ (randoms (mkStdGen s) :: [Double])
-    vv2 = UV.create $ do
-      mv <- UV.unsafeThaw vv1
-      VA.sort mv
-      return mv
-    paa = UV.map (\(_,_,i) -> i) vv2
-    rbb = R.fromUnboxed ((Z :. n :. z) :: DIM2) $ UV.unsafeBackpermute (R.toUnboxed raa) paa
+foreign import ccall unsafe "historyShuffle_u" historyShuffle_u
+    :: CLLong -> CLLong -> Ptr CShort -> CLLong -> Ptr CShort -> IO ()
 
 historyRepasShuffle_u :: HistoryRepa -> Int -> HistoryRepa
-historyRepasShuffle_u aa s = HistoryRepa vaa maa saa rbb
+historyRepasShuffle_u aa s = HistoryRepa vvaa maa saa rbb
   where
-    HistoryRepa vaa maa saa raa = aa
+    HistoryRepa vvaa maa saa raa = aa
     Z :. (!n) :. (!z) = R.extent raa
-    vv1 = UV.imap (\i a -> (i `div` z, a, i)) $ UV.fromListN (z*n) $ (drop 1 (randoms (mkStdGen s) :: [Double]))
-    vv2 = UV.create $ do
-      mv <- UV.unsafeThaw vv1
-      VA.sort mv
-      return mv
-    paa = UV.map (\(_,_,i) -> i) vv2
-    rbb = R.fromUnboxed ((Z :. n :. z) :: DIM2) $ UV.unsafeBackpermute (R.toUnboxed raa) paa
-
-
+    !vaa = SV.unsafeCast (UV.convert (R.toUnboxed raa)) :: SV.Vector CShort
+    !rbb = R.fromUnboxed ((Z :. n :. z) :: DIM2) $ SV.convert $ SV.unsafeCast $ unsafePerformIO $ do
+      vbb <- SMV.replicate (n*z) (-1)
+      SV.unsafeWith vaa $ \paa -> do
+      SMV.unsafeWith vbb $ \pbb -> do
+        historyShuffle_u (fromIntegral n) (fromIntegral z) paa (fromIntegral s) pbb
+      SV.unsafeFreeze vbb 
 
 historyRepaRegularRandomsUniform_u :: Int16 -> Int -> Int -> Int -> HistoryRepa
 historyRepaRegularRandomsUniform_u d n z s = 
