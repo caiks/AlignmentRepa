@@ -74,6 +74,7 @@ module AlignmentRepa (
   historyRepasTransformRepasApply_u,
   historyRepasListTransformRepasApply,
   listVariablesListTransformRepasSort,
+  listVariablesListTransformRepasSort_1,
   historyRepasListTransformRepasApply_u,
   systemsFudsHistoryRepasMultiply,
   systemsFudsHistoryRepasMultiply_u,
@@ -1643,6 +1644,22 @@ historyRepasListTransformRepasApply aa ff =
 
 listVariablesListTransformRepasSort :: V.Vector Variable -> V.Vector TransformRepa -> V.Vector TransformRepa 
 listVariablesListTransformRepasSort vv ff = next vv' ff' V.empty
+  where
+    vv' = vvqq vv
+    ff' = V.map (\tt -> (tt,und tt)) $ V.filter (\tt -> der tt `Set.notMember` vv') ff
+    next vv ff gg
+      | not (V.null hh) = next (V.foldl union vv hh) ii (gg V.++ (V.map fst hh))
+      | otherwise = gg
+      where 
+        (hh,ii) = V.partition (\(_,xx) -> xx `Set.isSubsetOf` vv) ff
+    union vv (tt,_) = der tt `Set.insert` vv
+    und tt =  der tt `Set.delete` vars tt 
+    vars = vvqq . transformRepasVectorVar
+    vvqq = Set.fromList . V.toList
+    der = transformRepasVarDerived
+
+listVariablesListTransformRepasSort_1 :: V.Vector Variable -> V.Vector TransformRepa -> V.Vector TransformRepa 
+listVariablesListTransformRepasSort_1 vv ff = next vv' ff' V.empty
   where
     vv' = Set.fromList $ V.toList vv
     ff' = V.map (\tt -> (tt,und tt)) $ V.filter (\tt -> der tt `Set.notMember` vv') ff
