@@ -6,6 +6,7 @@ module AlignmentRandomRepa (
   historyRepasShuffle_u_2,
   historyRepasShuffle_u_3,
   historyRepasShuffle_u_4,
+  historyRepasShuffle_u_5,
   historyRepaRegularRandomsUniform_u,
   historyRepaRegularRandomsUniform_u_1,  
   systemsDecompFudsHistoryRepasMultiplyWithShuffle,
@@ -92,10 +93,9 @@ historyRepasShuffle_u_4 aa s = HistoryRepa vaa maa saa rbb
   where
     HistoryRepa vaa maa saa raa = aa
     Z :. (!n) :. (!z) = R.extent raa
-    !qaa = R.toUnboxed raa
     !rbb = R.fromUnboxed ((Z :. n :. z) :: DIM2) $ unsafePerformIO $ do
       setStdGen (mkStdGen s)
-      qbb <- MV.replicate (n*z) (-1)
+      qbb <- UV.thaw (R.toUnboxed raa)
       forM_ [0 .. n-1] $ (\q -> do 
         let !qz = q*z
         forM_ (reverse [0 .. z-1]) $ (\i -> do 
@@ -106,11 +106,11 @@ historyRepasShuffle_u_4 aa s = HistoryRepa vaa maa saa rbb
           MV.unsafeWrite qbb (qz+i) y))
       UV.unsafeFreeze qbb
 
-foreign import ccall unsafe "historyShuffle_u" historyShuffle_u
+foreign import ccall unsafe "historyShuffle_u_5" historyShuffle_u_5
     :: CLLong -> CLLong -> Ptr CShort -> CLLong -> Ptr CShort -> IO ()
 
-historyRepasShuffle_u :: HistoryRepa -> Int -> HistoryRepa
-historyRepasShuffle_u aa s = HistoryRepa vvaa maa saa rbb
+historyRepasShuffle_u_5 :: HistoryRepa -> Int -> HistoryRepa
+historyRepasShuffle_u_5 aa s = HistoryRepa vvaa maa saa rbb
   where
     HistoryRepa vvaa maa saa raa = aa
     Z :. (!n) :. (!z) = R.extent raa
@@ -119,8 +119,23 @@ historyRepasShuffle_u aa s = HistoryRepa vvaa maa saa rbb
       vbb <- SMV.replicate (n*z) (-1)
       SV.unsafeWith vaa $ \paa -> do
       SMV.unsafeWith vbb $ \pbb -> do
-        historyShuffle_u (fromIntegral n) (fromIntegral z) paa (fromIntegral s) pbb
+        historyShuffle_u_5 (fromIntegral n) (fromIntegral z) paa (fromIntegral s) pbb
       SV.unsafeFreeze vbb 
+
+foreign import ccall unsafe "historyShuffle_u" historyShuffle_u
+    :: CLLong -> CLLong -> CLLong -> Ptr CShort -> IO ()
+
+historyRepasShuffle_u :: HistoryRepa -> Int -> HistoryRepa
+historyRepasShuffle_u aa s = HistoryRepa vvaa maa saa rbb
+  where
+    HistoryRepa vvaa maa saa raa = aa
+    Z :. (!n) :. (!z) = R.extent raa
+    !vbb = SV.unsafeCast (UV.convert (R.toUnboxed raa)) :: SV.Vector CShort
+    !rbb = R.fromUnboxed ((Z :. n :. z) :: DIM2) $ SV.convert $ SV.unsafeCast $ unsafePerformIO $ do
+      mvbb <- SV.unsafeThaw vbb
+      SMV.unsafeWith mvbb $ \pbb -> do
+        historyShuffle_u (fromIntegral n) (fromIntegral z) (fromIntegral s) pbb
+      SV.unsafeFreeze mvbb 
 
 historyRepaRegularRandomsUniform_u :: Int16 -> Int -> Int -> Int -> HistoryRepa
 historyRepaRegularRandomsUniform_u d n z s = 

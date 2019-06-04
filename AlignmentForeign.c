@@ -2308,7 +2308,7 @@ long long arrayHistoryPairsRollMax_u(
 
 #include <stdlib.h>
 
-void historyShuffle_u(long long n, long long z, short* paa, long long s, short* pbb)
+void historyShuffle_u_5(long long n, long long z, short* paa, long long s, short* pbb)
 {
     long long q;
     long long qz;
@@ -2328,4 +2328,27 @@ void historyShuffle_u(long long n, long long z, short* paa, long long s, short* 
         }
     }
 }
+
+void historyShuffle_u(long long n, long long z, long long s, short* pbb)
+{
+    long long q;
+    long long qz;
+    long long i;
+    long long j;
+    short x;
+
+    srand(s);
+    for (q=0; q<n; q++)
+    {
+        qz = q*z;
+	for (i=z-1; i!=0; i--)
+        {
+            j = rand() % (i+1);
+            x = pbb[qz+j];
+            pbb[qz+j] = pbb[qz+i];
+            pbb[qz+i] = x;
+        }
+    }
+}
+
 
