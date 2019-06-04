@@ -5,6 +5,7 @@ module AlignmentRandomRepa (
   historyRepasShuffle_u_1,
   historyRepasShuffle_u_2,
   historyRepasShuffle_u_3,
+  historyRepasShuffle_u_4,
   historyRepaRegularRandomsUniform_u,
   historyRepaRegularRandomsUniform_u_1,  
   systemsDecompFudsHistoryRepasMultiplyWithShuffle,
@@ -83,6 +84,26 @@ historyRepasShuffle_u_2 aa s = HistoryRepa vaa maa saa rbb
                      y <- MV.unsafeRead qbb (qz+j')
                      return (y,j')) (y,j)
           MV.unsafeWrite qbb (qz+j) (UV.unsafeIndex qaa (qz+i))))
+      UV.unsafeFreeze qbb
+
+-- Fisher-Yates
+historyRepasShuffle_u_4 :: HistoryRepa -> Int -> HistoryRepa
+historyRepasShuffle_u_4 aa s = HistoryRepa vaa maa saa rbb
+  where
+    HistoryRepa vaa maa saa raa = aa
+    Z :. (!n) :. (!z) = R.extent raa
+    !qaa = R.toUnboxed raa
+    !rbb = R.fromUnboxed ((Z :. n :. z) :: DIM2) $ unsafePerformIO $ do
+      setStdGen (mkStdGen s)
+      qbb <- MV.replicate (n*z) (-1)
+      forM_ [0 .. n-1] $ (\q -> do 
+        let !qz = q*z
+        forM_ (reverse [0 .. z-1]) $ (\i -> do 
+          j <- randomRIO (0,i) :: IO Int
+          x <- MV.unsafeRead qbb (qz+i)
+          y <- MV.unsafeRead qbb (qz+j)
+          MV.unsafeWrite qbb (qz+j) x
+          MV.unsafeWrite qbb (qz+i) y))
       UV.unsafeFreeze qbb
 
 foreign import ccall unsafe "historyShuffle_u" historyShuffle_u
