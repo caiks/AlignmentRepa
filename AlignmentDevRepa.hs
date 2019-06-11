@@ -211,6 +211,7 @@ dfff = decompFudsFud
 dfund = decompFudsUnderlying
 dfapply aa df = decompFudsHistogramsApply df aa
 dfmul aa df = decompFudsHistogramsMultiply df aa
+dfnul uu df g = fromJust $ systemsDecompFudsNullablePracticable uu df g
 
 ent = histogramsEntropy 
 lent aa ww vvl = ent (aa `red` (ww `Set.union` vvl)) - ent (aa `red` ww)
@@ -237,12 +238,12 @@ hrsize = historyRepasSize
 hrfmul = systemsFudsHistoryRepasMultiply_u
 hrhrred hh vv = setVarsHistoryRepasHistoryRepaReduced vv hh
 hrmult = systemsDecompFudsHistoryRepasMultiply
+dfred = systemsDecompFudsHistoryRepasDecompFudReduced
 hrquery = systemsDecompFudsHistoryRepasHistoriesQuery
 hrtest = systemsDecompFudsHistoryRepasHistoryRepasSetVariablesTest
 hralgn = systemsDecompFudsHistoryRepasAlignmentContentShuffleSummation_u
 hralgntree = systemsDecompFudsHistoryRepasTreeAlignmentContentShuffleSummation_u
 hrlent uu hh ww vvl = ent (hhaa $ hrhh uu $ hh `hrhrred` (ww `union` vvl)) - ent (hhaa $ hrhh uu $ hh `hrhrred` ww)
-
 summation = systemsDecompFudsHistoryRepasAlignmentContentShuffleSummation_u
 
 
