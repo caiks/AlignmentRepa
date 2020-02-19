@@ -16,7 +16,7 @@ There are a couple of useful libraries that should be installed along with repa 
 
 The [Haskell implementation of fast Practicable Inducers](https://greenlake.co.uk/pages/inducer_haskell_impl_repa) discusses the implementation of the *inducers* using this repository. 
 
-## Installation
+## Download
 
 The `AlignmentRepa` module requires the [Haskell platform](https://www.haskell.org/downloads#platform) to be installed.
 
