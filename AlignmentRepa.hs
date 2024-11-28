@@ -1171,10 +1171,10 @@ setVarsHistoryRepaStorablesReduce !f !kk !hh !vsh
       let vs = SV.replicate (R.size skk) 0
       mv <- SV.unsafeThaw vs
       SV.unsafeWith vspkk $ \ppkk -> do
-      SV.unsafeWith vsskk $ \pskk -> do
-      SV.unsafeWith vsh $ \prr -> do
-      SMV.unsafeWith mv $ \pmv -> do
-        listVarsArrayHistoriesReduce_u (realToFrac f) (fromIntegral m) ppkk pskk (fromIntegral z) prr pmv
+        SV.unsafeWith vsskk $ \pskk -> do
+          SV.unsafeWith vsh $ \prr -> do
+            SMV.unsafeWith mv $ \pmv -> do
+              listVarsArrayHistoriesReduce_u (realToFrac f) (fromIntegral m) ppkk pskk (fromIntegral z) prr pmv
       SV.unsafeFreeze mv 
     vsempty = UV.empty
     llrr = R.fromListUnboxed
@@ -1609,11 +1609,11 @@ histogramRepaVecsRollMax rrv  = (tt, toInteger q)
       mppm <- SV.unsafeThaw vsppm
       q <- SV.unsafeWith vssvv $ \psvv -> do
         SV.unsafeWith vsaa $ \paa -> do
-        SV.unsafeWith vsbb $ \pbb -> do
-        SV.unsafeWith vsaax $ \paax -> do
-        SV.unsafeWith vsbbx $ \pbbx -> do
-        SMV.unsafeWith mppm $ \pmppm -> do
-          arrayHistoryPairsRollMax_u (fromIntegral v) (fromIntegral n) psvv (fromIntegral d) (fromIntegral nd) paa paax pbb pbbx pmppm
+          SV.unsafeWith vsbb $ \pbb -> do
+            SV.unsafeWith vsaax $ \paax -> do
+              SV.unsafeWith vsbbx $ \pbbx -> do
+                SMV.unsafeWith mppm $ \pmppm -> do
+                  arrayHistoryPairsRollMax_u (fromIntegral v) (fromIntegral n) psvv (fromIntegral d) (fromIntegral nd) paa paax pbb pbbx pmppm
       vsppm' <- SV.unsafeFreeze mppm
       return ((SV.convert (SV.unsafeCast vsppm' :: SV.Vector Int)),q)
     !tt = V.map (\(i,e) -> UV.take e (UV.drop (d*i) ppm)) (V.indexed (UV.convert svv))
@@ -2274,14 +2274,14 @@ setSetVarsHistogramRepaPairStorablesPartitionIndependentPair_u pp rrv !vsaa vsaa
       mbb <- SV.unsafeThaw vsbb
       mbbrr <- SV.unsafeThaw vsbbrr
       SV.unsafeWith vssvv $ \psvv -> do
-      SV.unsafeWith vslyy $ \plyy -> do
-      SV.unsafeWith vssyy $ \psyy -> do
-      SV.unsafeWith vsppp $ \pppp -> do
-      SV.unsafeWith vsaa $ \paa -> do
-      SV.unsafeWith vsaarr $ \paarr -> do
-      SMV.unsafeWith mbb $ \pmbb -> do
-      SMV.unsafeWith mbbrr $ \pmbbrr -> do
-        listListVarsArrayHistoryPairsPartitionIndependent_u (realToFrac z) (fromIntegral v) (fromIntegral n) psvv (fromIntegral m) (fromIntegral r) plyy psyy pppp paa paarr pmbb pmbbrr
+        SV.unsafeWith vslyy $ \plyy -> do
+          SV.unsafeWith vssyy $ \psyy -> do
+            SV.unsafeWith vsppp $ \pppp -> do
+              SV.unsafeWith vsaa $ \paa -> do
+                SV.unsafeWith vsaarr $ \paarr -> do
+                  SMV.unsafeWith mbb $ \pmbb -> do
+                    SMV.unsafeWith mbbrr $ \pmbbrr -> do
+                      listListVarsArrayHistoryPairsPartitionIndependent_u (realToFrac z) (fromIntegral v) (fromIntegral n) psvv (fromIntegral m) (fromIntegral r) plyy psyy pppp paa paarr pmbb pmbbrr
       vsbb' <- SV.unsafeFreeze mbb 
       vsbbrr' <- SV.unsafeFreeze mbbrr
       return (vsbb',vsbbrr')
@@ -2326,14 +2326,14 @@ parametersHistogramRepaVecsSetTuplePartitionTop_u mmax umax pmax rrv y1 = (tt, t
       mtt <- SV.unsafeThaw vstt
       t <- SV.unsafeWith vssvv $ \psvv -> do
         SV.unsafeWith vsqm $ \pqm -> do
-        SV.unsafeWith vsql $ \pql -> do
-        SV.unsafeWith vsqs $ \pqs -> do
-        SV.unsafeWith vsqp $ \pqp -> do
-        SV.unsafeWith vsaa $ \paa -> do
-        SV.unsafeWith vsaarr $ \paarr -> do
-        SMV.unsafeWith mtt $ \pmtt -> do
-          listListVarsArrayHistoryPairsSetTuplePartitionTop_u (fromIntegral pmax) (realToFrac z) (fromIntegral v) (fromIntegral n) 
-            psvv (fromIntegral q) (realToFrac y1) pqm pql pqs pqp paa paarr pmtt
+          SV.unsafeWith vsql $ \pql -> do
+            SV.unsafeWith vsqs $ \pqs -> do
+              SV.unsafeWith vsqp $ \pqp -> do
+                SV.unsafeWith vsaa $ \paa -> do
+                  SV.unsafeWith vsaarr $ \paarr -> do
+                    SMV.unsafeWith mtt $ \pmtt -> do
+                      listListVarsArrayHistoryPairsSetTuplePartitionTop_u (fromIntegral pmax) (realToFrac z) (fromIntegral v) (fromIntegral n) 
+                        psvv (fromIntegral q) (realToFrac y1) pqm pql pqs pqp paa paarr pmtt
       vstt' <- SV.unsafeFreeze mtt 
       return (SV.take (fromIntegral t) vstt',t)
     !tt = Set.fromList (List.map (\p -> let (_,_,_,_,yy) = qq !! (fromIntegral p) in yy) (SV.toList vstt))
@@ -2370,14 +2370,14 @@ parametersHistogramRepaVecsSetTuplePartitionTopByM_u mmax umax pmax rrv y1 = (tt
           mtt <- SV.unsafeThaw vstt
           t <- SV.unsafeWith vssvv $ \psvv -> do
             SV.unsafeWith vsqm $ \pqm -> do
-            SV.unsafeWith vsql $ \pql -> do
-            SV.unsafeWith vsqs $ \pqs -> do
-            SV.unsafeWith vsqp $ \pqp -> do
-            SV.unsafeWith vsaa $ \paa -> do
-            SV.unsafeWith vsaarr $ \paarr -> do
-            SMV.unsafeWith mtt $ \pmtt -> do
-              listListVarsArrayHistoryPairsSetTuplePartitionTop_u (fromIntegral pmax) (realToFrac z) (fromIntegral v) (fromIntegral n) 
-                psvv (fromIntegral q) (realToFrac y1) pqm pql pqs pqp paa paarr pmtt
+              SV.unsafeWith vsql $ \pql -> do
+                SV.unsafeWith vsqs $ \pqs -> do
+                  SV.unsafeWith vsqp $ \pqp -> do
+                    SV.unsafeWith vsaa $ \paa -> do
+                      SV.unsafeWith vsaarr $ \paarr -> do
+                        SMV.unsafeWith mtt $ \pmtt -> do
+                          listListVarsArrayHistoryPairsSetTuplePartitionTop_u (fromIntegral pmax) (realToFrac z) (fromIntegral v) (fromIntegral n) 
+                            psvv (fromIntegral q) (realToFrac y1) pqm pql pqs pqp paa paarr pmtt
           vstt' <- SV.unsafeFreeze mtt 
           return (SV.take (fromIntegral t) vstt',t)
         nlluv n ll = let d = n - length ll in if d > 0 then UV.fromList ll UV.++ UV.replicate d 0 else UV.fromListN n ll
@@ -2435,17 +2435,17 @@ parametersSetVarsHistoryRepasSetSetVarsAlignedTop_u xmax omax ww hh hhx hhrr hhr
       mss <- SV.unsafeThaw vsss
       t <- SV.unsafeWith vssvv $ \psvv -> do
         SV.unsafeWith vspww $ \ppww -> do
-        SV.unsafeWith vshh $ \phh -> do
-        SV.unsafeWith vshhx $ \phhx -> do
-        SV.unsafeWith vshhrr $ \phhrr -> do
-        SV.unsafeWith vshhrrx $ \phhrrx -> do
-        SMV.unsafeWith mqww1 $ \pmqww1 -> do
-        SMV.unsafeWith mqww2 $ \pmqww2 -> do
-        SMV.unsafeWith mts1 $ \pmts1 -> do
-        SMV.unsafeWith mts2 $ \pmts2 -> do
-        SMV.unsafeWith mts3 $ \pmts3 -> do
-        SMV.unsafeWith mss $ \pmss -> do
-          listVarsArrayHistoriesAlignedTop_u (fromIntegral xmax) (fromIntegral omax) (fromIntegral n) psvv (fromIntegral m) (fromIntegral z) (fromIntegral zrr) ppww phh phhx phhrr phhrrx pmqww1 pmqww2 pmts1 pmts2 pmts3 pmss
+          SV.unsafeWith vshh $ \phh -> do
+            SV.unsafeWith vshhx $ \phhx -> do
+              SV.unsafeWith vshhrr $ \phhrr -> do
+                SV.unsafeWith vshhrrx $ \phhrrx -> do
+                  SMV.unsafeWith mqww1 $ \pmqww1 -> do
+                    SMV.unsafeWith mqww2 $ \pmqww2 -> do
+                      SMV.unsafeWith mts1 $ \pmts1 -> do
+                        SMV.unsafeWith mts2 $ \pmts2 -> do
+                          SMV.unsafeWith mts3 $ \pmts3 -> do
+                            SMV.unsafeWith mss $ \pmss -> do
+                              listVarsArrayHistoriesAlignedTop_u (fromIntegral xmax) (fromIntegral omax) (fromIntegral n) psvv (fromIntegral m) (fromIntegral z) (fromIntegral zrr) ppww phh phhx phhrr phhrrx pmqww1 pmqww2 pmts1 pmts2 pmts3 pmss
       vsqww1' <- SV.unsafeFreeze mqww1 
       vsqww2' <- SV.unsafeFreeze mqww2
       vsts1' <- SV.unsafeFreeze mts1
@@ -2499,13 +2499,13 @@ parametersSetVarsHistoryRepasSetSetVarsAlignedTop_u_1 xmax omax ww hh hhx hhrr h
       mqww2 <- SV.unsafeThaw vsqww2
       t <- SV.unsafeWith vssvv $ \psvv -> do
         SV.unsafeWith vspww $ \ppww -> do
-        SV.unsafeWith vshh $ \phh -> do
-        SV.unsafeWith vshhx $ \phhx -> do
-        SV.unsafeWith vshhrr $ \phhrr -> do
-        SV.unsafeWith vshhrrx $ \phhrrx -> do
-        SMV.unsafeWith mqww1 $ \pmqww1 -> do
-        SMV.unsafeWith mqww2 $ \pmqww2 -> do
-          listVarsArrayHistoriesAlignedTop_u_1 (fromIntegral xmax) (fromIntegral omax) (fromIntegral n) psvv (fromIntegral m) (fromIntegral z) (fromIntegral zrr) ppww phh phhx phhrr phhrrx pmqww1 pmqww2
+          SV.unsafeWith vshh $ \phh -> do
+            SV.unsafeWith vshhx $ \phhx -> do
+              SV.unsafeWith vshhrr $ \phhrr -> do
+                SV.unsafeWith vshhrrx $ \phhrrx -> do
+                  SMV.unsafeWith mqww1 $ \pmqww1 -> do
+                    SMV.unsafeWith mqww2 $ \pmqww2 -> do
+                      listVarsArrayHistoriesAlignedTop_u_1 (fromIntegral xmax) (fromIntegral omax) (fromIntegral n) psvv (fromIntegral m) (fromIntegral z) (fromIntegral zrr) ppww phh phhx phhrr phhrrx pmqww1 pmqww2
       vsqww1' <- SV.unsafeFreeze mqww1 
       vsqww2' <- SV.unsafeFreeze mqww2
       return (SV.take (fromIntegral t) vsqww1',SV.take (fromIntegral t) vsqww2')
@@ -2560,17 +2560,17 @@ parametersSetVarsHistoryRepasSetSetVarsAlignedTop_u_2 xmax omax ww hh hhx hhrr h
       mss <- SV.unsafeThaw vsss
       t <- SV.unsafeWith vssvv $ \psvv -> do
         SV.unsafeWith vspww $ \ppww -> do
-        SV.unsafeWith vshh $ \phh -> do
-        SV.unsafeWith vshhx $ \phhx -> do
-        SV.unsafeWith vshhrr $ \phhrr -> do
-        SV.unsafeWith vshhrrx $ \phhrrx -> do
-        SMV.unsafeWith mqww1 $ \pmqww1 -> do
-        SMV.unsafeWith mqww2 $ \pmqww2 -> do
-        SMV.unsafeWith mts1 $ \pmts1 -> do
-        SMV.unsafeWith mts2 $ \pmts2 -> do
-        SMV.unsafeWith mts3 $ \pmts3 -> do
-        SMV.unsafeWith mss $ \pmss -> do
-          listVarsArrayHistoriesAlignedTop_u (fromIntegral xmax) (fromIntegral omax) (fromIntegral n) psvv (fromIntegral m) (fromIntegral z) (fromIntegral zrr) ppww phh phhx phhrr phhrrx pmqww1 pmqww2 pmts1 pmts2 pmts3 pmss
+          SV.unsafeWith vshh $ \phh -> do
+            SV.unsafeWith vshhx $ \phhx -> do
+              SV.unsafeWith vshhrr $ \phhrr -> do
+                SV.unsafeWith vshhrrx $ \phhrrx -> do
+                  SMV.unsafeWith mqww1 $ \pmqww1 -> do
+                    SMV.unsafeWith mqww2 $ \pmqww2 -> do
+                      SMV.unsafeWith mts1 $ \pmts1 -> do
+                        SMV.unsafeWith mts2 $ \pmts2 -> do
+                          SMV.unsafeWith mts3 $ \pmts3 -> do
+                            SMV.unsafeWith mss $ \pmss -> do
+                              listVarsArrayHistoriesAlignedTop_u (fromIntegral xmax) (fromIntegral omax) (fromIntegral n) psvv (fromIntegral m) (fromIntegral z) (fromIntegral zrr) ppww phh phhx phhrr phhrrx pmqww1 pmqww2 pmts1 pmts2 pmts3 pmss
       vsqww1' <- SV.unsafeFreeze mqww1 
       vsqww2' <- SV.unsafeFreeze mqww2
       vsts1' <- SV.unsafeFreeze mts1
@@ -2645,20 +2645,20 @@ parametersSetVarsSetSetVarsHistoryRepasSetSetVarsAlignedTop_u xmax omax ww vdd h
       mss <- SV.unsafeThaw vsss
       t <- SV.unsafeWith vssvv $ \psvv -> do
         SV.unsafeWith vspww $ \ppww -> do
-        SV.unsafeWith vspdd $ \ppdd -> do
-        SV.unsafeWith vshh $ \phh -> do
-        SV.unsafeWith vshhx $ \phhx -> do
-        SV.unsafeWith vshhrr $ \phhrr -> do
-        SV.unsafeWith vshhrrx $ \phhrrx -> do
-        SMV.unsafeWith mqww1 $ \pmqww1 -> do
-        SMV.unsafeWith mqww2 $ \pmqww2 -> do
-        SMV.unsafeWith mts1 $ \pmts1 -> do
-        SMV.unsafeWith mts2 $ \pmts2 -> do
-        SMV.unsafeWith mts3 $ \pmts3 -> do
-        SMV.unsafeWith mss $ \pmss -> do
-          listVarsListTuplesArrayHistoriesAlignedTop_u 0 (fromIntegral xmax) (fromIntegral omax) 
-            (fromIntegral n) psvv (fromIntegral m) (fromIntegral d) (fromIntegral e) 
-            (fromIntegral z) (fromIntegral zrr) ppww ppdd phh phhx phhrr phhrrx pmqww1 pmqww2 pmts1 pmts2 pmts3 pmss
+          SV.unsafeWith vspdd $ \ppdd -> do
+            SV.unsafeWith vshh $ \phh -> do
+              SV.unsafeWith vshhx $ \phhx -> do
+                SV.unsafeWith vshhrr $ \phhrr -> do
+                  SV.unsafeWith vshhrrx $ \phhrrx -> do
+                    SMV.unsafeWith mqww1 $ \pmqww1 -> do
+                      SMV.unsafeWith mqww2 $ \pmqww2 -> do
+                        SMV.unsafeWith mts1 $ \pmts1 -> do
+                          SMV.unsafeWith mts2 $ \pmts2 -> do
+                            SMV.unsafeWith mts3 $ \pmts3 -> do
+                              SMV.unsafeWith mss $ \pmss -> do
+                                listVarsListTuplesArrayHistoriesAlignedTop_u 0 (fromIntegral xmax) (fromIntegral omax) 
+                                  (fromIntegral n) psvv (fromIntegral m) (fromIntegral d) (fromIntegral e) 
+                                  (fromIntegral z) (fromIntegral zrr) ppww ppdd phh phhx phhrr phhrrx pmqww1 pmqww2 pmts1 pmts2 pmts3 pmss
       vsqww1' <- SV.unsafeFreeze mqww1 
       vsqww2' <- SV.unsafeFreeze mqww2
       vsts1' <- SV.unsafeFreeze mts1
@@ -2732,20 +2732,20 @@ parametersSetVarsSetSetVarsHistoryRepasSetSetVarsAlignedTop_u_1 xmax omax ww dd 
       mss <- SV.unsafeThaw vsss
       t <- SV.unsafeWith vssvv $ \psvv -> do
         SV.unsafeWith vspww $ \ppww -> do
-        SV.unsafeWith vspdd $ \ppdd -> do
-        SV.unsafeWith vshh $ \phh -> do
-        SV.unsafeWith vshhx $ \phhx -> do
-        SV.unsafeWith vshhrr $ \phhrr -> do
-        SV.unsafeWith vshhrrx $ \phhrrx -> do
-        SMV.unsafeWith mqww1 $ \pmqww1 -> do
-        SMV.unsafeWith mqww2 $ \pmqww2 -> do
-        SMV.unsafeWith mts1 $ \pmts1 -> do
-        SMV.unsafeWith mts2 $ \pmts2 -> do
-        SMV.unsafeWith mts3 $ \pmts3 -> do
-        SMV.unsafeWith mss $ \pmss -> do
-          listVarsListTuplesArrayHistoriesAlignedTop_u_1 (fromIntegral xmax) (fromIntegral omax) 
-            (fromIntegral n) psvv (fromIntegral m) (fromIntegral d) (fromIntegral e) 
-            (fromIntegral z) (fromIntegral zrr) ppww ppdd phh phhx phhrr phhrrx pmqww1 pmqww2 pmts1 pmts2 pmts3 pmss
+          SV.unsafeWith vspdd $ \ppdd -> do
+            SV.unsafeWith vshh $ \phh -> do
+              SV.unsafeWith vshhx $ \phhx -> do
+                SV.unsafeWith vshhrr $ \phhrr -> do
+                  SV.unsafeWith vshhrrx $ \phhrrx -> do
+                    SMV.unsafeWith mqww1 $ \pmqww1 -> do
+                      SMV.unsafeWith mqww2 $ \pmqww2 -> do
+                        SMV.unsafeWith mts1 $ \pmts1 -> do
+                          SMV.unsafeWith mts2 $ \pmts2 -> do
+                            SMV.unsafeWith mts3 $ \pmts3 -> do
+                              SMV.unsafeWith mss $ \pmss -> do
+                                listVarsListTuplesArrayHistoriesAlignedTop_u_1 (fromIntegral xmax) (fromIntegral omax) 
+                                  (fromIntegral n) psvv (fromIntegral m) (fromIntegral d) (fromIntegral e) 
+                                  (fromIntegral z) (fromIntegral zrr) ppww ppdd phh phhx phhrr phhrrx pmqww1 pmqww2 pmts1 pmts2 pmts3 pmss
       vsqww1' <- SV.unsafeFreeze mqww1 
       vsqww2' <- SV.unsafeFreeze mqww2
       vsts1' <- SV.unsafeFreeze mts1
@@ -2797,20 +2797,20 @@ parametersSetVarsSetSetVarsHistoryRepasSetSetVarsAlignedTop_u_2 xmax omax ww vdd
       mss <- SV.unsafeThaw vsss
       t <- SV.unsafeWith vssvv $ \psvv -> do
         SV.unsafeWith vspww $ \ppww -> do
-        SV.unsafeWith vspdd $ \ppdd -> do
-        SV.unsafeWith vshh $ \phh -> do
-        SV.unsafeWith vshhx $ \phhx -> do
-        SV.unsafeWith vshhrr $ \phhrr -> do
-        SV.unsafeWith vshhrrx $ \phhrrx -> do
-        SMV.unsafeWith mqww1 $ \pmqww1 -> do
-        SMV.unsafeWith mqww2 $ \pmqww2 -> do
-        SMV.unsafeWith mts1 $ \pmts1 -> do
-        SMV.unsafeWith mts2 $ \pmts2 -> do
-        SMV.unsafeWith mts3 $ \pmts3 -> do
-        SMV.unsafeWith mss $ \pmss -> do
-          listVarsListTuplesArrayHistoriesAlignedTop_u_1 (fromIntegral xmax) (fromIntegral omax) 
-            (fromIntegral n) psvv (fromIntegral m) (fromIntegral d) (fromIntegral e) 
-            (fromIntegral z) (fromIntegral zrr) ppww ppdd phh phhx phhrr phhrrx pmqww1 pmqww2 pmts1 pmts2 pmts3 pmss
+          SV.unsafeWith vspdd $ \ppdd -> do
+            SV.unsafeWith vshh $ \phh -> do
+              SV.unsafeWith vshhx $ \phhx -> do
+                SV.unsafeWith vshhrr $ \phhrr -> do
+                  SV.unsafeWith vshhrrx $ \phhrrx -> do
+                    SMV.unsafeWith mqww1 $ \pmqww1 -> do
+                      SMV.unsafeWith mqww2 $ \pmqww2 -> do
+                        SMV.unsafeWith mts1 $ \pmts1 -> do
+                          SMV.unsafeWith mts2 $ \pmts2 -> do
+                            SMV.unsafeWith mts3 $ \pmts3 -> do
+                              SMV.unsafeWith mss $ \pmss -> do
+                                listVarsListTuplesArrayHistoriesAlignedTop_u_1 (fromIntegral xmax) (fromIntegral omax) 
+                                  (fromIntegral n) psvv (fromIntegral m) (fromIntegral d) (fromIntegral e) 
+                                  (fromIntegral z) (fromIntegral zrr) ppww ppdd phh phhx phhrr phhrrx pmqww1 pmqww2 pmts1 pmts2 pmts3 pmss
       vsqww1' <- SV.unsafeFreeze mqww1 
       vsqww2' <- SV.unsafeFreeze mqww2
       vsts1' <- SV.unsafeFreeze mts1
@@ -2880,20 +2880,20 @@ parametersSetVarsSetSetVarsHistoryRepasSetSetVarsAlignedDenseTop_u wmax omax ww 
       mss <- SV.unsafeThaw vsss
       t <- SV.unsafeWith vssvv $ \psvv -> do
         SV.unsafeWith vspww $ \ppww -> do
-        SV.unsafeWith vspdd $ \ppdd -> do
-        SV.unsafeWith vshh $ \phh -> do
-        SV.unsafeWith vshhx $ \phhx -> do
-        SV.unsafeWith vshhrr $ \phhrr -> do
-        SV.unsafeWith vshhrrx $ \phhrrx -> do
-        SMV.unsafeWith mqww1 $ \pmqww1 -> do
-        SMV.unsafeWith mqww2 $ \pmqww2 -> do
-        SMV.unsafeWith mts1 $ \pmts1 -> do
-        SMV.unsafeWith mts2 $ \pmts2 -> do
-        SMV.unsafeWith mts3 $ \pmts3 -> do
-        SMV.unsafeWith mss $ \pmss -> do
-          listVarsListTuplesArrayHistoriesAlignedTop_u 1 (fromIntegral wmax) (fromIntegral omax) 
-            (fromIntegral n) psvv (fromIntegral m) (fromIntegral d) (fromIntegral e) 
-            (fromIntegral z) (fromIntegral zrr) ppww ppdd phh phhx phhrr phhrrx pmqww1 pmqww2 pmts1 pmts2 pmts3 pmss
+          SV.unsafeWith vspdd $ \ppdd -> do
+            SV.unsafeWith vshh $ \phh -> do
+              SV.unsafeWith vshhx $ \phhx -> do
+                SV.unsafeWith vshhrr $ \phhrr -> do
+                  SV.unsafeWith vshhrrx $ \phhrrx -> do
+                    SMV.unsafeWith mqww1 $ \pmqww1 -> do
+                      SMV.unsafeWith mqww2 $ \pmqww2 -> do
+                        SMV.unsafeWith mts1 $ \pmts1 -> do
+                          SMV.unsafeWith mts2 $ \pmts2 -> do
+                            SMV.unsafeWith mts3 $ \pmts3 -> do
+                              SMV.unsafeWith mss $ \pmss -> do
+                                listVarsListTuplesArrayHistoriesAlignedTop_u 1 (fromIntegral wmax) (fromIntegral omax) 
+                                  (fromIntegral n) psvv (fromIntegral m) (fromIntegral d) (fromIntegral e) 
+                                  (fromIntegral z) (fromIntegral zrr) ppww ppdd phh phhx phhrr phhrrx pmqww1 pmqww2 pmts1 pmts2 pmts3 pmss
       vsqww1' <- SV.unsafeFreeze mqww1 
       vsqww2' <- SV.unsafeFreeze mqww2
       vsts1' <- SV.unsafeFreeze mts1
@@ -2954,22 +2954,22 @@ parametersSetVarsSetSetVarsHistoryRepasSetSetVarsAlignedExcludeHiddenDenseTop_u 
       mss <- SV.unsafeThaw vsss
       t <- SV.unsafeWith vssvv $ \psvv -> do
         SV.unsafeWith vspccd $ \ppccd -> do
-        SV.unsafeWith vspccu $ \ppccu -> do
-        SV.unsafeWith vspww $ \ppww -> do
-        SV.unsafeWith vspdd $ \ppdd -> do
-        SV.unsafeWith vshh $ \phh -> do
-        SV.unsafeWith vshhx $ \phhx -> do
-        SV.unsafeWith vshhrr $ \phhrr -> do
-        SV.unsafeWith vshhrrx $ \phhrrx -> do
-        SMV.unsafeWith mqww1 $ \pmqww1 -> do
-        SMV.unsafeWith mqww2 $ \pmqww2 -> do
-        SMV.unsafeWith mts1 $ \pmts1 -> do
-        SMV.unsafeWith mts2 $ \pmts2 -> do
-        SMV.unsafeWith mts3 $ \pmts3 -> do
-        SMV.unsafeWith mss $ \pmss -> do
-          listVarsListTuplesArrayHistoriesAlignedExcludeHiddenTop_u 1 (fromIntegral wmax) (fromIntegral omax) 
-            (fromIntegral n) psvv (fromIntegral m) (fromIntegral d) (fromIntegral e) 
-            (fromIntegral z) (fromIntegral zrr) (fromIntegral ccl) ppccd ppccu ppww ppdd phh phhx phhrr phhrrx pmqww1 pmqww2 pmts1 pmts2 pmts3 pmss
+          SV.unsafeWith vspccu $ \ppccu -> do
+            SV.unsafeWith vspww $ \ppww -> do
+              SV.unsafeWith vspdd $ \ppdd -> do
+                SV.unsafeWith vshh $ \phh -> do
+                  SV.unsafeWith vshhx $ \phhx -> do
+                    SV.unsafeWith vshhrr $ \phhrr -> do
+                      SV.unsafeWith vshhrrx $ \phhrrx -> do
+                        SMV.unsafeWith mqww1 $ \pmqww1 -> do
+                          SMV.unsafeWith mqww2 $ \pmqww2 -> do
+                            SMV.unsafeWith mts1 $ \pmts1 -> do
+                              SMV.unsafeWith mts2 $ \pmts2 -> do
+                                SMV.unsafeWith mts3 $ \pmts3 -> do
+                                  SMV.unsafeWith mss $ \pmss -> do
+                                    listVarsListTuplesArrayHistoriesAlignedExcludeHiddenTop_u 1 (fromIntegral wmax) (fromIntegral omax) 
+                                      (fromIntegral n) psvv (fromIntegral m) (fromIntegral d) (fromIntegral e) 
+                                      (fromIntegral z) (fromIntegral zrr) (fromIntegral ccl) ppccd ppccu ppww ppdd phh phhx phhrr phhrrx pmqww1 pmqww2 pmts1 pmts2 pmts3 pmss
       vsqww1' <- SV.unsafeFreeze mqww1 
       vsqww2' <- SV.unsafeFreeze mqww2
       vsts1' <- SV.unsafeFreeze mts1

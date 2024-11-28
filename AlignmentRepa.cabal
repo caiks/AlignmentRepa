@@ -1,0 +1,60 @@
+cabal-version: 1.12
+
+-- This file has been generated from package.yaml by hpack version 0.36.0.
+--
+-- see: https://github.com/sol/hpack
+
+name:           AlignmentRepa
+version:        0.1.0.0
+description:    Please see the README on GitHub at <https://github.com/caiks/AlignmentRepa#readme>
+homepage:       https://github.com/caiks/AlignmentRepa#readme
+bug-reports:    https://github.com/caiks/AlignmentRepa/issues
+author:         Cliff McCartney
+maintainer:     caiks@greenlake.co.uk
+copyright:      Cliff McCartney
+license:        MIT
+license-file:   LICENSE
+build-type:     Simple
+extra-source-files:
+    README.md
+
+source-repository head
+  type: git
+  location: https://github.com/caiks/AlignmentRepa
+
+library
+  exposed-modules:
+      AlignmentAeson
+      AlignmentAesonPretty
+      AlignmentAesonRepa
+      AlignmentDevRepa
+      AlignmentPracticableIORepa
+      AlignmentPracticableRepa
+      AlignmentRandomRepa
+      AlignmentRepa
+      AlignmentRepaVShape
+  other-modules:
+      Paths_AlignmentRepa
+  hs-source-dirs:
+      ./
+  ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints
+  c-sources:
+      AlignmentForeign.c
+  build-depends:
+      Alignment
+    , aeson
+    , aeson-pretty
+    , base >=4.7 && <5
+    , bytestring
+    , cassava
+    , containers
+    , old-locale
+    , primitive
+    , random
+    , repa
+    , repa-io
+    , time
+    , vector
+    , vector-algorithms
+    , zlib
+  default-language: Haskell2010

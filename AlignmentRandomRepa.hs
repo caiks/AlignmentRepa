@@ -118,8 +118,8 @@ historyRepasShuffle_u_5 aa s = HistoryRepa vvaa maa saa rbb
     !rbb = R.fromUnboxed ((Z :. n :. z) :: DIM2) $ SV.convert $ SV.unsafeCast $ unsafePerformIO $ do
       vbb <- SMV.replicate (n*z) (-1)
       SV.unsafeWith vaa $ \paa -> do
-      SMV.unsafeWith vbb $ \pbb -> do
-        historyShuffle_u_5 (fromIntegral n) (fromIntegral z) paa (fromIntegral s) pbb
+        SMV.unsafeWith vbb $ \pbb -> do
+          historyShuffle_u_5 (fromIntegral n) (fromIntegral z) paa (fromIntegral s) pbb
       SV.unsafeFreeze vbb 
 
 foreign import ccall unsafe "historyShuffle_u" historyShuffle_u
