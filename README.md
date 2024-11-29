@@ -16,40 +16,32 @@ There are a couple of useful libraries that should be installed along with repa 
 
 The [Haskell implementation of fast Practicable Inducers](https://greenlake.co.uk/pages/inducer_haskell_impl_repa) discusses the implementation of the *inducers* using this repository. 
 
-## Download
+## Install
 
-The `AlignmentRepa` module requires the [Haskell platform](https://www.haskell.org/downloads#platform) to be installed.
+The `AlignmentRepa` module requires the [Haskell platform](https://www.haskell.org/downloads#platform) to be installed. The project is managed using [stack](https://docs.haskellstack.org/en/stable/).
 
-For example in Ubuntu,
-```
-sudo apt-get update
-sudo apt-get install haskell-platform
-```
-Now the libaries not included in Haskell platform must be installed,
-```
-cabal update
-cabal install repa repa-io vector-algorithms zlib cassava aeson aeson-pretty
-```
-Then download the zip files or use git to get the AlignmentRepa repository and the underlying Alignment repository -
+Download the zip files or use git to get the AlignmentRepa repository and the underlying Alignment repository -
 ```
 cd
 git clone https://github.com/caiks/Alignment.git
 git clone https://github.com/caiks/AlignmentRepa.git
 ```
 
+Then build with the following -
+```
+cd ~/AlignmentRepa
+stack build --ghc-options -w
+
+```
+
 ## Usage
 
-Typically we wish to force compilation in ghci in order to have the highest performance. See [Compiling to object code inside GHCi](https://downloads.haskell.org/~ghc/8.4.1/docs/html/users_guide/ghci.html#compiling-to-object-code-inside-ghci).
+Use `stack ghci` or `stack repl` for a run-eval-print loop (REPL) environment. 
 Load `AlignmentDevRepa` to import the modules and define various useful abbreviated functions,
 ```sh
-cd ../Alignment
-rm *.o *.hi
+cd ~/AlignmentRepa
+stack ghci --ghci-options -w
 
-cd ../AlignmentRepa
-rm *.o *.hi
-
-gcc -fPIC -c AlignmentForeign.c -o AlignmentForeign.o -O3
-ghci -i../Alignment -i../AlignmentRepa ../AlignmentRepa/AlignmentForeign.o
 ```
 ```hs
 :set -fobject-code
@@ -67,7 +59,7 @@ Histogram (fromList [(State (fromList [(VarInt 1,ValInt 1),(VarInt 2,ValInt 1)])
 aaar (sys aa) aa
 HistogramRepa {histogramRepasVectorVar = [VarInt 1,VarInt 2], histogramRepasMapVarInt = fromList [(VarInt 1,0),(VarInt 2,1)], histogramRepasArray = AUnboxed [2,2] [1.0,0.0,0.0,1.0]}
 ```
-Note that if forcing compilation causes functions to be unresolved, for example,
+Note that if modules become unresolved, for example,
 ```hs
 rp $ Set.fromList [1,2,3]
 
@@ -79,7 +71,7 @@ rp $ fudEmpty
 
 <interactive>:10:6: Not in scope: ‘fudEmpty’
 ```
-then either (a) import the modules explicitly, for example,
+then re-import the modules explicitly as defined in `AlignmentDevRepa`, for example,
 ```hs
 import qualified Data.Set as Set
 import qualified Data.Map as Map
@@ -91,21 +83,6 @@ rp $ Set.fromList [1,2,3]
 rp $ fudEmpty
 "{}"
 ```
-or (b) interpret module `AlignmentDevRepa` by itself. Exit `ghci` and then delete `AlignmentDevRepa.o`,
-```sh
-rm AlignmentDevRepa.o
 
-ghci -i../Alignment -i../AlignmentRepa ../AlignmentRepa/AlignmentForeign.o
-```
-```hs
-:set +m
-:l AlignmentDevRepa
-
-rp $ Set.fromList [1,2,3]
-"{1,2,3}"
-
-rp $ fudEmpty
-"{}"
-```
 
 

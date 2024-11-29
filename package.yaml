@@ -48,6 +48,7 @@ ghc-options:
 - -Wredundant-constraints
 
 library:
-  source-dirs: .
-  c-sources: AlignmentForeign.c
+  source-dirs: src
+  cc-options: -fPIC -O3
+  c-sources: src/AlignmentForeign.c
 

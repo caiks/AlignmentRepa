@@ -27,6 +27,7 @@ library
       AlignmentAeson
       AlignmentAesonPretty
       AlignmentAesonRepa
+      AlignmentDevRepa
       AlignmentPracticableIORepa
       AlignmentPracticableRepa
       AlignmentRandomRepa
@@ -35,11 +36,11 @@ library
   other-modules:
       Paths_AlignmentRepa
   hs-source-dirs:
-      src
+      ./
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints
   cc-options: -fPIC -O3
   c-sources:
-      src/AlignmentForeign.c
+      AlignmentForeign.c
   build-depends:
       Alignment
     , aeson
