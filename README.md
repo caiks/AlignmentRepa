@@ -59,7 +59,7 @@ Histogram (fromList [(State (fromList [(VarInt 1,ValInt 1),(VarInt 2,ValInt 1)])
 aaar (sys aa) aa
 HistogramRepa {histogramRepasVectorVar = [VarInt 1,VarInt 2], histogramRepasMapVarInt = fromList [(VarInt 1,0),(VarInt 2,1)], histogramRepasArray = AUnboxed [2,2] [1.0,0.0,0.0,1.0]}
 ```
-Note that if modules become unresolved, for example,
+Note that some modules may become [unresolved](https://downloads.haskell.org/~ghc/7.10.3-rc1/users_guide/ghci-obj.html), for example,
 ```hs
 rp $ Set.fromList [1,2,3]
 
@@ -71,7 +71,7 @@ rp $ fudEmpty
 
 <interactive>:10:6: Not in scope: ‘fudEmpty’
 ```
-then re-import the modules explicitly as defined in `AlignmentDevRepa`, for example,
+In this case, re-import the modules explicitly as defined in `AlignmentDevRepa`, for example,
 ```hs
 import qualified Data.Set as Set
 import qualified Data.Map as Map
